@@ -70,25 +70,26 @@ namespace generators {
     // REGULAR CATENOID //
     Mesh* regularCatenoid(
         unsigned int samples,   // samples in rotational direction
-        double radius,
-        double height
+        double rOuter,
+        double rInner
     ) {
         // Sampling in rotational direction (uniform)
         const unsigned int uSamples = samples;
         double uStep = TWOPI / (double)uSamples;
-        const double& c = radius;
+        const double halfHeight = rInner * acosh(rOuter / rInner);
+        std::cout << halfHeight << std::endl;
 
         // Pre-computation for sampling in vertical direction
-        double z = -height/2;
+        double z = -halfHeight;
         unsigned int count = 0;
-        // rescale to [0, 2pi]
-        while (z < height/2) { 
-            std::cout << z << std::endl;
-            z += H * uStep * cosh(z/c);
+        const double factor = H * uStep;
+        // rescale to [-height/2, height/2]
+        while (z < halfHeight) { 
+            z += factor * cosh(z/rInner);
             count++;
         }
         std::cout << z << std::endl;
-        const double scaleFac = TWOPI * H * uStep / z;
+        const double rescale = halfHeight / z;
         const unsigned int vSamples = count;
         const unsigned int uvSamples = uSamples * vSamples;
 
@@ -98,15 +99,15 @@ namespace generators {
         m->reserveSpace(uvSamples, 2*uvSamples);        
 
 
-        z = -height/2;
+        z = -halfHeight;
         for (unsigned int v = 0; v < vSamples; ++v) {
             for (unsigned int u = 0; u < uSamples; ++u) {
                 // Place vertices
                 double uu = (u - (v%2)*.5)*uStep;
-                double vv = z;
-                const double k = cosh(vv / c);
-                GLdouble x = c * k * cos(uu);
-                GLdouble y = c * k * sin(uu);
+                double vv = z * rescale;
+                const double cat = rInner * cosh(vv / rInner);
+                GLdouble x = cat * cos(uu);
+                GLdouble y = cat * sin(uu);
                 GLdouble z = vv;
                 m->addVertex(x, y, z);
                 // std::cout << x << ", " << y << ", " << z << std::endl;
@@ -123,7 +124,7 @@ namespace generators {
                     m->addFace(a, c, d);
                 }
             }
-            z += scaleFac * cosh(z/c);
+            z += factor * cosh(z / rInner);
         }
 
         m->finalize();
