@@ -21,10 +21,10 @@ namespace generators {
         // Pre-computation for sampling in poloidal direction
         double phi = 0;
         unsigned int count = 0;
-        const double factor = H * uStep;
+        const double vFactor = H * uStep;
         // rescale to [0, 2pi]
         while (phi < TWOPI || count % 2) { 
-            phi += factor * (rRatio + cos(phi));
+            phi += vFactor * (rRatio + cos(phi));
             count++;
         }
         std::cout << count << std::endl;
@@ -59,7 +59,7 @@ namespace generators {
                 m->addFace(a, c, b);
                 m->addFace(a, d, c);
             }
-            phi += factor * (rRatio + cos(phi));
+            phi += vFactor * (rRatio + cos(phi));
         }
 
         m->finalize();
@@ -80,17 +80,10 @@ namespace generators {
         std::cout << halfHeight << std::endl;
 
         // Pre-computation for sampling in vertical direction
-        double z = -halfHeight;
-        unsigned int count = 0;
-        const double factor = H * uStep;
+        const double vFactor = H * uStep * rInner;
+        const unsigned int vSamples = 2 * halfHeight / vFactor;
         // rescale to [-height/2, height/2]
-        while (z < halfHeight) { 
-            z += factor * cosh(z/rInner);
-            count++;
-        }
-        std::cout << z << std::endl;
-        const double rescale = halfHeight / z;
-        const unsigned int vSamples = count;
+        const double rescale = 2 * halfHeight / (vSamples * vFactor);
         const unsigned int uvSamples = uSamples * vSamples;
 
         // Create object
@@ -99,21 +92,19 @@ namespace generators {
         m->reserveSpace(uvSamples, 2*uvSamples);        
 
 
-        z = -halfHeight;
         for (unsigned int v = 0; v < vSamples; ++v) {
             for (unsigned int u = 0; u < uSamples; ++u) {
                 // Place vertices
                 double uu = (u - (v%2)*.5)*uStep;
-                double vv = z * rescale;
+                double vv = (v * vFactor - halfHeight) * rescale;
                 const double cat = rInner * cosh(vv / rInner);
                 GLdouble x = cat * cos(uu);
                 GLdouble y = cat * sin(uu);
                 GLdouble z = vv;
                 m->addVertex(x, y, z);
-                // std::cout << x << ", " << y << ", " << z << std::endl;
 
                 // Add faces
-                if (v != vSamples) {    // Open at the ends
+                if (v != vSamples-1) {    // Open at the ends
                     unsigned int us = (u+uSamples-v%2)%uSamples;
                     GLuint a = u+v*uSamples;
                     GLuint b = (u+1)%uSamples+v*uSamples;
@@ -124,7 +115,6 @@ namespace generators {
                     m->addFace(a, c, d);
                 }
             }
-            z += factor * cosh(z / rInner);
         }
 
         m->finalize();
