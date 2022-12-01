@@ -1,5 +1,6 @@
 #include "Browser.hpp"
-#include "Generators.hpp"
+#include "Torus.hpp"
+#include "Catenoid.hpp"
 
 int main(int argc, char **argv) {
     Trackball trb;
@@ -7,8 +8,8 @@ int main(int argc, char **argv) {
     Browser::init(argv[0], &trb);
 
     // Create mesh
-    Mesh* mesh = generators::regularCatenoid(200, 4, .4);
-    // Mesh* mesh = generators::regularTorus(103, 2, 1);
+    Mesh* mesh = new Catenoid(100, 2, 1);
+    // Mesh* mesh = new Torus(100, 2, 1);
     
     Browser::setMesh(mesh);
     Browser::launch();
