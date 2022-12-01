@@ -9,7 +9,8 @@ SRC = $(wildcard *.cpp)
 OBJ = $(SRC:%.cpp=$(BUILDDIR)/%.o)
 DEPS = $(SRC:%.cpp=$(BUILDDIR)/%.d)
 
-all: dir main
+run: dir main
+	build/a.out
 
 dir:
 	mkdir -p $(BUILDDIR)
