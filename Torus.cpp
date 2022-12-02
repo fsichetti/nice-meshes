@@ -18,7 +18,7 @@ Torus::Torus(
     // rescale to [0, 2pi]
     while (phi < TWOPI || count % 2) { 
         phi += vFactor * (rRatio + cos(phi));
-        count++;
+        ++count;
     }
     std::cout << count << std::endl;
     const double rescale = TWOPI / phi;

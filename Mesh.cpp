@@ -28,12 +28,12 @@ unsigned int Mesh::addVertex(GLfloat x, GLfloat y, GLfloat z) {
     // add padding for other attributes
     for (int i=3; i<attCmp; ++i)
         vertices.push_back(0);
-    return vNum++;
+    return ++vNum;
 }
 
 unsigned int Mesh::addFace(GLuint i, GLuint j, GLuint k){
     faces.insert(faces.end(), {i,j,k});
-    return fNum++;
+    return ++fNum;
 }
 
 GLfloat* Mesh::vComponent(int vertex_index, int attrib_offset) {
