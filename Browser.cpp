@@ -7,7 +7,7 @@ namespace Browser {
     Trackball* trackball = nullptr;
     Mesh* mesh = nullptr;
 
-    bool drawWireframe = true;
+    bool drawWireframe = false;
 
     Shader* progSmooth; 
     Shader* progLines;
@@ -141,13 +141,13 @@ namespace Browser {
                 break;
             case GLUT_SCROLL_UP:
                 if (state == GLUT_DOWN) {
-                    trackball->zoom(.2);
+                    trackball->zoom(1);
                     glutPostRedisplay();
                 }
                 break;
             case GLUT_SCROLL_DOWN:
                 if (state == GLUT_DOWN) {
-                    trackball->zoom(-.2);
+                    trackball->zoom(-1);
                     glutPostRedisplay();
                 }
                 break;

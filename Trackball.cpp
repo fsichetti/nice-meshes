@@ -17,7 +17,7 @@ void Trackball::setDimensions(int w, int h) {
 }
 
 void Trackball::zoom(float delta) {
-    scaleParameter += delta;
+    scaleParameter += delta * .4;
     scale = (scaleParameter < 0) ? 
         glm::exp2(scaleParameter) : 
         glm::log2(scaleParameter + 1) + 1;
@@ -62,7 +62,7 @@ void Trackball::dragged(int x0, int y0, int x1, int y1) {
 
 void Trackball::panning(int x0, int y0, int x1, int y1) {
     glm::vec3 d(x1-x0, y0-y1, 0);
-    pan += glm::vec1(.01)*d;
+    pan += glm::vec1(.01)*d*scale;
 
     update();
 }

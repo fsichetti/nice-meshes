@@ -53,11 +53,15 @@ class BezierPatch::ControlGrid {
         double storage[3][(degree+1)*(degree+1)];
         // Random number generation
         glm::vec3 pointInSphere(const glm::vec3& center, double radius) {
-            glm::vec3 v = glm::sphericalRand(radius);
+            glm::vec3 v(0);
+            v[0] = glm::gaussRand(0., radius);
+            v[1] = glm::gaussRand(0., radius);
+            v[2] = glm::gaussRand(0., radius);
+            
             return v + center;
         }
         glm::vec3 pointOnSphere(const glm::vec3& center, double radius) {
-            glm::vec3 v = glm::normalize(glm::sphericalRand(radius));
+            glm::vec3 v = glm::sphericalRand(radius);
             return v + center;
         }
 };
