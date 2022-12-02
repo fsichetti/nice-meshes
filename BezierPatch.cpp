@@ -19,7 +19,7 @@ void BezierPatch::cacheBinomials() {
 
 BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
     : Mesh(true, true) {
-    name = "Bezier";
+    name = "BezierPatch";
     const unsigned int uvSamples = samples * samples;
     const double uvStep = 1.0 / (double)samples;
     reserveSpace(uvSamples, uvSamples/2);
@@ -52,4 +52,60 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
     }
 
     finalize();
+}
+
+
+BezierPatch::ControlGrid::ControlGrid(double maxNorm) {
+    srand(time(0));
+    const double rad = 1.0/8.0;
+    // Generate patch corners
+    glm::vec3 origin(0);
+    const auto p0 = pointOnSphere(origin, maxNorm);
+    const auto p1 = pointOnSphere(origin, maxNorm);
+    const auto p2 = pointOnSphere(origin, maxNorm);
+    const auto p3 = pointOnSphere(origin, maxNorm);
+    set(0, 0, p0);
+    set(3, 0, p1);
+    set(3, 3, p2);
+    set(0, 3, p3);
+
+    // Generate patch border
+    const auto N = glm::vec1(1.0/3.0);  // near weight
+    const auto F = glm::vec1(1)-N;  // far weight
+    const auto p4 = pointInSphere(N*p0 + F*p1, (p1-p0).length()*rad);
+    const auto p5 = pointInSphere(F*p0 + N*p1, (p1-p0).length()*rad);
+    const auto p6 = pointInSphere(N*p1 + F*p2, (p2-p1).length()*rad);
+    const auto p7 = pointInSphere(F*p1 + N*p2, (p2-p1).length()*rad);
+    const auto p8 = pointInSphere(N*p2 + F*p3, (p3-p2).length()*rad);
+    const auto p9 = pointInSphere(F*p2 + N*p3, (p3-p2).length()*rad);
+    const auto p10 = pointInSphere(N*p3 + F*p0, (p0-p3).length()*rad);
+    const auto p11 = pointInSphere(F*p3 + N*p0, (p0-p3).length()*rad);
+    set(1, 0, p4);
+    set(2, 0, p5);
+    set(3, 1, p6);
+    set(3, 2, p7);
+    set(2, 3, p8);
+    set(1, 3, p9);
+    set(0, 2, p10);
+    set(0, 1, p11);
+
+    // Generate patch interior
+    const auto N2 = glm::vec1(.5)*N;
+    const auto F2 = glm::vec1(.5)*F;
+    const auto p12 = pointInSphere(N2*(p4+p11)+F2*(p6+p9), glm::min(
+        (p4-p9).length(), (p6-p11).length()
+    )*rad);
+    const auto p13 = pointInSphere(N2*(p5+p6)+F2*(p8+p11), glm::min(
+        (p5-p8).length(), (p6-p11).length()
+    )*rad);
+    const auto p14 = pointInSphere(N2*(p5+p10)+F2*(p8+p7), glm::min(
+        (p5-p8).length(), (p7-p10).length()
+    )*rad);
+    const auto p15 = pointInSphere(N2*(p9+p10)+F2*(p4+p7), glm::min(
+        (p4-p9).length(), (p7-p10).length()
+    )*rad);
+    set(1,1,p12);
+    set(2,1,p13);
+    set(2,2,p14);
+    set(1,2,p15);
 }
