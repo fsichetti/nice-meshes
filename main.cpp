@@ -13,7 +13,6 @@ int main(int argc, char **argv) {
     // Mesh* mesh = new Torus(100, 2, 1);
     BezierPatch::ControlGrid cg(4);
     Mesh* mesh = new BezierPatch(cg, 80);
-    mesh->writeToObj("./bez.obj");
     
     Browser::setMesh(mesh);
     Browser::launch();

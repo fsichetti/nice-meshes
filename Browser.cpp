@@ -20,7 +20,7 @@ namespace Browser {
 
         // Init window
         int c = 1;
-        const int wW = 640, wH = 480;
+        const int wW = 1920, wH = 1080;
         glutInit(&c, &name);
         glutInitWindowPosition(10, 10);
         glutInitWindowSize(wW, wH);
@@ -42,7 +42,7 @@ namespace Browser {
         glutCloseFunc(callbackClose);
         
         // OpenGL Settings
-        glClearColor(.3, .45, .45, 0);
+        glClearColor(.4, .5, .4, 0);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
         // glEnable(GL_CULL_FACE);

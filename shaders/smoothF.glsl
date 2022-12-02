@@ -2,7 +2,7 @@
 
 layout(location = 1) uniform vec3 lightDir;
 layout(location = 2) uniform float alpha;
-const float minLight = 0.2;
+const float minLight = 0.;
 const vec3 frontColour = vec3(0.8, 0.8, 1.0);
 const vec3 backColour = vec3(1.0, 0.8, 0.8);
 
