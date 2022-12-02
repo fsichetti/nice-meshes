@@ -42,7 +42,7 @@ GLfloat* Mesh::vComponent(int vertex_index, int attrib_offset) {
 
 
 void Mesh::draw(GLuint drawMode) const {
-    if (!final) return;
+    if (!final) throw MeshNotFinalizedException();
     glBindVertexArray(vao);
     glDrawElements(drawMode, faces.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
@@ -146,7 +146,7 @@ void Mesh::computeNormals() {
 
 
 void Mesh::writeToObj(std::string path) const {
-    if (!final) return;
+    if (!final) throw MeshNotFinalizedException();
     // Open file
     std::ofstream file(path);
     if (file.is_open()) {
@@ -185,7 +185,7 @@ void Mesh::writeToObj(std::string path) const {
 }
 
 void Mesh::writeToPly(std::string path) const {
-    if (!final) return;
+    if (!final) throw MeshNotFinalizedException();
     // Open file
     std::ofstream file(path);
     if (file.is_open()) {

@@ -54,4 +54,8 @@ class Mesh {
         GLuint vbo, ebo, vao;
 };
 
+class MeshNotFinalizedException : public std::exception {
+    public: const char* what() { return "Mesh has not been finalised"; }
+};
+
 #endif

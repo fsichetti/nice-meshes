@@ -21,4 +21,12 @@ class Shader {
     bool checkLinkErrors(GLint);
 };
 
+class ShaderCompileException : public std::exception {
+    public: const char* what() { return "Could not compile shader"; }
+};
+
+class ShaderLinkException : public std::exception {
+    public: const char* what() { return "Could not link program"; }
+};
+
 #endif

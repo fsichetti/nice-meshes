@@ -103,14 +103,14 @@ namespace Browser {
             // Export OBJ
             case 'o':
                 n = "./" + mesh->name + ".obj";
-                    mesh->writeToObj(n);
+                mesh->writeToObj(n);
                 std::cout << "Exported mesh (" << n << ")" << std::endl;
                 break;
 
             // Export PLY
             case 'p':
                 n = "./" + mesh->name + ".ply";
-                    mesh->writeToPly(n);
+                mesh->writeToPly(n);
                 std::cout << "Exported mesh (" << n << ")" << std::endl;
                 break;
         }

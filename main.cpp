@@ -15,11 +15,12 @@ int main(int argc, char **argv) {
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
             cg.at(i,j,0) = i;
-            cg.at(i,j,0) = j;
-            cg.at(i,j,0) = i+j;
+            cg.at(i,j,1) = j;
+            cg.at(i,j,2) = 0;
         }
     }
     Mesh* mesh = new BezierPatch(cg, 16);
+    mesh->writeToObj("./bez.obj");
     
     Browser::setMesh(mesh);
     Browser::launch();
