@@ -36,16 +36,17 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
                     const double a = bPoly(i, u * uvStep);
                     const double b = bPoly(j, v * uvStep);
                     // Iterate on the 3 coordinates
-                    for (int x = 0; x < 2; ++x) {
+                    for (int x = 0; x < 3; ++x) {
                         p[x] += a * b * cg.at(i,j,x);
                     }
                 }
             }
             addVertex(p[0], p[1], p[2]);
+
             if (u < samples-1 && v < samples-1) {
                 const unsigned int id = samples * u + v;
                 addFace(id, id+1, id+samples);
-                addFace(id+1, id+samples, id+samples+1);
+                addFace(id+1, id+samples+1, id+samples);
             }
         }
     }

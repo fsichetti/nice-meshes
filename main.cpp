@@ -14,9 +14,11 @@ int main(int argc, char **argv) {
     BezierPatch::ControlGrid cg;
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
-            cg.at(i,j,0) = i;
-            cg.at(i,j,1) = j;
-            cg.at(i,j,2) = 0;
+            auto x = i-1.5;
+            auto y = j-1.5;
+            cg.at(i,j,0) = x;
+            cg.at(i,j,1) = y;
+            cg.at(i,j,2) = x*x+y*y;
         }
     }
     Mesh* mesh = new BezierPatch(cg, 16);
