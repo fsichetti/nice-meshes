@@ -93,6 +93,11 @@ namespace Browser {
     void callbackKeyboard(unsigned char key, int x, int y) {
         std::string n;
         switch (key) {
+            case 'w':
+                drawWireframe = !drawWireframe;
+                glutPostRedisplay();
+                break;
+
             // Screenshot
             case 's':
                 n = "./shot.png";

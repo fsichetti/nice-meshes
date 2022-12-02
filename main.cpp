@@ -11,8 +11,8 @@ int main(int argc, char **argv) {
     // Create mesh
     // Mesh* mesh = new Catenoid(100, 2, 1);
     // Mesh* mesh = new Torus(100, 2, 1);
-    BezierPatch::ControlGrid cg(2);
-    Mesh* mesh = new BezierPatch(cg, 16);
+    BezierPatch::ControlGrid cg(5);
+    Mesh* mesh = new BezierPatch(cg, 80);
     mesh->writeToObj("./bez.obj");
     
     Browser::setMesh(mesh);
