@@ -12,7 +12,7 @@ Catenoid::Catenoid(
     const double halfHeight = rInner * acosh(rOuter / rInner);
 
     // Pre-computation for sampling in vertical direction
-    const double vFactor = H * uStep * rInner;
+    const double vFactor = SQRT3_2 * uStep * rInner;
     const unsigned int vSamples = 2 * halfHeight / vFactor;
     // rescale to [-height/2, height/2]
     const double rescale = 2 * halfHeight / (vSamples * vFactor);

@@ -2,7 +2,7 @@
 #define CATENOID_H
 
 #include "Mesh.hpp"
-#include <math.h>
+#include "Constants.hpp"
 
 class Catenoid : public Mesh {
     public:
@@ -11,9 +11,6 @@ class Catenoid : public Mesh {
             double rOuter,
             double rInner
         );
-    private:
-        const double H = sqrt(3)/2;
-        const double TWOPI = 2 * M_PI;
 };
 
 #endif

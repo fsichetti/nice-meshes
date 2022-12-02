@@ -14,7 +14,7 @@ Torus::Torus(
     // Pre-computation for sampling in poloidal direction
     double phi = 0;
     unsigned int count = 0;
-    const double vFactor = H * uStep;
+    const double vFactor = SQRT3_2 * uStep;
     // rescale to [0, 2pi]
     while (phi < TWOPI || count % 2) { 
         phi += vFactor * (rRatio + cos(phi));

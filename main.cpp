@@ -12,10 +12,12 @@ int main(int argc, char **argv) {
     // Mesh* mesh = new Catenoid(100, 2, 1);
     // Mesh* mesh = new Torus(100, 2, 1);
     BezierPatch::ControlGrid cg;
-    for (int i = 0; i < 16; ++i) {
-        cg.x(i) = i % 4;
-        cg.y(i) = (int)(i / 4);
-        cg.z(i) = 0;
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            cg.at(i,j,0) = i;
+            cg.at(i,j,0) = j;
+            cg.at(i,j,0) = i+j;
+        }
     }
     Mesh* mesh = new BezierPatch(cg, 16);
     
