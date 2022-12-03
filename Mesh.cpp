@@ -190,24 +190,26 @@ void Mesh::writeToPly(std::string path) const {
     std::ofstream file(path);
     if (file.is_open()) {
         // Header
-        file << "ply\r" << "format ascii 1.0\r";
-        if (!name.empty()) file << "comment " << name << "\r";
-        file << "face vertex " << vNum << "\r";
-        file << "property float x\r" << "property float y\r"
-            << "property float z\r";
-        if (hasNrm) file << "property float nx\r" << "property float ny\r"
-            << "property float nz\r";
-        if (hasPar) file << "property float u\r" << "property float v\r";
-        file << "face face " << fNum << "\r";
-        file << "property list uchar int vertex_indices\r";
-        file << "end_header\r";
+        file << "ply" << std::endl << "format ascii 1.0" << std::endl;
+        if (!name.empty()) file << "comment " << name << std::endl;
+        file << "element vertex " << vNum << std::endl;
+        file << "property float x" << std::endl << "property float y" <<
+            std::endl << "property float z" << std::endl;
+        if (hasNrm) file << "property float nx" << std::endl <<
+            "property float ny" << std::endl << "property float nz" <<
+            std::endl;
+        if (hasPar) file << "property float u" << std::endl <<
+            "property float v" << std::endl;
+        file << "element face " << fNum << std::endl;
+        file << "property list uchar int vertex_indices" << std::endl;
+        file << "end_header" << std::endl;
 
         // Write vertices
         for (int i=0; i < vertices.size(); i+=attCmp) {
             for (int j=0; j<attCmp; ++j) {
                 file << vertices.at(i+j) << " ";
             }
-            file << "\r";
+            file << std::endl;
         }
 
         // Write faces
@@ -216,7 +218,7 @@ void Mesh::writeToPly(std::string path) const {
             for (int j=0; j<3; ++j) {
                 file << faces.at(i+j) << " ";
             }
-            file << "\r";
+            file << std::endl;
         }
     } 
     else {
