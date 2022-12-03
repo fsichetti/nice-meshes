@@ -10,9 +10,9 @@ int main(int argc, char **argv) {
 
     // Create mesh
     // Mesh* mesh = new Catenoid(100, 2, 1);
-    // Mesh* mesh = new Torus(100, 2, 1);
-    BezierPatch::ControlGrid cg(4);
-    Mesh* mesh = new BezierPatch(cg, 80);
+    Mesh* mesh = new Torus(100, 2, 1);
+    // BezierPatch::ControlGrid cg(4);
+    // Mesh* mesh = new BezierPatch(cg, 80);
     
     Browser::setMesh(mesh);
     Browser::launch();

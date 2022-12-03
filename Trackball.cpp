@@ -1,11 +1,19 @@
 #include "Trackball.hpp"
 
+void Trackball::reset() {
+    pan = glm::vec3(0);
+    rot = glm::normalize(glm::quat(0, 0, 1, 1));
+    scaleParameter = 0;
+    scale = 1;
+    update();
+}
+
 void Trackball::update() {
     glm::mat4 t = glm::translate(I, pan);
     glm::mat4 r = glm::toMat4(rot);
     glm::mat4 s = glm::scale(I, glm::vec3(scale));
     viewDir = glm::transpose(r) * glm::vec4(0.0, 0.0, 1.0, 0.0);
-    mvpMat = pMat * t * r * s;
+    mvpMat = pMat * vMat * rMat() * sMat() * tMat();
     mvpMat = glm::transpose(mvpMat);
 }
 
@@ -24,7 +32,7 @@ void Trackball::zoom(float delta) {
     update();
 }
 
-glm::vec3 Trackball::getPoint(int x, int y) {
+glm::vec3 Trackball::getPoint(int x, int y) const {
     glm::vec3 point;
     point.x = x - (GLfloat)width/2;
     point.y = y - (GLfloat)height/2;
@@ -62,7 +70,8 @@ void Trackball::dragged(int x0, int y0, int x1, int y1) {
 
 void Trackball::panning(int x0, int y0, int x1, int y1) {
     glm::vec3 d(x1-x0, y0-y1, 0);
-    pan += glm::vec1(.01)*d*scale;
+    d = riMat() * glm::vec4(d,0);
+    pan += glm::vec1(1.0/(200*scale))*d;
 
     update();
 }

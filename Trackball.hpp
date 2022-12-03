@@ -14,29 +14,39 @@ class Trackball {
         const float r2 = glm::pow(radius, 2);
         const glm::mat4 I = glm::mat4(1.0);
 
-        glm::vec3 pan = glm::vec3(0, 0, -5);
-        glm::quat rot = glm::normalize(glm::quat(1, 0, 0, 1));
-        float scaleParameter = 0;
-        float scale = 1;
-        glm::mat4 vMat = glm::mat4(1.0);
-        glm::mat4 pMat = glm::mat4(1.0);
-        glm::mat4 mvpMat = glm::mat4(1.0);
+        glm::vec3 pan;
+        glm::quat rot;
+        float scaleParameter, scale;
 
         glm::vec3 viewDir = glm::vec3(0.0, 0.0, 1.0);
+
+        const glm::mat4 vMat = glm::translate(I, glm::vec3(0,0,-5));;
+        glm::mat4 pMat = I;
+        inline glm::mat4 tMat() const { return glm::translate(I, pan); }
+        inline glm::mat4 tiMat() const { return glm::translate(I, -pan); }
+        inline glm::mat4 rMat() const { return glm::toMat4(rot); }
+        inline glm::mat4 riMat() const { return glm::toMat4(glm::inverse(rot)); }
+        inline glm::mat4 sMat() const { return glm::scale(I, glm::vec3(scale)); }
+        inline glm::mat4 siMat() const { return glm::scale(I, glm::vec3(1./scale)); }
+        glm::mat4 mvpMat = I;
 
         void update();
 
     public:
+        Trackball () { reset(); }
         const GLfloat* mvpPtr() const { return glm::value_ptr(mvpMat); }
         glm::vec3 viewDirection() const { return viewDir; }
+
+        void reset();
         void setDimensions(int, int);
         inline void getDimensions(unsigned int& w, unsigned int& h) const {
             w = width;
             h = height;
         }
-        glm::vec3 getPoint(int, int);
+        glm::vec3 getPoint(int, int) const;
         void dragged(int, int, int, int);
         void panning(int, int, int, int);
+
 
         // Scale calculation
         void zoom(float);

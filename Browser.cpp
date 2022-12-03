@@ -93,6 +93,13 @@ namespace Browser {
     void callbackKeyboard(unsigned char key, int x, int y) {
         std::string n;
         switch (key) {
+            // Reset trackball
+            case 'r':
+                trackball->reset();
+                glutPostRedisplay();
+                break;
+
+            // Toggle wireframe
             case 'w':
                 drawWireframe = !drawWireframe;
                 glutPostRedisplay();
