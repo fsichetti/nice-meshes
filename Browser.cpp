@@ -22,7 +22,7 @@ namespace Browser {
         int c = 1;
         const int wW = 1920, wH = 1080;
         glutInit(&c, &name);
-        glutInitWindowPosition(10, 10);
+        glutInitWindowPosition(0, 0);
         glutInitWindowSize(wW, wH);
         trackball->setDimensions(wW, wH); //TEMPORARY
         glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
@@ -42,13 +42,13 @@ namespace Browser {
         glutCloseFunc(callbackClose);
         
         // OpenGL Settings
-        glClearColor(.4, .5, .4, 0);
+        glClearColor(.4, .45, .4, 0);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
         // glEnable(GL_CULL_FACE);
         // glCullFace(GL_BACK);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // glEnable(GL_BLEND);
+        // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // Shader programs
         const std::string f = "shaders/";
