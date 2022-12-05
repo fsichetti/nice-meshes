@@ -20,7 +20,6 @@ Torus::Torus(
         phi += vFactor * (rRatio + cos(phi));
         ++count;
     }
-    std::cout << count << std::endl;
     const double rescale = TWOPI / phi;
     const unsigned int vSamples = count;
     const unsigned int uvSamples = uSamples * vSamples;
