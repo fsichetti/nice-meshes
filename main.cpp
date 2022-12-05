@@ -12,7 +12,9 @@ int main(int argc, char **argv) {
     // Mesh* mesh = new Catenoid(100, 2, 1);
     // Mesh* mesh = new Torus(100, 2, 1);
     BezierPatch::ControlGrid cg(4);
-    Mesh* mesh = new BezierPatch(cg, 80);
+    BezierPatch::PlaneSampling smp;
+    smp.readFromObj("./plane.obj");
+    Mesh* mesh = new BezierPatch(cg, smp);
     
     Browser::setMesh(mesh);
     Browser::launch();

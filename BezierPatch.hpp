@@ -19,6 +19,11 @@ class BezierPatch : public Mesh {
             unsigned int samples    // samples per uv direction
         );
 
+        BezierPatch(
+            ControlGrid cg,
+            PlaneSampling smp    // provided sampling of the plane
+        );
+
     private:
         // Bernstein polynomials
         unsigned int binomial[degree+1];

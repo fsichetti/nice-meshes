@@ -27,11 +27,11 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
     // Compute points
     cacheBinomials();
     // Iterate on sample points (u,v)
-    for (int u = 0; u < samples; ++u) {
-        for (int v = 0; v < samples; ++v) {
+    for (unsigned int u = 0; u < samples; ++u) {
+        for (unsigned int v = 0; v < samples; ++v) {
             // Iterate on control points (i,j)
             double p[3] = {0,0,0};
-            for (int i = 0; i <= degree; ++i) {
+            for (unsigned int i = 0; i <= degree; ++i) {
                 for (int j = 0; j <= degree; ++j) {
                     const double a = bPoly(i, u * uvStep);
                     const double b = bPoly(j, v * uvStep);
@@ -49,6 +49,41 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
                 addFace(id+1, id+samples+1, id+samples);
             }
         }
+    }
+
+    finalize();
+}
+
+
+BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
+    : Mesh(true, true) {
+    name = "BezierPatch";
+    const unsigned int NV = smp.verts.size() / 2;
+    const unsigned int NF = smp.faces.size() / 3;
+    reserveSpace(NV, NF);
+
+    cacheBinomials();
+    // Compute vertices
+    for (unsigned int i = 0; i < NV; ++i) {
+        const double u = smp.verts[2*i], v = smp.verts[2*i+1];
+        // Iterate on control points (i,j)
+            double p[3] = {0,0,0};
+            for (unsigned int i = 0; i <= degree; ++i) {
+                for (int j = 0; j <= degree; ++j) {
+                    const double a = bPoly(i, u);
+                    const double b = bPoly(j, v);
+                    // Iterate on the 3 coordinates
+                    for (int x = 0; x < 3; ++x) {
+                        p[x] += a * b * cg.at(i,j,x);
+                    }
+                }
+            }
+        addVertex(p[0], p[1], p[2]);
+    }
+    // Add faces
+    for (unsigned int i = 0; i < NF; ++i) {
+        const auto fi = 3*i;
+        addFace(smp.faces[fi], smp.faces[fi+1], smp.faces[fi+2]);
     }
 
     finalize();
@@ -116,46 +151,32 @@ void BezierPatch::PlaneSampling::readFromObj(std::string path) {
     faces.clear();
     std::ifstream file(path);
     if (file.is_open()) {
-        std::string line, token;
+        std::string token;
+        bool vfFlag;  // reading vertex/face
+        unsigned int cnt = 0;
 
         while (!file.eof()) {
-            file >> line;
-            token = "";
-            if (line.empty()) continue;
+            file >> token;
+            if (token.empty()) continue;
 
-            bool readVert;  // reading vertex/face
-            // Get type of data for this row
-            char c0 = line[0];
+            char c0 = token[0];
             switch (c0) {
                 case 'v':
-                    readVert = true;
+                    vfFlag = true;
+                    cnt = 0;
                     break;
                 case 'f':
-                    readVert = false;
+                    vfFlag = false;
+                    cnt = 0;
                     break;
                 default:
-                    continue;
-            }
-
-            const auto len = line.length();
-            const char sep = ' ';
-            unsigned int k = 0;
-            for (unsigned int i = 2; i < len; ++i) {
-                char c = line[i];
-                if (c != sep) {
-                    token += c;
-                }
-                else if (!token.empty()) {
-                    // Push number
-                    if (readVert) verts.push_back(std::stof(token));
-                    else faces.push_back(std::stoi(token));
-                    token = "";
-                }
-            }
-            // Push last element if necessary
-            if (!token.empty()) {
-                if (readVert) verts.push_back(std::stof(token));
-                else faces.push_back(std::stoi(token));
+                    if (vfFlag && cnt<2) {
+                        verts.push_back(std::stof(token));
+                    }
+                    else if (!vfFlag && cnt<3) {
+                        faces.push_back(std::stoi(token)-1);
+                    }
+                    ++cnt;
             }
         }
     }
