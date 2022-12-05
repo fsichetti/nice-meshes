@@ -17,16 +17,21 @@ class Mesh {
         Mesh(bool normals, bool parametric);
         ~Mesh();
 
+        // Core methods
         void reserveSpace(unsigned int verts, unsigned int faces);
+        unsigned int addVertex(GLfloat x, GLfloat y, GLfloat z);
+        unsigned int addFace(GLuint i, GLuint j, GLuint k);
+        GLfloat& attrib(int vertex_index, int attrib_offset);
         void finalize();
         void draw(GLuint drawMode = GL_TRIANGLES) const;
         void writeToObj(std::string filename) const;
         void writeToPly(std::string filename) const;
+        
+
         float getVolume() const;
 
-        unsigned int addVertex(GLfloat x, GLfloat y, GLfloat z);
-        unsigned int addFace(GLuint i, GLuint j, GLuint k);
-        GLfloat* vComponent(int vertex_index, int attrib_offset);
+        class FileOpenException;
+        class NotFinalizedException;
 
     private:
         bool final = false;
@@ -35,6 +40,11 @@ class Mesh {
         vArray verts;
         fArray faces;
 
+        GLuint vbo, ebo, vao;   // Buffer indices
+        const GLuint attCnt; // Attribute count
+        const GLuint attCmp; // Total number of components
+        const size_t attByt; // Total byte offset
+
         // Vertex-vertex adjacency list
         // typedef std::vector<std::set<unsigned int>> AdjacencyList;
 
@@ -42,19 +52,13 @@ class Mesh {
         const bool hasPar;  // Has parametric cooridnates?
         
         void computeNormals();
-
-        const GLuint attCnt; // Attribute count
-        const GLuint attCmp; // Total number of components
-        const size_t attByt; // Total byte offset
-            
-        GLuint vbo, ebo, vao;
 };
 
-class FileOpenException : public std::exception {
+class Mesh::FileOpenException : public std::exception {
     public: const char* what() { return "Could not open file"; }
 };
 
-class MeshNotFinalizedException : public std::exception {
+class Mesh::NotFinalizedException : public std::exception {
     public: const char* what() { return "Mesh has not been finalised"; }
 };
 

@@ -55,7 +55,7 @@ bool Shader::checkCompileErrors(GLint ShaderId, std::string fname) {
         glGetShaderInfoLog(ShaderId, max_length, &length, log);
         std::cerr << "Shader " << ShaderId << " (" << fname << ") "
             "error log: " << log << std::endl;
-        throw ShaderCompileException();
+        throw Shader::CompileException();
     }
     return true;
 }
@@ -70,7 +70,7 @@ bool Shader::checkLinkErrors(GLint program) {
         glGetProgramInfoLog(program, max_length, &length, log);
         std::cerr << "Program " << program <<
             " error log: " << log << std::endl;
-        throw ShaderLinkException();
+        throw Shader::LinkException();
     }
     return true;
 }

@@ -13,6 +13,9 @@ class Shader {
     Shader(std::string, std::string, std::string);
     operator GLuint() { return program; };
 
+    class CompileException;
+    class LinkException;
+
     private:
     const GLuint program = glCreateProgram();
     GLuint load(std::string, GLenum);
@@ -21,11 +24,11 @@ class Shader {
     bool checkLinkErrors(GLint);
 };
 
-class ShaderCompileException : public std::exception {
+class Shader::CompileException : public std::exception {
     public: const char* what() { return "Could not compile shader"; }
 };
 
-class ShaderLinkException : public std::exception {
+class Shader::LinkException : public std::exception {
     public: const char* what() { return "Could not link program"; }
 };
 

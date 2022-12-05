@@ -36,13 +36,13 @@ unsigned int Mesh::addFace(GLuint i, GLuint j, GLuint k){
     return ++fNum;
 }
 
-GLfloat* Mesh::vComponent(int vertex_index, int attrib_offset) {
-    return &verts[vertex_index + attCmp * attrib_offset];
+GLfloat& Mesh::attrib(int vertex_index, int attrib_offset) {
+    return verts[vertex_index + attCmp * attrib_offset];
 }
 
 
 void Mesh::draw(GLuint drawMode) const {
-    if (!final) throw MeshNotFinalizedException();
+    if (!final) throw Mesh::NotFinalizedException();
     glBindVertexArray(vao);
     glDrawElements(drawMode, faces.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
@@ -146,7 +146,7 @@ void Mesh::computeNormals() {
 
 
 void Mesh::writeToObj(std::string path) const {
-    if (!final) throw MeshNotFinalizedException();
+    if (!final) throw Mesh::NotFinalizedException();
     // Open file
     std::ofstream file(path);
     if (file.is_open()) {
@@ -184,7 +184,7 @@ void Mesh::writeToObj(std::string path) const {
 }
 
 void Mesh::writeToPly(std::string path) const {
-    if (!final) throw MeshNotFinalizedException();
+    if (!final) throw Mesh::NotFinalizedException();
     // Open file
     std::ofstream file(path);
     if (file.is_open()) {
@@ -206,7 +206,7 @@ void Mesh::writeToPly(std::string path) const {
         // Write vertices
         for (int i=0; i < verts.size(); i+=attCmp) {
             for (int j=0; j<attCmp; ++j) {
-                file << verts.at(i+j) << " ";
+                file << verts[i+j] << " ";
             }
             file << std::endl;
         }
@@ -215,7 +215,7 @@ void Mesh::writeToPly(std::string path) const {
         for (int i=0; i < faces.size(); i+=3) {
             file << "3 ";
             for (int j=0; j<3; ++j) {
-                file << faces.at(i+j) << " ";
+                file << faces[i+j] << " ";
             }
             file << std::endl;
         }
