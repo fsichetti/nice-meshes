@@ -16,18 +16,18 @@ Mesh::~Mesh() {
     glDeleteVertexArrays(1, &vao);
 }
 
-// Reserve space in vertices and faces arrays
+// Reserve space in verts and faces arrays
 void Mesh::reserveSpace(unsigned int rv, unsigned int re) {
-    vertices.reserve(rv * attCmp);
+    verts.reserve(rv * attCmp);
     faces.reserve(re * 3);
 }
 
 
 unsigned int Mesh::addVertex(GLfloat x, GLfloat y, GLfloat z) {
-    vertices.insert(vertices.end(), {x,y,z});
+    verts.insert(verts.end(), {x,y,z});
     // add padding for other attributes
     for (int i=3; i<attCmp; ++i)
-        vertices.push_back(0);
+        verts.push_back(0);
     return ++vNum;
 }
 
@@ -37,7 +37,7 @@ unsigned int Mesh::addFace(GLuint i, GLuint j, GLuint k){
 }
 
 GLfloat* Mesh::vComponent(int vertex_index, int attrib_offset) {
-    return &vertices[vertex_index + attCmp * attrib_offset];
+    return &verts[vertex_index + attCmp * attrib_offset];
 }
 
 
@@ -62,8 +62,8 @@ void Mesh::finalize() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(
         GL_ARRAY_BUFFER,
-        vertices.size() * sizeof(GLfloat),
-        vertices.data(),
+        verts.size() * sizeof(GLfloat),
+        verts.data(),
         GL_STATIC_DRAW
     );
 
@@ -122,7 +122,7 @@ void Mesh::computeNormals() {
         for (int j=0; j<3; ++j) {
             // for each xyz component, retrieve value
             for (int k=0; k<3; ++k) {
-                faceVert[j][k] = vertices[attCmp*faces[3*i+j]+k];
+                faceVert[j][k] = verts[attCmp*faces[3*i+j]+k];
             }
         }
         // Compute the cross product
@@ -138,7 +138,7 @@ void Mesh::computeNormals() {
     for (int i=0; i<vNum; ++i) {
         normals[i] = glm::normalize(normals[i]);
         for (int k=0; k<3; ++k) {
-            vertices[attCmp*i+k+3] = normals[i][k];
+            verts[attCmp*i+k+3] = normals[i][k];
         }
     }
 }
@@ -150,21 +150,21 @@ void Mesh::writeToObj(std::string path) const {
     // Open file
     std::ofstream file(path);
     if (file.is_open()) {
-        // Write vertices
-        for (int i=0; i < vertices.size(); i+=attCmp) {
+        // Write verts
+        for (int i=0; i < verts.size(); i+=attCmp) {
             file << "v "
-                << vertices[i+0] << " "
-                << vertices[i+1] << " "
-                << vertices[i+2] << " "
+                << verts[i+0] << " "
+                << verts[i+1] << " "
+                << verts[i+2] << " "
                 << std::endl;
         }
         // Write normals
         if (hasNrm) {
-            for (int i=0; i < vertices.size(); i+=attCmp) {
+            for (int i=0; i < verts.size(); i+=attCmp) {
                 file << "vn "
-                    << vertices[i+3] << " "
-                    << vertices[i+4] << " "
-                    << vertices[i+5] << " "
+                    << verts[i+3] << " "
+                    << verts[i+4] << " "
+                    << verts[i+5] << " "
                     << std::endl;
             }
         }
@@ -205,9 +205,9 @@ void Mesh::writeToPly(std::string path) const {
         file << "end_header" << std::endl;
 
         // Write vertices
-        for (int i=0; i < vertices.size(); i+=attCmp) {
+        for (int i=0; i < verts.size(); i+=attCmp) {
             for (int j=0; j<attCmp; ++j) {
-                file << vertices.at(i+j) << " ";
+                file << verts.at(i+j) << " ";
             }
             file << std::endl;
         }
@@ -239,7 +239,7 @@ float Mesh::getVolume() const {
         for (int j=0; j<3; ++j) {
             // for each xyz component, retrieve value
             for (int k=0; k<3; ++k) {
-                faceVert[j][k] = vertices[attCmp*faces[3*i+j]+k];
+                faceVert[j][k] = verts[attCmp*faces[3*i+j]+k];
             }
         }
         // face normal * 2 * face area

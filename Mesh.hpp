@@ -12,7 +12,6 @@
 class Mesh { 
     public:
         typedef std::vector<GLfloat> vArray;
-        typedef std::vector<GLuint> eArray;
         typedef std::vector<GLuint> fArray;
 
         std::string name = "mesh";
@@ -36,7 +35,7 @@ class Mesh {
         bool final = false;
 
         unsigned int vNum=0, fNum=0;    // vertex and face count
-        vArray vertices;
+        vArray verts;
         fArray faces;
 
         // Vertex-vertex adjacency list
