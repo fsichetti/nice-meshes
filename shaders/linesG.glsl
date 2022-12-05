@@ -2,7 +2,7 @@
 layout(triangles) in;
 layout(line_strip, max_vertices=4) out;
 
-const float zoff = -0.01;
+const float zoff = -0.001;
 
 void main() {
     gl_Position = gl_in[0].gl_Position;
