@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
     BezierPatch::ControlGrid cg(4);
     BezierPatch::PlaneSampling smp;
     smp.readFromObj("./plane.obj");
-    Mesh* mesh = new BezierPatch(cg, smp);
+    Mesh* mesh = new BezierPatch(cg, 64);
     
     Browser::setMesh(mesh);
     Browser::launch();

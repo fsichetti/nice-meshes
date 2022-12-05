@@ -92,7 +92,7 @@ BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
 
 BezierPatch::ControlGrid::ControlGrid(double maxNorm) {
     srand(time(0)); // get random seed
-    const double rad = 1.0/4.0;
+    const double rad = 1.0/3.0;
     // Generate patch corners
     glm::vec3 origin(0);
     const auto p0 = pointOnSphere(origin, maxNorm);

@@ -210,4 +210,12 @@ namespace Browser {
         FreeImage_Unload(image);
         delete [] pixels;
     }
+
+    // void message(float x, float y, std::string msg) {
+    //     glColor3f(1., 1., 1.); 
+    //     glRasterPos2f(x, y);
+    //     glutBitmapString(GLUT_BITMAP_8_BY_13, 
+    //     reinterpret_cast<const unsigned char*>(msg.c_str()));
+    //     glutPostRedisplay();
+    // }
 }

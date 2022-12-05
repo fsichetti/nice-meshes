@@ -27,6 +27,7 @@ namespace Browser {
     void callbackClose();
 
     void screenshot(std::string filename);
+    // void message(float x, float y, std::string msg);
 };
 
 #endif
