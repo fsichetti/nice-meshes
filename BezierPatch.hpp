@@ -10,8 +10,9 @@ class BezierPatch : public Mesh {
     public:
         static const unsigned int degree = 3;  // hardcoded as cubic patches
 
-        // Control grid struct
+        // Control grid and plane sampling classes
         class ControlGrid;
+        class PlaneSampling;
 
         BezierPatch(
             ControlGrid cg,
@@ -32,7 +33,7 @@ class BezierPatch : public Mesh {
 class BezierPatch::ControlGrid {
     public:
         ControlGrid() {};   // empty constructor
-        ControlGrid(double maxNorm);   // random generator
+        ControlGrid(double baseScale);   // random generator
 
         inline glm::vec3 get(unsigned int i, unsigned int j) const {
             const auto id = i + (degree+1) * j;
@@ -64,6 +65,12 @@ class BezierPatch::ControlGrid {
             glm::vec3 v = glm::sphericalRand(radius);
             return v + center;
         }
+};
+
+struct BezierPatch::PlaneSampling {
+    Mesh::vArray verts;     // vertices in 2D
+    Mesh::fArray faces;
+    void readFromObj(std::string path);
 };
 
 #endif

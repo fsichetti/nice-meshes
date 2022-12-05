@@ -177,9 +177,8 @@ void Mesh::writeToObj(std::string path) const {
                 << std::endl;
         }
     } 
-    else {
-        throw FileOpenException();
-    }
+    else throw FileOpenException();
+
     // Close file
     file.close();
 }
@@ -221,9 +220,8 @@ void Mesh::writeToPly(std::string path) const {
             file << std::endl;
         }
     } 
-    else {
-        throw FileOpenException();
-    }
+    else throw FileOpenException();
+    
     // Close file
     file.close();
 }

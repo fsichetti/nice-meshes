@@ -109,3 +109,56 @@ BezierPatch::ControlGrid::ControlGrid(double maxNorm) {
     set(2,2,p14);
     set(1,2,p15);
 }
+
+
+void BezierPatch::PlaneSampling::readFromObj(std::string path) {
+    verts.clear();
+    faces.clear();
+    std::ifstream file(path);
+    if (file.is_open()) {
+        std::string line, token;
+
+        while (!file.eof()) {
+            file >> line;
+            token = "";
+            if (line.empty()) continue;
+
+            bool readVert;  // reading vertex/face
+            // Get type of data for this row
+            char c0 = line[0];
+            switch (c0) {
+                case 'v':
+                    readVert = true;
+                    break;
+                case 'f':
+                    readVert = false;
+                    break;
+                default:
+                    continue;
+            }
+
+            const auto len = line.length();
+            const char sep = ' ';
+            unsigned int k = 0;
+            for (unsigned int i = 2; i < len; ++i) {
+                char c = line[i];
+                if (c != sep) {
+                    token += c;
+                }
+                else if (!token.empty()) {
+                    // Push number
+                    if (readVert) verts.push_back(std::stof(token));
+                    else faces.push_back(std::stoi(token));
+                    token = "";
+                }
+            }
+            // Push last element if necessary
+            if (!token.empty()) {
+                if (readVert) verts.push_back(std::stof(token));
+                else faces.push_back(std::stoi(token));
+            }
+        }
+    }
+    else throw FileOpenException();
+    file.close();
+}
