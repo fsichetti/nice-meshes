@@ -115,14 +115,20 @@ namespace Browser {
             // Export OBJ
             case 'o':
                 n = "./" + mesh->name + ".obj";
-                mesh->writeToObj(n);
+                try { mesh->writeToObj(n); }
+                catch(std::exception &ex) {
+                    std::cerr << "Could not open file " << n << std::endl;
+                }
                 std::cout << "Exported mesh (" << n << ")" << std::endl;
                 break;
 
             // Export PLY
             case 'p':
                 n = "./" + mesh->name + ".ply";
-                mesh->writeToPly(n);
+                try { mesh->writeToPly(n); }
+                catch(std::exception &ex) {
+                    std::cerr << "Could not open file " << n << std::endl;
+                }
                 std::cout << "Exported mesh (" << n << ")" << std::endl;
                 break;
         }

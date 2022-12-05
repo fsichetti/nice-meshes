@@ -2,10 +2,7 @@
 #define MESH_H
 
 #include <vector>
-#include <set>
-#include <iostream>
 #include <fstream>
-#include <string>
 #include <epoxy/gl.h>
 #include <glm/glm.hpp>
 
@@ -14,7 +11,7 @@ class Mesh {
         typedef std::vector<GLfloat> vArray;
         typedef std::vector<GLuint> fArray;
 
-        std::string name = "mesh";
+        std::string name = "";
 
         // Init mesh with expected number of vertices and faces
         Mesh(bool normals, bool parametric);
@@ -51,6 +48,10 @@ class Mesh {
         const size_t attByt; // Total byte offset
             
         GLuint vbo, ebo, vao;
+};
+
+class FileOpenException : public std::exception {
+    public: const char* what() { return "Could not open file"; }
 };
 
 class MeshNotFinalizedException : public std::exception {
