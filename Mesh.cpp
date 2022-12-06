@@ -36,7 +36,7 @@ unsigned int Mesh::addFace(GLuint i, GLuint j, GLuint k){
     return ++fNum;
 }
 
-GLfloat& Mesh::attrib(int vertex_index, int attrib_offset) {
+inline GLfloat& Mesh::attrib(int vertex_index, int attrib_offset) {
     return verts[vertex_index + attCmp * attrib_offset];
 }
 
@@ -226,9 +226,35 @@ void Mesh::writeToPly(std::string path) const {
     file.close();
 }
 
+
+// cache this
+float Mesh::avgEdgeLength() const {
+    float len = 0;
+    unsigned int cnt = 0;
+    glm::vec3 faceVert[3];
+
+    // for each face...
+    for (int i=0; i<fNum; ++i) {
+        // for each face vertex...
+        for (int j=0; j<3; ++j) {
+            // for each xyz component, retrieve value
+            for (int k=0; k<3; ++k) {
+                faceVert[j][k] = verts[attCmp*faces[3*i+j]+k];
+            }
+        }
+        // face normal * 2 * face area
+        len += (faceVert[0] - faceVert[1]).length();
+        len += (faceVert[1] - faceVert[2]).length();
+        len += (faceVert[2] - faceVert[0]).length();
+        cnt += 3;
+    }
+    return len / (float)cnt;
+}
+
+// cache this
 float Mesh::getVolume() const {
     float vol = 0;
-    std::vector<glm::vec3> faceVert(3);
+    glm::vec3 faceVert[3];
     glm::vec3 nA;
 
     // for each face...

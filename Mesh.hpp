@@ -21,14 +21,20 @@ class Mesh {
         void reserveSpace(unsigned int verts, unsigned int faces);
         unsigned int addVertex(GLfloat x, GLfloat y, GLfloat z);
         unsigned int addFace(GLuint i, GLuint j, GLuint k);
-        GLfloat& attrib(int vertex_index, int attrib_offset);
+        inline GLfloat& attrib(int vertex_index, int attrib_offset);
         void finalize();
         void draw(GLuint drawMode = GL_TRIANGLES) const;
         void writeToObj(std::string filename) const;
         void writeToPly(std::string filename) const;
         
-
+        // Utility methods
+        // friend class MeshStatistics;
+        // friend class MeshProcessing;
+        float avgEdgeLength()const;
         float getVolume() const;
+
+        // Mesh processing
+        // void addGaussNoise(bool normal = true, bool tangential = true);
 
         class FileOpenException;
         class NotFinalizedException;
@@ -49,7 +55,7 @@ class Mesh {
         // typedef std::vector<std::set<unsigned int>> AdjacencyList;
 
         const bool hasNrm;  // Has normals?
-        const bool hasPar;  // Has parametric cooridnates?
+        const bool hasPar;  // Has parametric coordinates?
         
         void computeNormals();
 };
