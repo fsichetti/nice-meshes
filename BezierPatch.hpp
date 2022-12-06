@@ -3,8 +3,8 @@
 
 #include "Mesh.hpp"
 #include "Constants.hpp"
+#include "Rng.hpp"
 #include <glm/glm.hpp>
-#include <glm/gtc/random.hpp>
 
 class BezierPatch : public Mesh {
     public:
@@ -57,19 +57,6 @@ class BezierPatch::ControlGrid {
 
     private:
         double storage[3][(degree+1)*(degree+1)];
-        // Random number generation
-        glm::vec3 pointInSphere(const glm::vec3& center, double radius) {
-            glm::vec3 v(0);
-            v[0] = glm::gaussRand(0., radius);
-            v[1] = glm::gaussRand(0., radius);
-            v[2] = glm::gaussRand(0., radius);
-            
-            return v + center;
-        }
-        glm::vec3 pointOnSphere(const glm::vec3& center, double radius) {
-            glm::vec3 v = glm::sphericalRand(radius);
-            return v + center;
-        }
 };
 
 struct BezierPatch::PlaneSampling {
