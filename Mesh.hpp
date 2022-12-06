@@ -28,12 +28,12 @@ class Mesh {
         void writeToPly(std::string filename) const;
         
         // Utility methods
-        // friend class MeshStatistics;
-        // friend class MeshProcessing;
+        // friend class MeshStatistics;     // maybe in the future?
         float avgEdgeLength()const;
         float getVolume() const;
 
         // Mesh processing
+        // friend class MeshProcessing;     // maybe in the future?
         // void addGaussNoise(bool normal = true, bool tangential = true);
 
         class FileOpenException;

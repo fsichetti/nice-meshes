@@ -4,17 +4,23 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/random.hpp>
 
-namespace random3d {
     // Random number generation
-    inline glm::vec3 pointInSphere(const glm::vec3& center, double variance) {
+namespace random3d {
+    inline glm::vec3 gaussian(const glm::vec3& center, double variance) {
         return glm::vec3(
-            glm::gaussRand(0., variance),
-            glm::gaussRand(0., variance),
-            glm::gaussRand(0., variance)
+            glm::gaussRand<float>(0., variance),
+            glm::gaussRand<float>(0., variance),
+            glm::gaussRand<float>(0., variance)
         ) + center;
     }
+    
     inline glm::vec3 pointOnSphere(const glm::vec3& center, double radius) {
-        return (glm::vec3)glm::sphericalRand(radius) + center;
+        return glm::sphericalRand<float>(radius) + center;
+    }
+
+    inline glm::vec3 pointInSphere(const glm::vec3& center, double radius) {
+        return pointOnSphere(center, radius) *
+            static_cast<float>(pow(glm::linearRand<double>(0,1), 1./3.));
     }
 }
 
