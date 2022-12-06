@@ -51,6 +51,4 @@ Torus::Torus(
         }
         phi += vFactor * (rRatio + cos(phi));
     }
-
-    finalize();
 }

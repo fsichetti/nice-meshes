@@ -36,10 +36,6 @@ unsigned int Mesh::addFace(GLuint i, GLuint j, GLuint k){
     return ++fNum;
 }
 
-inline GLfloat& Mesh::attrib(int vertex_index, int attrib_offset) {
-    return verts[vertex_index + attCmp * attrib_offset];
-}
-
 
 void Mesh::draw(GLuint drawMode) const {
     if (!final) throw Mesh::NotFinalizedException();
@@ -52,7 +48,7 @@ void Mesh::draw(GLuint drawMode) const {
 
 // Prepare for drawing
 void Mesh::finalize() {
-    if (hasNrm) computeNormals();
+    if (hasNrm) requireNormals();
 
     // Vertex array
     glBindVertexArray(vao);
@@ -106,18 +102,20 @@ void Mesh::finalize() {
 
 
 
-void Mesh::computeNormals() {
+void Mesh::requireNormals(bool recompute) {
+    if (!recompute && normalsComputed) return;
+    normalsComputed = true;
+
     // Compute normals
-    std::vector<glm::vec3> faceVert(3);     // used for normals computation
-    std::vector<glm::vec3> normals(vNum);     // used for normals computation
-    glm::vec3 n;
+    auto normals = new glm::vec3[vNum];
 
     for (int i=0; i<vNum; ++i) {
-        normals.push_back(glm::vec3(0));
+        normals[i] = glm::vec3(0);
     }
 
     // for each face, compute normal
     for (int i=0; i<fNum; ++i) {
+        glm::vec3 faceVert[3];
         // for each face vertex...
         for (int j=0; j<3; ++j) {
             // for each xyz component, retrieve value
@@ -126,7 +124,8 @@ void Mesh::computeNormals() {
             }
         }
         // Compute the cross product
-        n = glm::cross(faceVert[1] - faceVert[0], faceVert[2] - faceVert[0]);
+        const glm::vec3 n = glm::cross(faceVert[1] - faceVert[0],
+            faceVert[2] - faceVert[0]);
         // Accumulate unnormalised* normal on each vertex
         // *i.e. weighted by face area
         for (int j=0; j<3; ++j) {
@@ -138,7 +137,8 @@ void Mesh::computeNormals() {
     for (int i=0; i<vNum; ++i) {
         normals[i] = glm::normalize(normals[i]);
         for (int k=0; k<3; ++k) {
-            verts[attCmp*i+k+3] = normals[i][k];
+            // verts[attCmp*i+k+3] = normals[i][k];
+            attrib(i, k+3) = normals[i][k];
         }
     }
 }
@@ -224,6 +224,28 @@ void Mesh::writeToPly(std::string path) const {
     
     // Close file
     file.close();
+}
+
+
+void Mesh::gaussNoise(float variance, bool nrm, bool tan) {
+    if (!(nrm || tan)) return;
+    for (unsigned int i = 0; i < vNum; ++i) {
+        glm::vec3 v(cAttrib(i, 0), cAttrib(i, 1), cAttrib(i, 2));
+        glm::vec3 noise = RandPoint::gaussian3(variance);
+        // IT'S NOT YET USING UNIFORM DISTRIBUTIONS FOR NRM AND TAN NOISES!!!
+        if (nrm != tan) {
+            requireNormals();
+            glm::vec3 n(cAttrib(i, 3), cAttrib(i, 4), cAttrib(i, 5));
+            n = glm::normalize(n);
+            n *= glm::dot(noise, n);    // Normal component of noise
+            if (nrm) noise = n;
+            else if (tan) noise -= n;
+        }
+        attrib(i, 0) += noise.x;
+        attrib(i, 1) += noise.y;
+        attrib(i, 2) += noise.z;
+    }
+    requireNormals(true);   // is it necessary to recalculate normals?
 }
 
 

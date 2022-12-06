@@ -47,6 +47,4 @@ Catenoid::Catenoid(
             }
         }
     }
-
-    finalize();
 }

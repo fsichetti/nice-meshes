@@ -5,6 +5,7 @@
 #include <fstream>
 #include <epoxy/gl.h>
 #include <glm/glm.hpp>
+#include "RandPoint.hpp"
 
 class Mesh { 
     public:
@@ -21,12 +22,16 @@ class Mesh {
         void reserveSpace(unsigned int verts, unsigned int faces);
         unsigned int addVertex(GLfloat x, GLfloat y, GLfloat z);
         unsigned int addFace(GLuint i, GLuint j, GLuint k);
-        inline GLfloat& attrib(int vertex_index, int attrib_offset);
         void finalize();
         void draw(GLuint drawMode = GL_TRIANGLES) const;
         void writeToObj(std::string filename) const;
         void writeToPly(std::string filename) const;
-        
+
+        // Access methods
+        inline GLfloat cAttrib(int vertexId, int attribOffset) const {
+            return verts[attCmp * vertexId + attribOffset];
+        }
+
         // Utility methods
         // friend class MeshStatistics;     // maybe in the future?
         float avgEdgeLength()const;
@@ -34,7 +39,8 @@ class Mesh {
 
         // Mesh processing
         // friend class MeshProcessing;     // maybe in the future?
-        // void addGaussNoise(bool normal = true, bool tangential = true);
+        void gaussNoise(float variance, 
+            bool normal = true, bool tangential = true);
 
         class FileOpenException;
         class NotFinalizedException;
@@ -57,9 +63,18 @@ class Mesh {
         const bool hasNrm;  // Has normals?
         const bool hasPar;  // Has parametric coordinates?
         
-        void computeNormals();
+        // Computes normals unless already available
+        bool normalsComputed = false;
+        public:
+        void requireNormals(bool recompute = false);
+
+        // Access
+        inline GLfloat& attrib(int vertexId, int attribOffset) {
+            return verts[attCmp * vertexId + attribOffset];
+        }
 };
 
+// Exceptions
 class Mesh::FileOpenException : public std::exception {
     public: const char* what() { return "Could not open file"; }
 };
