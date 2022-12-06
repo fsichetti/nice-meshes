@@ -3,7 +3,7 @@
 
 #include "Mesh.hpp"
 #include "Constants.hpp"
-#include "Rng.hpp"
+#include "RandPoint.hpp"
 #include <glm/glm.hpp>
 
 class BezierPatch : public Mesh {
