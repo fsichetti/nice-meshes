@@ -1,4 +1,4 @@
 *.obj
 !plane*.obj
 *.ply
-build/*
+build/
