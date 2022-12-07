@@ -39,9 +39,14 @@ Torus::Torus(
             GLdouble z = sin(uu) * (rOuter + rInner * cos(vv));
             addVertex(x, y, z);
 
+            // Write parametric coordinates
+            const unsigned int index = u + v*uSamples;
+            attrib(index, 6) = uu;
+            attrib(index, 7) = vv;
+
             // Add faces
             unsigned int us = (u+uSamples-v%2)%uSamples;
-            GLuint a = u+v*uSamples;
+            GLuint a = index;
             GLuint b = (u+1)%uSamples+v*uSamples;
             GLuint c = ((u+1-v%2)%uSamples+(v+1)*uSamples)%uvSamples;
             GLuint d = ((us+uSamples)%uSamples+(v+1)*uSamples)%uvSamples;

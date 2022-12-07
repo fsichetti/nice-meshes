@@ -46,6 +46,12 @@ class Mesh {
         class FileOpenException;
         class NotFinalizedException;
 
+    protected:
+        // Access methods
+        inline GLfloat& attrib(int vertexId, int attribOffset) {
+            return verts[attCmp * vertexId + attribOffset];
+        }
+
     private:
         bool final = false;
 
@@ -67,11 +73,7 @@ class Mesh {
         // Computes normals unless already available
         bool normalsComputed = false;
         void requireNormals(bool recompute = false);
-
-        // Access
-        inline GLfloat& attrib(int vertexId, int attribOffset) {
-            return verts[attCmp * vertexId + attribOffset];
-        }
+        
 };
 
 // Exceptions
