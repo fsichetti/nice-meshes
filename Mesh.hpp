@@ -34,13 +34,14 @@ class Mesh {
 
         // Utility methods
         // friend class MeshStatistics;     // maybe in the future?
-        float avgEdgeLength()const;
+        float avgEdgeLength() const;
         float getVolume() const;
 
         // Mesh processing
         // friend class MeshProcessing;     // maybe in the future?
         void gaussNoise(float variance, 
             bool normal = true, bool tangential = true);
+        void makeCentered();
 
         class FileOpenException;
         class NotFinalizedException;
@@ -65,7 +66,6 @@ class Mesh {
         
         // Computes normals unless already available
         bool normalsComputed = false;
-        public:
         void requireNormals(bool recompute = false);
 
         // Access

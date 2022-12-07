@@ -16,6 +16,7 @@ int main(int argc, char **argv) {
     BezierPatch::ControlGrid cg(4);
     Mesh* mesh = new BezierPatch(cg, 64);
     
+    mesh->makeCentered();
     const auto ael = mesh->avgEdgeLength();
     mesh->gaussNoise(ael / 32, true, true);
     mesh->finalize();

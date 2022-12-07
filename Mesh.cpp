@@ -248,6 +248,20 @@ void Mesh::gaussNoise(float variance, bool nrm, bool tan) {
     requireNormals(true);   // is it necessary to recalculate normals?
 }
 
+void Mesh::makeCentered() {
+    GLfloat com[3];
+    // Accumulate
+    for (unsigned int i = 0; i < vNum; ++i) {
+        for (unsigned int k = 0; k < 3; ++k) com[k] += cAttrib(i, k);
+    }
+    // Average
+    for (unsigned int k = 0; k < 3; ++k) com[k] /= vNum;
+    // Translate
+    for (unsigned int i = 0; i < vNum; ++i) {
+        for (unsigned int k = 0; k < 3; ++k) attrib(i, k) -= com[k];
+    }
+}
+
 
 // cache this
 float Mesh::avgEdgeLength() const {
