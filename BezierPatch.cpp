@@ -162,15 +162,15 @@ void BezierPatch::PlaneSampling::readFromObj(std::string path) {
     faces.clear();
     std::ifstream file(path);
     if (file.is_open()) {
-        std::string token;
-        bool vfFlag;  // reading vertex/face
         unsigned int cnt = 0;
 
         while (!file.eof()) {
+            std::string token;
             file >> token;
             if (token.empty()) continue;
 
             char c0 = token[0];
+            bool vfFlag;  // reading vertex/face
             switch (c0) {
                 case 'v':
                     vfFlag = true;
