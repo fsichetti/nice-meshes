@@ -6,6 +6,11 @@
 
 // Random number generation
 namespace RandPoint {
+    inline unsigned int seed(unsigned int seed = time(0)) {
+        srand(seed); // get random seed
+        return seed;
+    }
+
     inline glm::vec3 gaussian3(double variance,
         const glm::vec3& center = glm::vec3()) {
         return glm::vec3(

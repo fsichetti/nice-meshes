@@ -38,7 +38,11 @@ class BezierPatch : public Mesh {
 class BezierPatch::ControlGrid {
     public:
         ControlGrid() {};   // empty constructor
-        ControlGrid(double baseScale);   // random generator
+        ControlGrid(        // random generator
+            double baseScale,
+            double borderBumpiness=1.0, // may self-intersect for values >1
+            double innerBumpiness=-1.0  // if <0, it's equal to borderBump.
+        );
 
         inline glm::vec3 get(unsigned int i, unsigned int j) const {
             const auto id = i + (degree+1) * j;

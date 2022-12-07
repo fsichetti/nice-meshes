@@ -250,6 +250,7 @@ void Mesh::gaussNoise(float variance, bool nrm, bool tan) {
 
 void Mesh::makeCentered() {
     GLfloat com[3];
+    for (unsigned int k = 0; k < 3; ++k) com[k] = 0;
     // Accumulate
     for (unsigned int i = 0; i < vNum; ++i) {
         for (unsigned int k = 0; k < 3; ++k) com[k] += cAttrib(i, k);
