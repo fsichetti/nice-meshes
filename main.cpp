@@ -12,8 +12,8 @@ int main(int argc, char **argv) {
     std::cout << "RNG seed: " << RandPoint::seed() << std::endl;
 
     // Create mesh
-    // Mesh* mesh = new Catenoid(100, 2, 1);
-    Mesh* mesh = new Torus(100, 2, 1);
+    Mesh* mesh = new Catenoid(100, 2, 1);
+    // Mesh* mesh = new Torus(100, 2, 1);
     // BezierPatch::PlaneSampling smp;
     // smp.readFromObj("./plane_anisotropic.obj");
     // BezierPatch::ControlGrid cg(4, 2.5, 6.5);

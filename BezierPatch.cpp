@@ -29,12 +29,13 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
     // Iterate on sample points (u,v)
     for (unsigned int u = 0; u < samples; ++u) {
         for (unsigned int v = 0; v < samples; ++v) {
+            const double uu = u * uvStep, vv = v * uvStep;
             // Iterate on control points (i,j)
             double p[3] = {0,0,0};
             for (unsigned int i = 0; i <= degree; ++i) {
                 for (int j = 0; j <= degree; ++j) {
-                    const double a = bPoly(i, u * uvStep);
-                    const double b = bPoly(j, v * uvStep);
+                    const double a = bPoly(i, uu);
+                    const double b = bPoly(j, vv);
                     // Iterate on the 3 coordinates
                     for (int x = 0; x < 3; ++x) {
                         p[x] += a * b * cg.at(i,j,x);
@@ -42,6 +43,11 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
                 }
             }
             addVertex(p[0], p[1], p[2]);
+
+            // Write parametric coordinates
+            const unsigned int index = v + u*samples;
+            attrib(index, Attribute::U) = uu;
+            attrib(index, Attribute::V) = vv;
 
             if (u < samples-1 && v < samples-1) {
                 const unsigned int id = samples * u + v;

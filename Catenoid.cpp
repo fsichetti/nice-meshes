@@ -34,10 +34,15 @@ Catenoid::Catenoid(
             GLdouble z = vv;
             addVertex(x, y, z);
 
+            // Write parametric coordinates
+            const unsigned int index = u + v*uSamples;
+            attrib(index, Attribute::U) = uu;
+            attrib(index, Attribute::V) = vv;
+
             // Add faces
             if (v != vSamples-1) {    // Open at the ends
                 unsigned int us = (u+uSamples-v%2)%uSamples;
-                GLuint a = u+v*uSamples;
+                GLuint a = index;
                 GLuint b = (u+1)%uSamples+v*uSamples;
                 GLuint c = ((u+1-v%2)%uSamples+(v+1)*uSamples)%uvSamples;
                 GLuint d = ((us+uSamples)%uSamples+(v+1)*uSamples)%uvSamples;
