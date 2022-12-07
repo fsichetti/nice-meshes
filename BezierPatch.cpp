@@ -71,13 +71,13 @@ BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
     cacheBinomials();
     // Compute vertices
     for (unsigned int i = 0; i < NV; ++i) {
-        const double u = smp.verts[2*i], v = smp.verts[2*i+1];
+        const double uu = smp.verts[2*i], vv = smp.verts[2*i+1];
         // Iterate on control points (i,j)
             double p[3] = {0,0,0};
             for (unsigned int i = 0; i <= degree; ++i) {
                 for (int j = 0; j <= degree; ++j) {
-                    const double a = bPoly(i, u);
-                    const double b = bPoly(j, v);
+                    const double a = bPoly(i, uu);
+                    const double b = bPoly(j, vv);
                     // Iterate on the 3 coordinates
                     for (int x = 0; x < 3; ++x) {
                         p[x] += a * b * cg.at(i,j,x);
@@ -85,6 +85,10 @@ BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
                 }
             }
         addVertex(p[0], p[1], p[2]);
+
+        // Write parametric coordinates
+        attrib(i, Attribute::U) = uu;
+        attrib(i, Attribute::V) = vv;
     }
     // Add faces
     for (unsigned int i = 0; i < NF; ++i) {
