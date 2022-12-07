@@ -28,8 +28,13 @@ class Mesh {
         void writeToPly(std::string filename) const;
 
         // Access methods
-        inline GLfloat cAttrib(int vertexId, int attribOffset) const {
+        enum Attribute { X, Y, Z, NX, NY, NZ, U, V };
+        inline GLfloat cAttrib(unsigned int vertexId, int attribOffset) const {
             return verts[attCmp * vertexId + attribOffset];
+        }
+        inline GLfloat cAttrib(unsigned int vertexId,
+            Attribute attribute) const {
+            return cAttrib(vertexId, attToOff(attribute));
         }
 
         // Utility methods
@@ -45,11 +50,15 @@ class Mesh {
 
         class FileOpenException;
         class NotFinalizedException;
+        class NoAttributeException;
 
     protected:
         // Access methods
-        inline GLfloat& attrib(int vertexId, int attribOffset) {
+        inline GLfloat& attrib(unsigned int vertexId, int attribOffset) {
             return verts[attCmp * vertexId + attribOffset];
+        }
+        inline GLfloat& attrib(unsigned int vertexId, Attribute attribute) {
+            return attrib(vertexId, attToOff(attribute));
         }
 
     private:
@@ -63,6 +72,9 @@ class Mesh {
         const GLuint attCnt; // Attribute count
         const GLuint attCmp; // Total number of components
         const size_t attByt; // Total byte offset
+
+        // Converts ttribute enum value to offset
+        unsigned int attToOff(Attribute att) const;
 
         // Vertex-vertex adjacency list
         // typedef std::vector<std::set<unsigned int>> AdjacencyList;
@@ -82,6 +94,10 @@ class Mesh::FileOpenException : public std::exception {
 };
 
 class Mesh::NotFinalizedException : public std::exception {
+    public: const char* what() { return "Mesh has not been finalised"; }
+};
+
+class Mesh::NoAttributeException : public std::exception {
     public: const char* what() { return "Mesh has not been finalised"; }
 };
 

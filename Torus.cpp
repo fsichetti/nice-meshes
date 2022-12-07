@@ -41,8 +41,8 @@ Torus::Torus(
 
             // Write parametric coordinates
             const unsigned int index = u + v*uSamples;
-            attrib(index, 6) = uu;
-            attrib(index, 7) = vv;
+            attrib(index, Attribute::U) = uu;
+            attrib(index, Attribute::V) = vv;
 
             // Add faces
             unsigned int us = (u+uSamples-v%2)%uSamples;

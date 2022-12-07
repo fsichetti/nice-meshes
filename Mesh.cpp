@@ -23,6 +23,33 @@ void Mesh::reserveSpace(unsigned int rv, unsigned int re) {
 }
 
 
+// Utility method to convert an attrib constant to an offset
+unsigned int Mesh::attToOff(Attribute att) const {
+    switch (att) {
+        case X: return 0;
+        case Y: return 1;
+        case Z: return 2;
+
+        case NX:
+            if (!hasNrm) throw NoAttributeException();
+            else return 3;
+        case NY:
+            if (!hasNrm) throw NoAttributeException();
+            else return 4;
+        case NZ:
+            if (!hasNrm) throw NoAttributeException();
+            else return 5;
+
+        case U:
+            if (!hasPar) throw NoAttributeException();
+            else return (hasNrm) ? 6 : 3;
+        case V:
+            if (!hasPar) throw NoAttributeException();
+            else return (hasNrm) ? 7 : 4;
+    }
+}
+
+
 unsigned int Mesh::addVertex(GLfloat x, GLfloat y, GLfloat z) {
     verts.insert(verts.end(), {x,y,z});
     // add padding for other attributes
@@ -103,6 +130,7 @@ void Mesh::finalize() {
 
 
 void Mesh::requireNormals(bool recompute) {
+    if (!hasNrm) throw NoAttributeException();
     if (!recompute && normalsComputed) return;
     normalsComputed = true;
 
@@ -136,10 +164,9 @@ void Mesh::requireNormals(bool recompute) {
     // for each vertex, normalise the normal and write to the vector
     for (int i=0; i<vNum; ++i) {
         normals[i] = glm::normalize(normals[i]);
-        for (int k=0; k<3; ++k) {
-            // verts[attCmp*i+k+3] = normals[i][k];
-            attrib(i, k+3) = normals[i][k];
-        }
+        attrib(i, Attribute::NX) = normals[i].x;
+        attrib(i, Attribute::NY) = normals[i].y;
+        attrib(i, Attribute::NZ) = normals[i].z;
     }
 }
 
@@ -230,20 +257,28 @@ void Mesh::writeToPly(std::string path) const {
 void Mesh::gaussNoise(float variance, bool nrm, bool tan) {
     if (!(nrm || tan)) return;
     for (unsigned int i = 0; i < vNum; ++i) {
-        glm::vec3 v(cAttrib(i, 0), cAttrib(i, 1), cAttrib(i, 2));
+        glm::vec3 v(
+            cAttrib(i, Attribute::X),
+            cAttrib(i, Attribute::Y),
+            cAttrib(i, Attribute::Z)
+        );
         glm::vec3 noise = RandPoint::gaussian3(variance);
         // IT'S NOT YET USING UNIFORM DISTRIBUTIONS FOR NRM AND TAN NOISES!!!
         if (nrm != tan) {
             requireNormals();
-            glm::vec3 n(cAttrib(i, 3), cAttrib(i, 4), cAttrib(i, 5));
+            glm::vec3 n(
+                cAttrib(i, Attribute::NX),
+                cAttrib(i, Attribute::NY),
+                cAttrib(i, Attribute::NZ)
+            );
             n = glm::normalize(n);
             n *= glm::dot(noise, n);    // Normal component of noise
             if (nrm) noise = n;
             else if (tan) noise -= n;
         }
-        attrib(i, 0) += noise.x;
-        attrib(i, 1) += noise.y;
-        attrib(i, 2) += noise.z;
+        attrib(i, Attribute::X) += noise.x;
+        attrib(i, Attribute::Y) += noise.y;
+        attrib(i, Attribute::Z) += noise.z;
     }
     requireNormals(true);   // is it necessary to recalculate normals?
 }
@@ -253,13 +288,17 @@ void Mesh::makeCentered() {
     for (unsigned int k = 0; k < 3; ++k) com[k] = 0;
     // Accumulate
     for (unsigned int i = 0; i < vNum; ++i) {
-        for (unsigned int k = 0; k < 3; ++k) com[k] += cAttrib(i, k);
+        com[0] += cAttrib(i, Attribute::X);
+        com[1] += cAttrib(i, Attribute::Y);
+        com[2] += cAttrib(i, Attribute::Z);
     }
     // Average
     for (unsigned int k = 0; k < 3; ++k) com[k] /= vNum;
     // Translate
     for (unsigned int i = 0; i < vNum; ++i) {
-        for (unsigned int k = 0; k < 3; ++k) attrib(i, k) -= com[k];
+        attrib(i, Attribute::X) -= com[0];
+        attrib(i, Attribute::Y) -= com[1];
+        attrib(i, Attribute::Z) -= com[2];
     }
 }
 
