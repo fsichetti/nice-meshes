@@ -74,9 +74,12 @@ void Mesh::draw(GLuint drawMode) const {
 
 
 // Prepare for drawing
-void Mesh::finalize() {
+void Mesh::finalize(bool nogui) {
     if (hasNrm) requireNormals();
-
+    if (nogui) {
+        final = true;
+        return;
+    }
     // Vertex array
     glBindVertexArray(vao);
 

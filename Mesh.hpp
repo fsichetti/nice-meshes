@@ -22,7 +22,7 @@ class Mesh {
         void reserveSpace(unsigned int verts, unsigned int faces);
         unsigned int addVertex(GLfloat x, GLfloat y, GLfloat z);
         unsigned int addFace(GLuint i, GLuint j, GLuint k);
-        void finalize();
+        void finalize(bool nogui = false);
         void draw(GLuint drawMode = GL_TRIANGLES) const;
         void writeToObj(std::string filename) const;
         void writeToPly(std::string filename) const;

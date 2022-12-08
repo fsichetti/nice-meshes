@@ -56,8 +56,6 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
             }
         }
     }
-
-    finalize();
 }
 
 

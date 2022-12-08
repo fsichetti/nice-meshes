@@ -4,7 +4,7 @@ CXXFLAGS = -g -MD -MP
 LDFLAGS = -lepoxy -lglut -lfreeimage
 SILENCE = > /dev/null 2>&1
 BUILDDIR = build
-OUT = $(BUILDDIR)/a.out
+OUT = $(BUILDDIR)/nicemesh
 SRC = $(wildcard *.cpp)
 OBJ = $(SRC:%.cpp=$(BUILDDIR)/%.o)
 DEPS = $(SRC:%.cpp=$(BUILDDIR)/%.d)
@@ -12,7 +12,7 @@ DEPS = $(SRC:%.cpp=$(BUILDDIR)/%.d)
 all: dir main
 
 run: all
-	build/a.out
+	build/nicemesh
 
 dir:
 	mkdir -p $(BUILDDIR)
