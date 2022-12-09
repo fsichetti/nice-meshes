@@ -3,27 +3,27 @@ CXX = g++
 CXXFLAGS = -g -MD -MP
 LDFLAGS = -lepoxy -lglut -lfreeimage
 SILENCE = > /dev/null 2>&1
-BUILDDIR = build
-OUT = $(BUILDDIR)/nicemesh
+BUILD = build
+OUT = $(BUILD)/nicemesh
 SRC = $(wildcard *.cpp)
-OBJ = $(SRC:%.cpp=$(BUILDDIR)/%.o)
-DEPS = $(SRC:%.cpp=$(BUILDDIR)/%.d)
+OBJ = $(SRC:%.cpp=$(BUILD)/%.o)
+DEPS = $(SRC:%.cpp=$(BUILD)/%.d)
 
 all: dir main
 
-run: all
-	build/nicemesh
-
 dir:
-	mkdir -p $(BUILDDIR)
+	mkdir -p $(BUILD)
 
 main: $(OBJ)
 	$(CXX) $(CXXFLAGS) -o $(OUT) $^ $(LDFLAGS)
 
-$(OBJ): $(BUILDDIR)/%.o: %.cpp
+$(OBJ): $(BUILD)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@ $(SILENCE)
 
 -include $(DEPS)
 
+run:
+	build/nicemesh
+
 clean:
-	rm -f -r $(BUILDDIR)
+	rm -f -r $(BUILD)

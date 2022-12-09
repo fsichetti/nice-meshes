@@ -2,3 +2,4 @@
 !plane*.obj
 *.ply
 build/
+.cache/
