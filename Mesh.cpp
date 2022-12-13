@@ -58,7 +58,7 @@ unsigned int Mesh::addVertex(GLfloat x, GLfloat y, GLfloat z) {
     return ++vNum;
 }
 
-unsigned int Mesh::addFace(GLuint i, GLuint j, GLuint k){
+unsigned int Mesh::addFace(GLuint i, GLuint j, GLuint k) {
     faces.insert(faces.end(), {i,j,k});
     return ++fNum;
 }
@@ -151,7 +151,7 @@ void Mesh::requireNormals(bool recompute) {
         for (int j=0; j<3; ++j) {
             // for each xyz component, retrieve value
             for (int k=0; k<3; ++k) {
-                faceVert[j][k] = verts[attCmp*faces[3*i+j]+k];
+                faceVert[j][k] = cAttrib(faces[3*i+j], k);
             }
         }
         // Compute the cross product
@@ -308,7 +308,7 @@ void Mesh::makeCentered() {
 
 // cache this
 float Mesh::avgEdgeLength() const {
-    float len = 0;
+    double len = 0;
     unsigned int cnt = 0;
     glm::vec3 faceVert[3];
 
@@ -318,16 +318,15 @@ float Mesh::avgEdgeLength() const {
         for (int j=0; j<3; ++j) {
             // for each xyz component, retrieve value
             for (int k=0; k<3; ++k) {
-                faceVert[j][k] = verts[attCmp*faces[3*i+j]+k];
+                faceVert[j][k] = cAttrib(faces[3*i+j], k);
             }
         }
-        // face normal * 2 * face area
-        len += (faceVert[0] - faceVert[1]).length();
-        len += (faceVert[1] - faceVert[2]).length();
-        len += (faceVert[2] - faceVert[0]).length();
+        len += glm::length(faceVert[0] - faceVert[1]);
+        len += glm::length(faceVert[1] - faceVert[2]);
+        len += glm::length(faceVert[2] - faceVert[0]);
         cnt += 3;
     }
-    return len / (float)cnt;
+    return len / static_cast<double>(cnt);
 }
 
 // cache this
@@ -342,7 +341,7 @@ float Mesh::getVolume() const {
         for (int j=0; j<3; ++j) {
             // for each xyz component, retrieve value
             for (int k=0; k<3; ++k) {
-                faceVert[j][k] = verts[attCmp*faces[3*i+j]+k];
+                faceVert[j][k] = cAttrib(faces[3*i+j], k);
             }
         }
         // face normal * 2 * face area
