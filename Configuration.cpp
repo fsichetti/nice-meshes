@@ -3,15 +3,13 @@
 void ConfigManager::defaultValues() {
     auto& c = configuration;
     c["shape"] = "torus";
-    c["name"] = "";
+    c["name"] = "mesh";
 
     c["mode"] = "interactive";
 
-    c["samples"] = "16";
+    c["samples"] = "64";
     c["innerRadius"] = "1";
     c["outerRadius"] = "2";
-
-    c["size"] = "4";
     c["centered"] = "no";
 
     c["noise"] = "0";

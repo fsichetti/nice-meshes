@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     }
     else if (cm["shape"] == "bezier") {
         BezierPatch::ControlGrid cg(
-            std::stod(cm["size"]),
+            std::stod(cm["outerRadius"]),
             std::stod(cm["borderVariance"]),
             std::stod(cm["innerVariance"])
         );
@@ -60,6 +60,11 @@ int main(int argc, char **argv) {
             mesh = new BezierPatch(cg,
                 std::stoi(cm["samples"]));
         }
+    }
+    else {
+        std::cerr << "Invalid shape (" <<
+            file << ")" << std::endl;
+        return 1;
     }
     
     // Name
