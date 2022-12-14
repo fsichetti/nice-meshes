@@ -5,3 +5,5 @@ build/
 out/
 .cache/
 *.png
+*.ini
+!configuration.ini
