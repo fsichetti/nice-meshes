@@ -5,7 +5,8 @@ void ConfigManager::defaultValues() {
     c["shape"] = "torus";
     c["name"] = "mesh";
 
-    c["mode"] = "interactive";
+    c["mode"] = "obj";
+    c["repeat"] = "1";
 
     c["samples"] = "64";
     c["innerRadius"] = "1";

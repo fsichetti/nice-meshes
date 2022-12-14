@@ -17,7 +17,7 @@ The program's behaviour is defined in a standard INI file. The INI file can cont
 All parameters are case-insensitive.
 - **shape**: Must be one of *torus*, *catenoid*, and *bezier*. Sets the type of shape to be generated and the parameters that are used. Defaults to *torus*.
 - **name**: Sets the name of the mesh, which is used when saving the mesh in any format. Defaults to "mesh".
-- **mode**: Sets the behaviour of the program. Defaults to "interactive". Possible values:
+- **mode**: Sets the behaviour of the program. Defaults to "obj". Possible values:
     - *interactive*: Displays the generated mesh in the interactive viewer, where it can be exported to any format via keyboard shortcuts.
     - *obj*: Exports the mesh to an OBJ file with the mesh name and exits.
     - *ply*: Exports the mesh to a PLY file with the mesh name and exits.
@@ -31,6 +31,7 @@ All parameters are case-insensitive.
     - *normal*: Each vertex is displaced along its normal direction.
     - *tangential*: Each vertex is displaced along a direction on its tangent plane.
 - **seed**: Sets the seed for the random number generator. Defaults to empty, which tells the program to generate a seed from system time. Only relevant to random Bézier patches, since the other options do not use RNG.
+- **repeat**: Used for batch generation of random surfaces. Controls how many times the generation is executed. The names of the resulting meshes are obtained by appending a number to the base name specified in the **name** field. If **mode** is set to "interactive", **repeat** is ignored. Defaults to 1.
 - **borderVariance**: Only relevant to random Bézier patches. How far the border vertices can deviate from their starting position on the line connecting two corner vertices.
 - **innerVariance**: Only relevant to random Bézier patches. How far the inner vertices can deviate from their starting position.
 - **sampling**: Only relevant to random Bézier patches. If the path to an OBJ file containing a meshed \[0,1\] XY plane is specified, the sampling of the Bézier patch is done by copying the topology of the provided plane. The Z coordinate, if present is ignored. If this parameter is not provided, a regular sampling is performed.
