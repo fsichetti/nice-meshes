@@ -63,6 +63,7 @@ class Mesh {
 
     private:
         bool final = false;
+        bool allocatedGLBuffers = false; // prevent deletion of unalloc. buffers
 
         unsigned int vNum=0, fNum=0;    // vertex and face count
         vArray verts;
