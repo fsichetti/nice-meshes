@@ -35,7 +35,12 @@ ConfigManager::ConfigManager(std::string path, std::string section) {
     while (!ini.eof()) {
         std::string val;
         ini >> val;
-        if (val.empty() || val.front() == ';') continue;
+        if (val.empty() || val.front() == ';') {
+            // Discard the rest of the line
+            std::string a = "";
+            std::getline(ini, a);
+            continue;
+        }
         for (char c : val) c = tolower(c);
 
         // Check section name against selected configuration
