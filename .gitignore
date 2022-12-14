@@ -3,4 +3,4 @@
 *.ply
 build/
 .cache/
-*.ini
+*.png
