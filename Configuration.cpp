@@ -7,6 +7,7 @@ void ConfigManager::defaultValues() {
 
     c["mode"] = "obj";
     c["repeat"] = "1";
+    c["outFolder"] = "./";
 
     c["samples"] = "64";
     c["innerRadius"] = "1";

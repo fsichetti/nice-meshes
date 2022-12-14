@@ -47,6 +47,8 @@ unsigned int Mesh::attToOff(Attribute att) const {
         case V:
             if (!hasPar) throw NoAttributeException();
             else return (hasNrm) ? 7 : 4;
+        default:
+            throw NoAttributeException();
     }
 }
 

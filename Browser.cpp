@@ -6,6 +6,7 @@
 namespace Browser {
     Trackball* trackball = nullptr;
     Mesh* mesh = nullptr;
+    std::string outPath = "./";
 
     bool drawWireframe = false;
 
@@ -57,6 +58,7 @@ namespace Browser {
     }
 
     void setMesh(Mesh* m) { mesh = m; }
+    void setOutPath(std::string o) { outPath = o; }
     void launch() { glutMainLoop(); }
 
     void callbackDisplay() {
@@ -114,7 +116,7 @@ namespace Browser {
             
             // Export OBJ
             case 'o':
-                n = "./" + mesh->name + ".obj";
+                n = outPath + mesh->name + ".obj";
                 try { mesh->writeToObj(n); }
                 catch(std::exception &ex) {
                     std::cerr << "Could not open file " << n << std::endl;
@@ -124,7 +126,7 @@ namespace Browser {
 
             // Export PLY
             case 'p':
-                n = "./" + mesh->name + ".ply";
+                n = outPath + mesh->name + ".ply";
                 try { mesh->writeToPly(n); }
                 catch(std::exception &ex) {
                     std::cerr << "Could not open file " << n << std::endl;

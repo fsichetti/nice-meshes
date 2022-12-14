@@ -16,6 +16,7 @@
 namespace Browser {
     void init(char*, Trackball*);
     void setMesh(Mesh*);
+    void setOutPath(std::string);
     void launch();
 
     void callbackDisplay();

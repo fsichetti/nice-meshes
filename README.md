@@ -6,7 +6,7 @@ Clone the repo, move to the root folder and run `make`.
 Dependencies:
 - [Epoxy](https://github.com/anholt/libepoxy)
 - [FreeGlut](https://freeglut.sourceforge.net/)
-- [FreeImage](https://freeimage.sourceforge.io/).
+- [FreeImage](https://freeimage.sourceforge.io/)
 
 # Running
 The program's behaviour is defined in a standard INI file. The INI file can contain any number of sections, each corresponding to a different configuration. The program takes two optional arguments: the first is the name of the configuration (i.e. section) to use, and it defaults to the first configuration in the INI file; the second is the path to the INI file itself, which defaults to `./configuration.ini`.
@@ -30,11 +30,12 @@ All parameters are case-insensitive.
     - *3d*: Each vertex is displaced in 3D space.
     - *normal*: Each vertex is displaced along its normal direction.
     - *tangential*: Each vertex is displaced along a direction on its tangent plane.
-- **seed**: Sets the seed for the random number generator. Defaults to empty, which tells the program to generate a seed from system time. Only relevant to random Bézier patches, since the other options do not use RNG.
-- **repeat**: Used for batch generation of random surfaces. Controls how many times the generation is executed. The names of the resulting meshes are obtained by appending a number to the base name specified in the **name** field. If **mode** is set to "interactive", **repeat** is ignored. Defaults to 1.
 - **borderVariance**: Only relevant to random Bézier patches. How far the border vertices can deviate from their starting position on the line connecting two corner vertices.
 - **innerVariance**: Only relevant to random Bézier patches. How far the inner vertices can deviate from their starting position.
 - **sampling**: Only relevant to random Bézier patches. If the path to an OBJ file containing a meshed \[0,1\] XY plane is specified, the sampling of the Bézier patch is done by copying the topology of the provided plane. The Z coordinate, if present is ignored. If this parameter is not provided, a regular sampling is performed.
+- **seed**: Sets the seed for the random number generator. Defaults to empty, which tells the program to generate a seed from system time. Only relevant to random Bézier patches, since the other options do not use RNG.
+- **repeat**: Used for batch generation of random surfaces. Controls how many times the generation is executed. The names of the resulting meshes are obtained by appending a number to the base name specified in the **name** field. If **mode** is set to "interactive", **repeat** is ignored. Defaults to 1.
+- **outFolder**: Path to the folder where the exported meshes should be saved. The folder must exist. Defaults to the current folder.
 
 ## Keyboard shortcuts
 add list

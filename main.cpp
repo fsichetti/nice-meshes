@@ -104,15 +104,16 @@ int main(int argc, char **argv) {
             Browser::init(argv[0], &trb);
             mesh->finalize();
             Browser::setMesh(mesh);
+            Browser::setOutPath(cm["outFolder"]);
             Browser::launch();
         }
-        else {
+        else {  // save file
             mesh->finalize(true);
-            if (cm["mode"] == "obj") mesh->writeToObj(mesh->name + ".obj");
-            if (cm["mode"] == "ply") mesh->writeToPly(mesh->name + ".ply");
+            std::string fname = cm["outFolder"] + mesh->name + "." + cm["mode"];
+            if (cm["mode"] == "obj") mesh->writeToObj(fname);
+            if (cm["mode"] == "ply") mesh->writeToPly(fname);
+            delete mesh;
         }
-
-        delete mesh;
     }
     return 0;
 }
