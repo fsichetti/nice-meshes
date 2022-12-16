@@ -9,34 +9,34 @@ Torus::Torus(
     // Construct torus
     const double rRatio = rOuter / rInner;
     const unsigned int uSamples = samples;
-    double uStep = TWOPI / (double)uSamples;
+    const double uStep = 1.0 / static_cast<double>(uSamples);
 
     // Pre-computation for sampling in poloidal direction
-    double phi = 0;
+    double phiMax = 0;
     unsigned int count = 0;
-    const double vFactor = SQRT3_2 * uStep;
-    // rescale to [0, 2pi]
-    while (phi < TWOPI || count % 2) { 
-        phi += vFactor * (rRatio + cos(phi));
+    const double vStep = SQRT3_2 * uStep;
+    // rescale to [0, 1]
+    while (phiMax < TWOPI || count % 2) { 
+        phiMax += TWOPI * vStep * (rRatio + cos(phiMax));
         ++count;
     }
-    const double rescale = TWOPI / phi;
     const unsigned int vSamples = count;
     const unsigned int uvSamples = uSamples * vSamples;
 
     name = "RegularTorus";
-    reserveSpace(uvSamples, 2*uvSamples);        
+    reserveSpace(uvSamples, 2*uvSamples);    
 
 
-    phi = 0;
+    double phi = 0;
     for (unsigned int v = 0; v < vSamples; ++v) {
         for (unsigned int u = 0; u < uSamples; ++u) {
             // Place vertices
-            double uu = (u - (v%2)*.5)*uStep;
-            double vv = phi * rescale;
-            GLdouble x = cos(uu) * (rOuter + rInner * cos(vv));
-            GLdouble y = rInner * sin(vv);
-            GLdouble z = sin(uu) * (rOuter + rInner * cos(vv));
+            double uu = (u - (v%2)*.5) * uStep;
+            double vv = phi / phiMax;
+            double upi = TWOPI * uu, vpi = TWOPI * vv;
+            GLdouble x = cos(upi) * (rOuter + rInner * cos(vpi));
+            GLdouble y = rInner * sin(vpi);
+            GLdouble z = sin(upi) * (rOuter + rInner * cos(vpi));
             addVertex(x, y, z);
 
             // Write parametric coordinates
@@ -54,6 +54,6 @@ Torus::Torus(
             addFace(a, c, b);
             addFace(a, d, c);
         }
-        phi += vFactor * (rRatio + cos(phi));
+        phi += TWOPI * vStep * (rRatio + cos(phi));
     }
 }

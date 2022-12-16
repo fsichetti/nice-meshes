@@ -8,14 +8,15 @@ Catenoid::Catenoid(
 
     // Sampling in rotational direction (uniform)
     const unsigned int uSamples = samples;
-    double uStep = TWOPI / (double)uSamples;
+    const double uStep = 1.0 / static_cast<double>(uSamples);
     const double halfHeight = rInner * acosh(rOuter / rInner);
+    const double height = 2 * halfHeight;
 
     // Pre-computation for sampling in vertical direction
-    const double vFactor = SQRT3_2 * uStep * rInner;
-    const unsigned int vSamples = 2 * halfHeight / vFactor;
-    // rescale to [-height/2, height/2]
-    const double rescale = 2 * halfHeight / (vSamples * vFactor);
+    const double temp = TWOPI * SQRT3_2 * uStep * rInner;
+    const unsigned int vSamples = std::ceil(height / temp);
+    const double vStep = 1.0 / static_cast<double>(vSamples);
+    // rescale to [0, 1]
     const unsigned int uvSamples = uSamples * vSamples;
 
     // Create object
@@ -26,12 +27,13 @@ Catenoid::Catenoid(
     for (unsigned int v = 0; v < vSamples; ++v) {
         for (unsigned int u = 0; u < uSamples; ++u) {
             // Place vertices
-            double uu = (u - (v%2)*.5)*uStep;
-            double vv = (v * vFactor - halfHeight) * rescale;
-            const double cat = rInner * cosh(vv / rInner);
-            GLdouble x = cat * cos(uu);
-            GLdouble y = cat * sin(uu);
-            GLdouble z = vv;
+            const double uu = (u - (v%2)*.5) * uStep;
+            const double vv = v * vStep;
+            const double upi = uu * TWOPI, vs = (vv-.5)*height;
+            const double cat = rInner * cosh(vs / rInner);
+            GLdouble x = cat * cos(upi);
+            GLdouble y = cat * sin(upi);
+            GLdouble z = vs;
             addVertex(x, y, z);
 
             // Write parametric coordinates
