@@ -1,4 +1,5 @@
 #include "Mesh.hpp"
+#include <iostream>
 
 // Constructor
 Mesh::Mesh(bool nrm, bool par) :
@@ -58,12 +59,12 @@ unsigned int Mesh::addVertex(GLfloat x, GLfloat y, GLfloat z) {
     // add padding for other attributes
     for (int i=3; i<attCmp; ++i)
         verts.push_back(0);
-    return ++vNum;
+    return vNum++;
 }
 
 unsigned int Mesh::addFace(GLuint i, GLuint j, GLuint k) {
     faces.insert(faces.end(), {i,j,k});
-    return ++fNum;
+    return fNum++;
 }
 
 
@@ -306,6 +307,51 @@ void Mesh::makeCentered() {
         attrib(i, Attribute::X) -= com[0];
         attrib(i, Attribute::Y) -= com[1];
         attrib(i, Attribute::Z) -= com[2];
+    }
+}
+
+
+void Mesh::refine() {
+    typedef unsigned long Edge;
+    // Save edge and position within vertex list
+    std::unordered_map<Edge, unsigned int> edges;
+    const unsigned int oldFNum = fNum, oldVNum = vNum;
+    edges.reserve(oldFNum * 3 / 2);
+    for (unsigned int fi = 0; fi < oldFNum; ++fi) {
+        glm::vec3 vOld[3];         // coordinates
+        unsigned int viOld[3], viNew[3];    // indices
+        for (unsigned int k = 0; k < 3; ++k) {
+            viOld[k] = faces[3*fi + k];
+            vOld[k] = glm::vec3(
+                cAttrib(viOld[k], Attribute::X),
+                cAttrib(viOld[k], Attribute::Y),
+                cAttrib(viOld[k], Attribute::Z)
+            );
+        }
+        // Get midpoints
+        for (unsigned int k = 0; k < 3; ++k) {
+            // Indices of edge's endpoints
+            const unsigned int a = viOld[k], b = viOld[(k+1)%3];
+            const Edge e = std::max(a,b) + oldVNum * std::min(a,b);
+            // If already present
+            if (edges.count(e) == 1) {
+                viNew[k] = edges.at(e);
+            }
+            else {  // Make new vertex
+                const auto avg = (vOld[k] + vOld[(k+1)%3]) * glm::vec1(.5);
+                viNew[k] = addVertex(avg.x, avg.y, avg.z);  // make new vert
+                edges.emplace(e, viNew[k]);                 // cache
+            }
+        }
+
+        // Change the middle face
+        for (unsigned int k = 0; k < 3; ++k) {
+            faces[3*fi + k] = viNew[k];
+        }
+        // Add 3 new faces
+        addFace(viOld[0], viNew[0], viNew[2]);
+        addFace(viOld[1], viNew[1], viNew[0]);
+        addFace(viOld[2], viNew[2], viNew[1]);
     }
 }
 

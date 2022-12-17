@@ -15,15 +15,17 @@ The program's behaviour is defined in a standard INI file. The INI file can cont
 
 ## Configuration parameters
 All parameters are case-insensitive.
-- **shape**: Must be one of *torus*, *catenoid*, and *bezier*. Sets the type of shape to be generated and the parameters that are used. Defaults to *torus*.
+- **shape**: Must be one of *sphere*, *torus*, *catenoid*, *bezier*. Sets the type of shape to be generated and the parameters that are used. Defaults to *torus*.
 - **name**: Sets the name of the mesh, which is used when saving the mesh in any format. Defaults to "mesh".
 - **mode**: Sets the behaviour of the program. Defaults to "obj". Possible values:
     - *interactive*: Displays the generated mesh in the interactive viewer, where it can be exported to any format via keyboard shortcuts.
     - *obj*: Exports the mesh to an OBJ file with the mesh name and exits.
     - *ply*: Exports the mesh to a PLY file with the mesh name and exits.
 - **samples**: Determines the number of samples in one of the natural coordinates. If the shape is a surface of revolution (torus or catenoid), then it is the number of samples in the direction of rotation; the number of samples in the other direction is determined automatically in order to obtain the nice mesh. If the shape is a Bézier patch, it is the number of samples in any of the two directions (unless the **sampling** parameter is specified). Defaults to 64.
+- **subdivision**: For the sphere, it is the number of times an icosahedron is subdivided to generate the sphere. Defaults to 3.
+- **radius**: For the sphere, it is the radius of the sphere. For a randomly generated Bézier patch, it is the radius of the sphere on which the 4 corner points lie. Defaults to 1.
 - **innerRadius**: For the torus, the first is the radius of the circle that revolves around the axis. For the catenoid, it is the radius of the circular section at the middle point, where the catenoid is most narrow. For Bézier patches, it is ignored. Defaults to 1.
-- **outerRadius**: For the torus, it is the distance of the revolved circle from the axis of revolution. For the catenoid, it is the radius of the ends of the shape. For a randomly generated Bézier patch, it is the radius of the sphere on which the 4 corner points lie. Defaults to 2.
+- **outerRadius**: For the torus, it is the distance of the revolved circle from the axis of revolution. For the catenoid, it is the radius of the ends of the shape. Defaults to 2.
 - **centered**: If "yes" or "true", the mesh is centered at the origin after it is computed. This is only really needed for random Bézier patches. Defaults to "no".
 - **noise**: Sets the variance of gaussian noise relative to the average edge length of the mesh. Defaults to 0.
 - **noiseType**: Sets the type of noise. Defaults to "3d". Possible values:

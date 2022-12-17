@@ -1,6 +1,7 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include <unordered_map>
 #include <vector>
 #include <fstream>
 #include <epoxy/gl.h>
@@ -18,6 +19,10 @@ class Mesh {
         Mesh(bool normals, bool parametric);
         ~Mesh();
 
+        // Get vertex and face number
+        const inline unsigned int vertNum() const { return vNum; }
+        const inline unsigned int faceNum() const { return fNum; }
+
         // Core methods
         void reserveSpace(unsigned int verts, unsigned int faces);
         unsigned int addVertex(GLfloat x, GLfloat y, GLfloat z);
@@ -29,10 +34,11 @@ class Mesh {
 
         // Access methods
         enum Attribute { X, Y, Z, NX, NY, NZ, U, V };
-        inline GLfloat cAttrib(unsigned int vertexId, int attribOffset) const {
+        const inline GLfloat cAttrib(unsigned int vertexId,
+            int attribOffset) const {
             return verts[attCmp * vertexId + attribOffset];
         }
-        inline GLfloat cAttrib(unsigned int vertexId,
+        const inline GLfloat cAttrib(unsigned int vertexId,
             Attribute attribute) const {
             return cAttrib(vertexId, attToOff(attribute));
         }
@@ -47,6 +53,7 @@ class Mesh {
         void gaussNoise(float variance, 
             bool normal = true, bool tangential = true);
         void makeCentered();
+        void refine();
 
         class FileOpenException;
         class NotFinalizedException;
@@ -54,7 +61,7 @@ class Mesh {
 
     protected:
         // Access methods
-        inline GLfloat& attrib(unsigned int vertexId, int attribOffset) {
+        inline GLfloat& attrib(unsigned int vertexId, unsigned int attribOffset) {
             return verts[attCmp * vertexId + attribOffset];
         }
         inline GLfloat& attrib(unsigned int vertexId, Attribute attribute) {
@@ -78,7 +85,7 @@ class Mesh {
         unsigned int attToOff(Attribute att) const;
 
         // Vertex-vertex adjacency list
-        // typedef std::vector<std::set<unsigned int>> AdjacencyList;
+        // typedef std::vector<std::set<unsigned int>> adjacencyVV;
 
         const bool hasNrm;  // Has normals?
         const bool hasPar;  // Has parametric coordinates?

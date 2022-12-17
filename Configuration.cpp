@@ -10,9 +10,11 @@ void ConfigManager::defaultValues() {
     c["outFolder"] = "./";
 
     c["samples"] = "64";
+    c["radius"] = "1";
     c["innerRadius"] = "1";
     c["outerRadius"] = "2";
     c["centered"] = "no";
+    c["subdivision"] = "3";
 
     c["noise"] = "0";
     c["noiseType"] = "3d";

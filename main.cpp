@@ -1,4 +1,5 @@
 #include "Browser.hpp"
+#include "Sphere.hpp"
 #include "Torus.hpp"
 #include "Catenoid.hpp"
 #include "BezierPatch.hpp"
@@ -48,9 +49,15 @@ int main(int argc, char **argv) {
                 std::stod(cm["innerRadius"])
             );
         }
+        else if (cm["shape"] == "sphere") {
+            mesh = new Sphere(
+                std::stoi(cm["subdivision"]),
+                std::stod(cm["radius"])
+            );
+        }
         else if (cm["shape"] == "bezier") {
             BezierPatch::ControlGrid cg(
-                std::stod(cm["outerRadius"]),
+                std::stod(cm["radius"]),
                 std::stod(cm["borderVariance"]),
                 std::stod(cm["innerVariance"])
             );
