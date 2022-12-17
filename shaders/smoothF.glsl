@@ -12,7 +12,7 @@ layout(location = 0) out vec4 oColour;
 
 
 void main() {
-    const float d = dot(iNormal, lightDir); // Replace this with view dir!!
+    const float d = dot(normalize(iNormal), lightDir);
     const vec3 faceColour = d > 0 ? frontColour : backColour;
     float light = max(abs(d), minLight);
     oColour = vec4(faceColour * light, alpha);
