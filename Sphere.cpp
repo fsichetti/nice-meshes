@@ -11,16 +11,28 @@ Sphere::Sphere(unsigned int subdiv, double radius) : Mesh(true, true) {
     for (unsigned int i = 0; i < subdiv; ++i) {
         refine();
     }
-    // Normalization
+    // Normalization, normals, UV
     const unsigned int s = vertexNumber;
     for (unsigned int i = 0; i < s; ++i) {
-        auto& x = attrib(i, Attribute::X);
-        auto& y = attrib(i, Attribute::Y);
-        auto& z = attrib(i, Attribute::Z);
-        const double nrm = radius / std::sqrt(x*x + y*y + z*z);
+        double x = cAttrib(i, Attribute::X);
+        double y = cAttrib(i, Attribute::Y);
+        double z = cAttrib(i, Attribute::Z);
+        const double nrm = 1.0 / sqrt(x*x + y*y + z*z);
+        // Normalized coordinates
         x *= nrm;
         y *= nrm;
         z *= nrm;
+        attrib(i, Attribute::X) = x * radius;
+        attrib(i, Attribute::Y) = y * radius;
+        attrib(i, Attribute::Z) = z * radius;
+        attrib(i, Attribute::NX) = x;
+        attrib(i, Attribute::NY) = y;
+        attrib(i, Attribute::NZ) = z;
+        attrib(i, Attribute::U) = acos(z) / M_PI;
+        const double f = sqrt(x*x + y*y);
+        attrib(i, Attribute::V) = (f == 0) ? 0 : (
+            glm::sign(y) * acos(x / f) / TWOPI + .5
+        );
     }
 }
 

@@ -318,15 +318,9 @@ void Mesh::refine() {
     const unsigned int oldFNum = fNum, oldVNum = vNum;
     edges.reserve(oldFNum * 3 / 2);
     for (unsigned int fi = 0; fi < oldFNum; ++fi) {
-        glm::vec3 vOld[3];         // coordinates
         unsigned int viOld[3], viNew[3];    // indices
         for (unsigned int k = 0; k < 3; ++k) {
             viOld[k] = faces[3*fi + k];
-            vOld[k] = glm::vec3(
-                cAttrib(viOld[k], Attribute::X),
-                cAttrib(viOld[k], Attribute::Y),
-                cAttrib(viOld[k], Attribute::Z)
-            );
         }
         // Get midpoints
         for (unsigned int k = 0; k < 3; ++k) {
@@ -337,9 +331,14 @@ void Mesh::refine() {
             if (edges.count(e) == 1) {
                 viNew[k] = edges.at(e);
             }
-            else {  // Make new vertex
-                const auto avg = (vOld[k] + vOld[(k+1)%3]) * glm::vec1(.5);
-                viNew[k] = addVertex(avg.x, avg.y, avg.z);  // make new vert
+            else {
+                // Make new vertex
+                viNew[k] = addVertex(0, 0, 0);
+                // Average all attributes
+                for (unsigned int att = 0; att < attCnt; ++att) {
+                    attrib(viNew[k], att) = (cAttrib(viOld[k], att) + 
+                        cAttrib(viOld[(k+1)%3], att)) / 2;
+                }
                 edges.emplace(e, viNew[k]);                 // cache
             }
         }
