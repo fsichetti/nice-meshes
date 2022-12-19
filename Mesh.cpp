@@ -179,84 +179,105 @@ void Mesh::requireNormals(bool recompute) {
 }
 
 
-
-void Mesh::writeToObj(std::string path) const {
+void Mesh::writeOBJ(std::string path) const {
     if (!final) throw Mesh::NotFinalizedException();
     // Open file
     std::ofstream file(path);
-    if (file.is_open()) {
-        // Write verts
-        for (int i=0; i < verts.size(); i+=attCmp) {
-            file << "v "
-                << verts[i+0] << " "
-                << verts[i+1] << " "
-                << verts[i+2] << " "
-                << std::endl;
+    if (!file.is_open()) throw FileOpenException();
+
+    // Write verts
+    for (int i=0; i < vNum; ++i) {
+        file << "v "
+            << cAttrib(i, Attribute::X) << " "
+            << cAttrib(i, Attribute::Y) << " "
+            << cAttrib(i, Attribute::Z) << std::endl;
+    }
+    // Write normals
+    if (hasNrm) {
+        for (int i=0; i < vNum; ++i) {
+            file << "vn "
+                << cAttrib(i, Attribute::NX) << " "
+                << cAttrib(i, Attribute::NY) << " "
+                << cAttrib(i, Attribute::NZ) << std::endl;
         }
-        // Write normals
-        if (hasNrm) {
-            for (int i=0; i < verts.size(); i+=attCmp) {
-                file << "vn "
-                    << verts[i+3] << " "
-                    << verts[i+4] << " "
-                    << verts[i+5] << " "
-                    << std::endl;
-            }
-        }
-        // Write faces
-        for (int i=0; i < faces.size(); i+=3) {
-            file << "f "
-                << faces[i+0] + 1 << " "
-                << faces[i+1] + 1 << " "
-                << faces[i+2] + 1 << " "
-                << std::endl;
-        }
-    } 
-    else throw FileOpenException();
+    }
+    // Write faces
+    for (int i=0; i < faces.size(); i+=3) {
+        file << "f "
+            << faces[i+0] + 1 << " "
+            << faces[i+1] + 1 << " "
+            << faces[i+2] + 1 << std::endl;
+    }
 
     // Close file
     file.close();
 }
 
-void Mesh::writeToPly(std::string path) const {
+void Mesh::writePLY(std::string path) const {
+        if (!final) throw Mesh::NotFinalizedException();
+    // Open file
+    std::ofstream file(path);
+    if (!file.is_open()) throw FileOpenException();
+    
+    // Header
+    file << "ply" << std::endl << "format ascii 1.0" << std::endl;
+    if (!name.empty()) file << "comment " << name << std::endl;
+    file << "element vertex " << vNum << std::endl;
+    file << "property float x" << std::endl << "property float y" <<
+        std::endl << "property float z" << std::endl;
+    if (hasNrm) file << "property float nx" << std::endl <<
+        "property float ny" << std::endl << "property float nz" <<
+        std::endl;
+    if (hasPar) file << "property float u" << std::endl <<
+        "property float v" << std::endl;
+    file << "element face " << fNum << std::endl;
+    file << "property list uchar int vertex_indices" << std::endl;
+    file << "end_header" << std::endl;
+
+    // Write vertices
+    for (int i=0; i < verts.size(); i+=attCmp) {
+        for (int j=0; j<attCmp; ++j) {
+            file << verts[i+j] << " ";
+        }
+        file << std::endl;
+    }
+
+    // Write faces
+    for (int i=0; i < faces.size(); i+=3) {
+        file << "3 ";
+        for (int j=0; j<3; ++j) {
+            file << faces[i+j] << " ";
+        }
+        file << std::endl;
+    }
+    
+    // Close file
+    file.close();
+}
+
+void Mesh::writeOFF(std::string path) const {
     if (!final) throw Mesh::NotFinalizedException();
     // Open file
     std::ofstream file(path);
-    if (file.is_open()) {
-        // Header
-        file << "ply" << std::endl << "format ascii 1.0" << std::endl;
-        if (!name.empty()) file << "comment " << name << std::endl;
-        file << "element vertex " << vNum << std::endl;
-        file << "property float x" << std::endl << "property float y" <<
-            std::endl << "property float z" << std::endl;
-        if (hasNrm) file << "property float nx" << std::endl <<
-            "property float ny" << std::endl << "property float nz" <<
-            std::endl;
-        if (hasPar) file << "property float u" << std::endl <<
-            "property float v" << std::endl;
-        file << "element face " << fNum << std::endl;
-        file << "property list uchar int vertex_indices" << std::endl;
-        file << "end_header" << std::endl;
+    if (!file.is_open()) throw FileOpenException();
 
-        // Write vertices
-        for (int i=0; i < verts.size(); i+=attCmp) {
-            for (int j=0; j<attCmp; ++j) {
-                file << verts[i+j] << " ";
-            }
-            file << std::endl;
-        }
+    // Header
+    file << "OFF " << vNum << " " << fNum << " " << 0 << std::endl;
 
-        // Write faces
-        for (int i=0; i < faces.size(); i+=3) {
-            file << "3 ";
-            for (int j=0; j<3; ++j) {
-                file << faces[i+j] << " ";
-            }
-            file << std::endl;
-        }
-    } 
-    else throw FileOpenException();
-    
+    // Write verts
+    for (int i=0; i < vNum; ++i) {
+        file << cAttrib(i, Attribute::X) << " "
+            << cAttrib(i, Attribute::Y) << " "
+            << cAttrib(i, Attribute::Z) << std::endl;
+    }
+    // Write faces
+    for (int i=0; i < faces.size(); i+=3) {
+        file << "3 "
+            << faces[i+0] << " "
+            << faces[i+1] << " "
+            << faces[i+2] << std::endl;
+    }
+
     // Close file
     file.close();
 }

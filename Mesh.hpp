@@ -29,8 +29,11 @@ class Mesh {
         unsigned int addFace(GLuint i, GLuint j, GLuint k);
         void finalize(bool nogui = false);
         void draw(GLuint drawMode = GL_TRIANGLES) const;
-        void writeToObj(std::string filename) const;
-        void writeToPly(std::string filename) const;
+
+        // File output
+        void writePLY(std::string filename) const;
+        void writeOBJ(std::string filename) const;
+        void writeOFF(std::string filename) const;
 
         // Access methods
         enum Attribute { X, Y, Z, NX, NY, NZ, U, V };
@@ -93,7 +96,6 @@ class Mesh {
         // Computes normals unless already available
         bool normalsComputed = false;
         void requireNormals(bool recompute = false);
-        
 };
 
 // Exceptions
@@ -106,7 +108,7 @@ class Mesh::NotFinalizedException : public std::exception {
 };
 
 class Mesh::NoAttributeException : public std::exception {
-    public: const char* what() { return "Mesh has not been finalised"; }
+    public: const char* what() { return "Mesh is missing an attribute"; }
 };
 
 #endif

@@ -117,8 +117,8 @@ int main(int argc, char **argv) {
         else {  // save file
             mesh->finalize(true);
             std::string fname = cm["outFolder"] + mesh->name + "." + cm["mode"];
-            if (cm["mode"] == "obj") mesh->writeToObj(fname);
-            if (cm["mode"] == "ply") mesh->writeToPly(fname);
+            if (cm["mode"] == "obj") mesh->writeOBJ(fname);
+            if (cm["mode"] == "ply") mesh->writePLY(fname);
             delete mesh;
         }
     }

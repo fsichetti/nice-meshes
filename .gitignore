@@ -1,9 +1,11 @@
-*.obj
-!plane*.obj
 *.ply
+*.off
+*.obj
+*.png
+*.ini
+!plane*.obj
+!configuration.ini
+
 build/
 out/
 .cache/
-*.png
-*.ini
-!configuration.ini
