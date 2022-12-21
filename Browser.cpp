@@ -9,6 +9,7 @@ namespace Browser {
     std::string outPath = "./";
 
     bool drawWireframe = false;
+    bool drawUV = false;
 
     Shader* progSmooth; 
     Shader* progLines;
@@ -60,7 +61,7 @@ namespace Browser {
     void setMesh(Mesh* m) { mesh = m; }
     void setOutPath(std::string o) { outPath = o; }
     void launch() { glutMainLoop(); }
-
+    
     void callbackDisplay() {
         // Clear buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -75,6 +76,7 @@ namespace Browser {
         glUniformMatrix4fv(0, 1, GL_TRUE, mat);     // mvp
         glUniform3f(1, vDir[0], vDir[1], vDir[2]);  // view direction
         glUniform1f(2, meshAlpha);                  // alpha
+        glUniform1i(3, drawUV);
         mesh->draw();
 
         if (drawWireframe) {
@@ -104,6 +106,12 @@ namespace Browser {
             // Toggle wireframe
             case 'w':
                 drawWireframe = !drawWireframe;
+                glutPostRedisplay();
+                break;
+
+            // Toggle uv
+            case 'u':
+                drawUV = !drawUV;
                 glutPostRedisplay();
                 break;
 

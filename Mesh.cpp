@@ -101,23 +101,22 @@ void Mesh::finalize(bool nogui) {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-    unsigned int cnt = 0;   // attribute counter
     size_t off = 0;   // attribute offset
     const size_t sf = sizeof(GLfloat);
     // Positions
-    glEnableVertexAttribArray(cnt);
-    glVertexAttribPointer(cnt, 3, GL_FLOAT, false, attByt, (GLvoid*)off);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, false, attByt, (GLvoid*)off);
     off += 3*sf;
     // Normals
     if (hasNrm) {
-        glEnableVertexAttribArray(++cnt);
-        glVertexAttribPointer(cnt, 3, GL_FLOAT, false, attByt, (GLvoid*)off);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, attByt, (GLvoid*)off);
         off += 3*sf;
     }
     // Parametric coords
     if (hasPar) {
-        glEnableVertexAttribArray(++cnt);
-        glVertexAttribPointer(cnt, 2, GL_FLOAT, false, attByt, (GLvoid*)off);
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, attByt, (GLvoid*)off);
         off += 2*sf;
     }
 
