@@ -1,5 +1,5 @@
 # Nice Meshes
-Add description
+todo
 
 # Building
 Clone the repo, move to the root folder and run `make`.
@@ -9,7 +9,7 @@ Dependencies:
 - [FreeImage](https://freeimage.sourceforge.io/)
 
 # Running
-The program's behaviour is defined in a standard INI file. The INI file can contain any number of sections, each corresponding to a different configuration. The program takes two optional arguments: the first is the name of the configuration (i.e. section) to use, and it defaults to the first configuration in the INI file; the second is the path to the INI file itself, which defaults to `./configuration.ini`.
+Program behaviour is specified in a standard INI file. The INI file can contain any number of sections, each corresponding to a different configuration. The program takes two optional arguments: the first is the name of the configuration (i.e. section) to use, and it defaults to the first configuration in the INI file; the second is the path to the INI file itself, which defaults to `./configuration.ini`.
 
 *Example: the file `configuration.ini` in the current directory contains a section named "torusply" which generates a torus with certain parameters and saves it as a PLY mesh. The command `nicemesh torusply` executes this instruction.*
 
@@ -40,4 +40,4 @@ All parameters are case-insensitive.
 - **outFolder**: Path to the folder where the exported meshes should be saved. The folder must exist. Defaults to the current folder.
 
 ## Keyboard shortcuts
-add list
+todo
