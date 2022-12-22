@@ -25,6 +25,7 @@ class Mesh {
 
         // Core methods
         void reserveSpace(unsigned int verts, unsigned int faces);
+        unsigned int addVertex();
         unsigned int addVertex(GLfloat x, GLfloat y, GLfloat z);
         unsigned int addFace(GLuint i, GLuint j, GLuint k);
         void finalize(bool nogui = false);
@@ -71,6 +72,9 @@ class Mesh {
             return attrib(vertexId, attToOff(attribute));
         }
 
+        // Normals computation
+        void computeNormals(bool noCompute = false /*only mark as computed*/);
+
     private:
         bool final = false;
         bool allocatedGLBuffers = false; // prevent deletion of unalloc. buffers
@@ -95,7 +99,6 @@ class Mesh {
         
         // Computes normals unless already available
         bool normalsComputed = false;
-        void requireNormals(bool recompute = false);
 };
 
 // Exceptions

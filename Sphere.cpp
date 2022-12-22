@@ -34,6 +34,7 @@ Sphere::Sphere(unsigned int subdiv, double radius) : Mesh(true, true) {
             glm::sign(y) * acos(x / f) / TWOPI + .5
         );
     }
+    computeNormals(true);
 }
 
 void Sphere::initIcosahedron() {

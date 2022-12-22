@@ -31,16 +31,29 @@ Torus::Torus(
     for (unsigned int v = 0; v < vSamples; ++v) {
         for (unsigned int u = 0; u < uSamples; ++u) {
             // Place vertices
-            double uu = (u - (v%2)*.5) * uStep;
-            double vv = phi / phiMax;
-            double upi = TWOPI * uu, vpi = TWOPI * vv;
-            GLdouble x = cos(upi) * (rOuter + rInner * cos(vpi));
-            GLdouble y = rInner * sin(vpi);
-            GLdouble z = sin(upi) * (rOuter + rInner * cos(vpi));
-            addVertex(x, y, z);
+            const double uu = (u - (v%2)*.5) * uStep;
+            const double vv = phi / phiMax;
+            const double upi = TWOPI * uu, vpi = TWOPI * vv;
+            const double k = (rOuter + rInner * cos(vpi));
+            
+            const unsigned int index = addVertex();
+            attrib(index, Attribute::X) = cos(upi) * k;
+            attrib(index, Attribute::Y) = rInner * sin(vpi);
+            attrib(index, Attribute::Z) = sin(upi) * k;
+
+            // Compute normals analitically
+            const glm::vec3 xu = glm::vec3(-sin(upi) * k, 0, cos(upi) * k);
+            const glm::vec3 xv = glm::vec3(
+                -rInner * cos(upi) * sin(vpi),
+                rInner * cos(vpi),
+                -rInner * sin(upi) * sin(vpi)
+            );
+            const glm::vec3 normal = glm::normalize(glm::cross(xu, xv));
+            attrib(index, Attribute::NX) = normal.x;
+            attrib(index, Attribute::NY) = normal.y;
+            attrib(index, Attribute::NZ) = normal.z;
 
             // Write parametric coordinates
-            const unsigned int index = u + v*uSamples;
             attrib(index, Attribute::U) = uu;
             attrib(index, Attribute::V) = vv;
 
@@ -56,4 +69,5 @@ Torus::Torus(
         }
         phi += TWOPI * vStep * (rRatio + cos(phi));
     }
+    computeNormals(true);
 }

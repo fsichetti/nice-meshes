@@ -53,6 +53,11 @@ unsigned int Mesh::attToOff(Attribute att) const {
     }
 }
 
+unsigned int Mesh::addVertex() {
+    for (int i=0; i<attCmp; ++i)
+        verts.push_back(0);
+    return vNum++;
+}
 
 unsigned int Mesh::addVertex(GLfloat x, GLfloat y, GLfloat z) {
     verts.insert(verts.end(), {x,y,z});
@@ -79,7 +84,7 @@ void Mesh::draw(GLuint drawMode) const {
 
 // Prepare for drawing
 void Mesh::finalize(bool nogui) {
-    if (hasNrm) requireNormals();
+    if (hasNrm && !normalsComputed) computeNormals();
     if (nogui) {
         final = true;
         return;
@@ -136,10 +141,10 @@ void Mesh::finalize(bool nogui) {
 
 
 
-void Mesh::requireNormals(bool recompute) {
+void Mesh::computeNormals(bool noCompute) {
     if (!hasNrm) throw NoAttributeException();
-    if (!recompute && normalsComputed) return;
     normalsComputed = true;
+    if (noCompute) return;
 
     // Compute normals
     auto normals = new glm::vec3[vNum];
@@ -159,8 +164,8 @@ void Mesh::requireNormals(bool recompute) {
             }
         }
         // Compute the cross product
-        const glm::vec3 n = glm::cross(faceVert[1] - faceVert[0],
-            faceVert[2] - faceVert[0]);
+        const glm::vec3 n = glm::cross(faceVert[2] - faceVert[0],
+            faceVert[1] - faceVert[0]);
         // Accumulate unnormalised* normal on each vertex
         // *i.e. weighted by face area
         for (int j=0; j<3; ++j) {
@@ -293,7 +298,7 @@ void Mesh::gaussNoise(float variance, bool nrm, bool tan) {
         glm::vec3 noise = RandPoint::gaussian3(variance);
         // IT'S NOT YET USING UNIFORM DISTRIBUTIONS FOR NRM AND TAN NOISES!!!
         if (nrm != tan) {
-            requireNormals();
+            if (!normalsComputed) computeNormals();
             glm::vec3 n(
                 cAttrib(i, Attribute::NX),
                 cAttrib(i, Attribute::NY),
@@ -308,7 +313,7 @@ void Mesh::gaussNoise(float variance, bool nrm, bool tan) {
         attrib(i, Attribute::Y) += noise.y;
         attrib(i, Attribute::Z) += noise.z;
     }
-    requireNormals(true);   // is it necessary to recalculate normals?
+    computeNormals();
 }
 
 void Mesh::makeCentered() {
@@ -353,7 +358,7 @@ void Mesh::refine() {
             }
             else {
                 // Make new vertex
-                viNew[k] = addVertex(0, 0, 0);
+                viNew[k] = addVertex();
                 // Average all attributes
                 for (unsigned int att = 0; att < attCnt; ++att) {
                     attrib(viNew[k], att) = (cAttrib(viOld[k], att) + 

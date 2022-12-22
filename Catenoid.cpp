@@ -31,13 +31,22 @@ Catenoid::Catenoid(
             const double vv = v * vStep;
             const double upi = uu * TWOPI, vs = (vv-.5)*height;
             const double cat = rInner * cosh(vs / rInner);
-            GLdouble x = cat * cos(upi);
-            GLdouble y = cat * sin(upi);
-            GLdouble z = vs;
-            addVertex(x, y, z);
+            const unsigned int index = addVertex();
+            attrib(index, Attribute::X) = cat * cos(upi);
+            attrib(index, Attribute::Y) = cat * sin(upi);
+            attrib(index, Attribute::Z) = vs;
+
+            // Compute normals analitically
+            const glm::vec3 xu = glm::vec3(-sin(upi) * cat, cos(upi) * cat, 0);
+            const glm::vec3 xv = glm::vec3(
+                sinh(vs) * cos(upi), sinh(vs) * sin(upi), 1
+            );
+            const glm::vec3 normal = glm::normalize(glm::cross(xv, xu));
+            attrib(index, Attribute::NX) = normal.x;
+            attrib(index, Attribute::NY) = normal.y;
+            attrib(index, Attribute::NZ) = normal.z;
 
             // Write parametric coordinates
-            const unsigned int index = u + v*uSamples;
             attrib(index, Attribute::U) = uu;
             attrib(index, Attribute::V) = vv;
 
@@ -54,4 +63,5 @@ Catenoid::Catenoid(
             }
         }
     }
+    computeNormals(true);
 }
