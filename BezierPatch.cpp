@@ -1,5 +1,29 @@
 #include "BezierPatch.hpp"
 
+unsigned int BezierPatch::binomial(int k, int n) {
+    if (k < 0 || k > n) throw std::domain_error("K must be between 0 and N.");
+    if (k == 0 || k == n) return 1;
+    const unsigned int nn = n-2;
+    const unsigned int ind = (nn*nn + nn)/2 + k-1;
+    if (bc[ind] == 0) bc[ind] = binomial(k-1, n-1) + binomial(k, n-1);
+    return bc[ind];
+}
+
+
+glm::vec3 BezierPatch::samplePosition(const ControlGrid& cg,
+    double u, double v, unsigned int derivU, unsigned int derivV) {
+    glm::vec3 p(0);
+    for (unsigned int i = 0; i <= degree; ++i) {
+        for (int j = 0; j <= degree; ++j) {
+            p += glm::vec1(
+                bPoly(i, degree, u, derivU) * 
+                bPoly(j, degree, v, derivV)
+            ) * cg.get(i, j);
+        }
+    }
+    return p;
+}
+
 
 BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
     : Mesh(true, true) {
@@ -14,18 +38,16 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
         for (unsigned int v = 0; v < samples; ++v) {
             const double uu = u * uvStep, vv = v * uvStep;
             // Iterate on control points (i,j)
-            double p[3] = {0,0,0};
-            for (unsigned int i = 0; i <= degree; ++i) {
-                for (int j = 0; j <= degree; ++j) {
-                    const double a = bPoly(i, uu);
-                    const double b = bPoly(j, vv);
-                    // Iterate on the 3 coordinates
-                    for (int x = 0; x < 3; ++x) {
-                        p[x] += a * b * cg.at(i,j,x);
-                    }
-                }
-            }
+            const glm::vec3 p = samplePosition(cg, uu, vv);
             const unsigned int index = addVertex(p[0], p[1], p[2]);
+
+            // Compute normals analitically
+            const glm::vec3 xu = samplePosition(cg, uu, vv, 1, 0);
+            const glm::vec3 xv = samplePosition(cg, uu, vv, 0, 1);
+            const glm::vec3 normal = glm::normalize(glm::cross(xu, xv));
+            attrib(index, Attribute::NX) = normal.x;
+            attrib(index, Attribute::NY) = normal.y;
+            attrib(index, Attribute::NZ) = normal.z;
 
             // Write parametric coordinates
             attrib(index, Attribute::U) = uu;
@@ -38,6 +60,7 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
             }
         }
     }
+    computeNormals(true);
 }
 
 
@@ -51,19 +74,16 @@ BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
     // Compute vertices
     for (unsigned int i = 0; i < NV; ++i) {
         const double uu = smp.verts[2*i], vv = smp.verts[2*i+1];
-        // Iterate on control points (i,j)
-            double p[3] = {0,0,0};
-            for (unsigned int i = 0; i <= degree; ++i) {
-                for (int j = 0; j <= degree; ++j) {
-                    const double a = bPoly(i, uu);
-                    const double b = bPoly(j, vv);
-                    // Iterate on the 3 coordinates
-                    for (int x = 0; x < 3; ++x) {
-                        p[x] += a * b * cg.at(i,j,x);
-                    }
-                }
-            }
+        const glm::vec3 p = samplePosition(cg, uu, vv);
         addVertex(p[0], p[1], p[2]);
+
+        // Compute normals analitically
+        const glm::vec3 xu = samplePosition(cg, uu, vv, 1, 0);
+        const glm::vec3 xv = samplePosition(cg, uu, vv, 0, 1);
+        const glm::vec3 normal = glm::normalize(glm::cross(xu, xv));
+        attrib(i, Attribute::NX) = normal.x;
+        attrib(i, Attribute::NY) = normal.y;
+        attrib(i, Attribute::NZ) = normal.z;
 
         // Write parametric coordinates
         attrib(i, Attribute::U) = uu;
@@ -74,6 +94,7 @@ BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
         const auto fi = 3*i;
         addFace(smp.faces[fi], smp.faces[fi+1], smp.faces[fi+2]);
     }
+    computeNormals(true);
 }
 
 

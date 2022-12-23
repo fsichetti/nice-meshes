@@ -25,19 +25,26 @@ class BezierPatch : public Mesh {
         );
 
     private:
-        // Bernstein polynomials
+        // Binomial coefficients
         unsigned int bc[((degree-1) * (degree-1) + degree-1) / 2] = {};
-        unsigned int binomial(int k, int n) {
-            if (k < 0 || k > n) return 0;
-            if (k == 0 || k == n) return 1;
-            const unsigned int nn = n-2;
-            const unsigned int ind = (nn*nn + nn)/2 + k-1;
-            if (bc[ind] == 0) bc[ind] = binomial(k-1, n-1) + binomial(k, n-1);
-            return bc[ind];
+        unsigned int binomial(int k, int n);
+
+        // Bernstein polynomials with derivatives
+        inline double bPoly(int i, int n, double x,
+            unsigned int derivative = 1) {
+            if (derivative == 0) {
+                if (i < 0 || i > n) return 0;
+                return binomial(i, n) * pow(x, i) * pow(1-x, n-i);
+            }
+            return n * (
+                bPoly(i-1, n-1, x, derivative-1)
+                - bPoly(i, n-1, x, derivative-1)
+            );
         }
-        inline double bPoly(unsigned int i, double x) {
-            return binomial(i, degree) * pow(x, i) * pow(1-x, degree-i);
-        }
+
+        // Computations
+        glm::vec3 samplePosition(const ControlGrid&, double u, double v,
+            unsigned int derivU = 0, unsigned int derivV = 0);
 };
 
 
