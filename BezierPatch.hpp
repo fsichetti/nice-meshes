@@ -26,10 +26,17 @@ class BezierPatch : public Mesh {
 
     private:
         // Bernstein polynomials
-        unsigned int binomial[degree+1];
-        void cacheBinomials();
-        inline double bPoly(unsigned int i, double x) const {
-            return binomial[i] * pow(x, i) * pow(1-x, degree-i);
+        unsigned int bc[((degree-1) * (degree-1) + degree-1) / 2] = {};
+        unsigned int binomial(int k, int n) {
+            if (k < 0 || k > n) return 0;
+            if (k == 0 || k == n) return 1;
+            const unsigned int nn = n-2;
+            const unsigned int ind = (nn*nn + nn)/2 + k-1;
+            if (bc[ind] == 0) bc[ind] = binomial(k-1, n-1) + binomial(k, n-1);
+            return bc[ind];
+        }
+        inline double bPoly(unsigned int i, double x) {
+            return binomial(i, degree) * pow(x, i) * pow(1-x, degree-i);
         }
 };
 

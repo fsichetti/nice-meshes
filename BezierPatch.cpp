@@ -1,21 +1,5 @@
 #include "BezierPatch.hpp"
 
-// Compute and cache the binomial coefficients
-void BezierPatch::cacheBinomials() {
-    const unsigned int facN = 1;
-    binomial[0] = 1;
-    binomial[degree] = 1;
-    for (unsigned int i = 1; i < degree; ++i) {
-        unsigned int num = 1, den = 1;
-
-        for (unsigned int j = 1; j <= i; ++j) {
-            num *= (degree-j+1);
-            den *= j;
-        }
-        binomial[i] = num / den;
-    }
-}
-
 
 BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
     : Mesh(true, true) {
@@ -25,7 +9,6 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
     reserveSpace(uvSamples, uvSamples/2);
 
     // Compute points
-    cacheBinomials();
     // Iterate on sample points (u,v)
     for (unsigned int u = 0; u < samples; ++u) {
         for (unsigned int v = 0; v < samples; ++v) {
@@ -42,10 +25,9 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
                     }
                 }
             }
-            addVertex(p[0], p[1], p[2]);
+            const unsigned int index = addVertex(p[0], p[1], p[2]);
 
             // Write parametric coordinates
-            const unsigned int index = v + u*samples;
             attrib(index, Attribute::U) = uu;
             attrib(index, Attribute::V) = vv;
 
@@ -66,7 +48,6 @@ BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
     const unsigned int NF = smp.faces.size() / 3;
     reserveSpace(NV, NF);
 
-    cacheBinomials();
     // Compute vertices
     for (unsigned int i = 0; i < NV; ++i) {
         const double uu = smp.verts[2*i], vv = smp.verts[2*i+1];
