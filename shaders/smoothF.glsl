@@ -13,7 +13,7 @@ layout(location = 0) out vec4 oColour;
 
 void main() {
     const vec3 frontColour = iColour;
-    const vec3 backColour = (showCoordinates) ? frontColour : frontColour.gbr;
+    const vec3 backColour = (showCoordinates) ? frontColour : frontColour.brg;
     const float d = dot(normalize(iNormal), lightDir);
     const vec3 faceColour = (d > 0) ? frontColour : backColour;
     float light = max(abs(d), minLight);

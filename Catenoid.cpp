@@ -37,7 +37,7 @@ Catenoid::Catenoid(
             attrib(index, Attribute::Z) = vs;
 
             // Compute normals analitically
-            const glm::vec3 xu = glm::vec3(-sin(upi) * cat, cos(upi) * cat, 0);
+            const glm::vec3 xu = glm::vec3(sin(upi) * cat, -cos(upi) * cat, 0);
             const glm::vec3 xv = glm::vec3(
                 sinh(vs) * cos(upi), sinh(vs) * sin(upi), 1
             );

@@ -48,7 +48,7 @@ Torus::Torus(
                 rInner * cos(vpi),
                 -rInner * sin(upi) * sin(vpi)
             );
-            const glm::vec3 normal = glm::normalize(glm::cross(xu, xv));
+            const glm::vec3 normal = glm::normalize(glm::cross(xv, xu));
             attrib(index, Attribute::NX) = normal.x;
             attrib(index, Attribute::NY) = normal.y;
             attrib(index, Attribute::NZ) = normal.z;

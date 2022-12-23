@@ -175,7 +175,7 @@ void Mesh::computeNormals(bool noCompute) {
 
     // for each vertex, normalise the normal and write to the vector
     for (int i=0; i<vNum; ++i) {
-        normals[i] = glm::normalize(normals[i]);
+        normals[i] = -glm::normalize(normals[i]);
         attrib(i, Attribute::NX) = normals[i].x;
         attrib(i, Attribute::NY) = normals[i].y;
         attrib(i, Attribute::NZ) = normals[i].z;

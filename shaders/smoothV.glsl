@@ -20,5 +20,5 @@ void main() {
             vec3(0., 1., 0.) * iTex.s * iTex.t +
             vec3(0., 0., 1.) * (1-iTex.s) * iTex.t
         ;
-    else oColour = vec3(1., .8, .8);
+    else oColour = vec3(.8, .8, 1.);
 }

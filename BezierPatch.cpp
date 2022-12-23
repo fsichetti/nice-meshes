@@ -44,7 +44,7 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
             // Compute normals analitically
             const glm::vec3 xu = samplePosition(cg, uu, vv, 1, 0);
             const glm::vec3 xv = samplePosition(cg, uu, vv, 0, 1);
-            const glm::vec3 normal = glm::normalize(glm::cross(xu, xv));
+            const glm::vec3 normal = glm::normalize(glm::cross(xv, xu));
             attrib(index, Attribute::NX) = normal.x;
             attrib(index, Attribute::NY) = normal.y;
             attrib(index, Attribute::NZ) = normal.z;
@@ -80,7 +80,7 @@ BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
         // Compute normals analitically
         const glm::vec3 xu = samplePosition(cg, uu, vv, 1, 0);
         const glm::vec3 xv = samplePosition(cg, uu, vv, 0, 1);
-        const glm::vec3 normal = glm::normalize(glm::cross(xu, xv));
+        const glm::vec3 normal = glm::normalize(glm::cross(xv, xu));
         attrib(i, Attribute::NX) = normal.x;
         attrib(i, Attribute::NY) = normal.y;
         attrib(i, Attribute::NZ) = normal.z;
