@@ -313,7 +313,6 @@ void Mesh::gaussNoise(float variance, bool nrm, bool tan) {
         attrib(i, Attribute::Y) += noise.y;
         attrib(i, Attribute::Z) += noise.z;
     }
-    computeNormals();
 }
 
 void Mesh::makeCentered() {
