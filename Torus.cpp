@@ -41,17 +41,40 @@ Torus::Torus(
             attrib(index, Attribute::Y) = rInner * sin(vpi);
             attrib(index, Attribute::Z) = sin(upi) * k;
 
-            // Compute normals analitically
-            const glm::vec3 xu = glm::vec3(-sin(upi) * k, 0, cos(upi) * k);
-            const glm::vec3 xv = glm::vec3(
+
+            // Compute derivatives
+            const glm::vec3 xu(
+                -sin(upi) * k,
+                0,
+                cos(upi) * k
+            );
+            const glm::vec3 xv(
                 -rInner * cos(upi) * sin(vpi),
                 rInner * cos(vpi),
                 -rInner * sin(upi) * sin(vpi)
             );
-            const glm::vec3 normal = glm::normalize(glm::cross(xv, xu));
-            attrib(index, Attribute::NX) = normal.x;
-            attrib(index, Attribute::NY) = normal.y;
-            attrib(index, Attribute::NZ) = normal.z;
+            const glm::vec3 xuu(
+                -cos(upi) * k,
+                0,
+                -sin(upi) * k
+            );
+            const glm::vec3 xuv(
+                rInner * sin(upi) * sin(vpi),
+                0,
+                -rInner * cos(upi) * sin(vpi)
+            );
+            const glm::vec3 xvv(
+                -rInner * cos(upi) * cos(vpi),
+                -rInner * sin(vpi),
+                -rInner * cos(upi) * sin(vpi)
+            );
+
+            const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
+
+            // Normals
+            attrib(index, Attribute::NX) = dq.normal().x;
+            attrib(index, Attribute::NY) = dq.normal().y;
+            attrib(index, Attribute::NZ) = dq.normal().z;
 
             // Write parametric coordinates
             attrib(index, Attribute::U) = uu;
