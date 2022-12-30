@@ -1,3 +1,6 @@
+#ifndef DIFFQUANT_H
+#define DIFFQUANT_H
+
 #include <glm/glm.hpp>
 
 class DifferentialQuantities {
@@ -45,3 +48,5 @@ class DifferentialQuantities {
         const float meanCurvature() const { return crvH; }
         const float gaussianCurvature() const { return crvK; }
 };
+
+#endif

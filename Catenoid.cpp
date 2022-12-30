@@ -36,19 +36,43 @@ Catenoid::Catenoid(
             attrib(index, Attribute::Y) = cat * sin(upi);
             attrib(index, Attribute::Z) = vs;
 
-            // Compute normals analitically
-            const glm::vec3 xu = glm::vec3(sin(upi) * cat, -cos(upi) * cat, 0);
-            const glm::vec3 xv = glm::vec3(
-                sinh(vs) * cos(upi), sinh(vs) * sin(upi), 1
+            // Compute derivatives
+            const glm::vec3 xu(
+                sin(upi) * cat,
+                -cos(upi) * cat,
+                0
             );
-            const glm::vec3 normal = glm::normalize(glm::cross(xv, xu));
-            attrib(index, Attribute::NX) = normal.x;
-            attrib(index, Attribute::NY) = normal.y;
-            attrib(index, Attribute::NZ) = normal.z;
+            const glm::vec3 xv(
+                sinh(vs) * cos(upi),
+                sinh(vs) * sin(upi),
+                1
+            );
+            const glm::vec3 xuu(
+                cos(upi) * cat,
+                sin(upi) * cat,
+                0
+            );
+            const glm::vec3 xuv(
+                -sinh(vs) * sin(upi),
+                sinh(vs) * cos(upi),
+                0
+            );
+            const glm::vec3 xvv(
+                cosh(vs) * cos(upi),
+                sinh(vs) * sin(upi),
+                0
+            );
+
+            const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
+
+            // Normals
+            attrib(index, Attribute::NX) = dq.normal().x;
+            attrib(index, Attribute::NY) = dq.normal().y;
+            attrib(index, Attribute::NZ) = dq.normal().z;
 
             // Write parametric coordinates
-            attrib(index, Attribute::U) = uu;
-            attrib(index, Attribute::V) = vv;
+            attrib(index, Attribute::U) = dq.gaussianCurvature();
+            attrib(index, Attribute::V) = 0;
 
             // Add faces
             if (v != vSamples-1) {    // Open at the ends

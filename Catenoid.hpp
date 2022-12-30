@@ -3,6 +3,7 @@
 
 #include "Mesh.hpp"
 #include "Constants.hpp"
+#include "DifferentialQuantities.hpp"
 
 class Catenoid : public Mesh {
     public:
