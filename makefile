@@ -1,6 +1,6 @@
 MAKEFLAGS += -j
 CXX = g++
-CXXFLAGS = -g -MD -MP
+CXXFLAGS = -MD -MP
 LDFLAGS = -lepoxy -lglut -lfreeimage
 BUILD = build
 OUT = $(BUILD)/nicemesh
@@ -13,6 +13,9 @@ all: dir main
 dir:
 	@mkdir -p $(BUILD)
 
+debug: $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $(OUT) $^ $(LDFLAGS) -g
+
 main: $(OBJ)
 	$(CXX) $(CXXFLAGS) -o $(OUT) $^ $(LDFLAGS)
 
@@ -20,9 +23,6 @@ $(OBJ): $(BUILD)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@ $(SILENCE)
 
 -include $(DEPS)
-
-run:
-	@$(OUT)
 
 clean:
 	@rm -f -r $(BUILD)
