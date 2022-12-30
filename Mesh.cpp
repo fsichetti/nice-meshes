@@ -90,7 +90,8 @@ void Mesh::finalize(bool nogui) {
         return;
     }
     // Vertex array
-    glBindVertexArray(vao);
+    // glGenVertexArrays(1, &vao);
+    // glBindVertexArray(vao);
 
     // Vertex buffer
     glGenBuffers(1, &vbo);
