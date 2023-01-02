@@ -33,6 +33,7 @@ Sphere::Sphere(unsigned int subdiv, double radius) : Mesh(true, true) {
         attrib(i, Attribute::V) = (f == 0) ? 0 : (
             glm::sign(y) * acos(x / f) / TWOPI + .5
         );
+        // Curvature: K=1/RR, H=1/R
     }
     computeNormals(true);
 }

@@ -71,8 +71,8 @@ Catenoid::Catenoid(
             attrib(index, Attribute::NZ) = dq.normal().z;
 
             // Write parametric coordinates
-            attrib(index, Attribute::U) = dq.gaussianCurvature();
-            attrib(index, Attribute::V) = 0;
+            attrib(index, Attribute::U) = uu;
+            attrib(index, Attribute::V) = vv;
 
             // Add faces
             if (v != vSamples-1) {    // Open at the ends
