@@ -4,6 +4,7 @@
 #include "Mesh.hpp"
 #include "Constants.hpp"
 #include "RandPoint.hpp"
+#include "DifferentialQuantities.hpp"
 #include <glm/glm.hpp>
 
 class BezierPatch : public Mesh {

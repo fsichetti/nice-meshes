@@ -38,16 +38,21 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
         for (unsigned int v = 0; v < samples; ++v) {
             const double uu = u * uvStep, vv = v * uvStep;
             // Iterate on control points (i,j)
-            const glm::vec3 p = samplePosition(cg, uu, vv);
-            const unsigned int index = addVertex(p[0], p[1], p[2]);
+            const glm::vec3 x = samplePosition(cg, uu, vv);
+            const unsigned int index = addVertex(x[0], x[1], x[2]);
 
             // Compute normals analitically
             const glm::vec3 xu = samplePosition(cg, uu, vv, 1, 0);
             const glm::vec3 xv = samplePosition(cg, uu, vv, 0, 1);
-            const glm::vec3 normal = glm::normalize(glm::cross(xv, xu));
-            attrib(index, Attribute::NX) = normal.x;
-            attrib(index, Attribute::NY) = normal.y;
-            attrib(index, Attribute::NZ) = normal.z;
+            const glm::vec3 xuu = samplePosition(cg, uu, vv, 2, 0);
+            const glm::vec3 xuv = samplePosition(cg, uu, vv, 1, 1);
+            const glm::vec3 xvv = samplePosition(cg, uu, vv, 0, 2);
+            const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
+
+            // Normals
+            attrib(index, Attribute::NX) = dq.normal().x;
+            attrib(index, Attribute::NY) = dq.normal().y;
+            attrib(index, Attribute::NZ) = dq.normal().z;
 
             // Write parametric coordinates
             attrib(index, Attribute::U) = uu;
@@ -74,16 +79,21 @@ BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
     // Compute vertices
     for (unsigned int i = 0; i < NV; ++i) {
         const double uu = smp.verts[2*i], vv = smp.verts[2*i+1];
-        const glm::vec3 p = samplePosition(cg, uu, vv);
-        addVertex(p[0], p[1], p[2]);
+        const glm::vec3 x = samplePosition(cg, uu, vv);
+        addVertex(x[0], x[1], x[2]);
 
         // Compute normals analitically
         const glm::vec3 xu = samplePosition(cg, uu, vv, 1, 0);
         const glm::vec3 xv = samplePosition(cg, uu, vv, 0, 1);
-        const glm::vec3 normal = glm::normalize(glm::cross(xv, xu));
-        attrib(i, Attribute::NX) = normal.x;
-        attrib(i, Attribute::NY) = normal.y;
-        attrib(i, Attribute::NZ) = normal.z;
+        const glm::vec3 xuu = samplePosition(cg, uu, vv, 2, 0);
+        const glm::vec3 xuv = samplePosition(cg, uu, vv, 1, 1);
+        const glm::vec3 xvv = samplePosition(cg, uu, vv, 0, 2);
+        const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
+
+        // Normals
+        attrib(i, Attribute::NX) = dq.normal().x;
+        attrib(i, Attribute::NY) = dq.normal().y;
+        attrib(i, Attribute::NZ) = dq.normal().z;
 
         // Write parametric coordinates
         attrib(i, Attribute::U) = uu;
