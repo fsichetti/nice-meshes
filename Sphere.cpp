@@ -1,6 +1,6 @@
 #include "Sphere.hpp"
 
-Sphere::Sphere(unsigned int subdiv, double radius) : Mesh(true, true) {
+Sphere::Sphere(unsigned int subdiv, double radius) : Mesh(true, true, true) {
     name = "sphere";
 
     const unsigned int faceNumber = 20 * pow(4,subdiv);
@@ -33,7 +33,9 @@ Sphere::Sphere(unsigned int subdiv, double radius) : Mesh(true, true) {
         attrib(i, Attribute::V) = (f == 0) ? 0 : (
             glm::sign(y) * acos(x / f) / TWOPI + .5
         );
-        // Curvature: K=1/RR, H=1/R
+        const float h = 1 / radius;
+        attrib(i, Attribute::H) = h;
+        attrib(i, Attribute::K) = h / radius;
     }
     computeNormals(true);
 }

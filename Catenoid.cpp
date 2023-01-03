@@ -4,7 +4,7 @@ Catenoid::Catenoid(
         unsigned int samples,   // samples in toroidal direction
         double rOuter,
         double rInner
-    ) : Mesh(true, true) {
+    ) : Mesh(true, true, true) {
 
     // Sampling in rotational direction (uniform)
     const unsigned int uSamples = samples;
@@ -74,6 +74,10 @@ Catenoid::Catenoid(
             attrib(index, Attribute::U) = uu;
             attrib(index, Attribute::V) = vv;
 
+            // Curvature
+            attrib(index, Attribute::H) = dq.meanCurvature();
+            attrib(index, Attribute::K) = dq.gaussianCurvature();
+            
             // Add faces
             if (v != vSamples-1) {    // Open at the ends
                 unsigned int us = (u+uSamples-v%2)%uSamples;

@@ -2,10 +2,10 @@
 #include <iostream>
 
 // Constructor
-Mesh::Mesh(bool nrm, bool par) :
-    hasNrm(nrm), hasPar(par),
-    attCnt(1 + nrm + par),
-    attCmp(3 + nrm*3 + par*2),
+Mesh::Mesh(bool nrm, bool par, bool dif) :
+    hasNrm(nrm), hasPar(par), hasDif(dif),
+    attCnt(1 + nrm + par + dif),
+    attCmp(3 + nrm*3 + par*2 + dif*2),
     attByt(attCmp*sizeof(GLfloat))
     {
 };
@@ -34,23 +34,29 @@ unsigned int Mesh::attToOff(Attribute att) const {
 
         case NX:
             if (!hasNrm) throw NoAttributeException();
-            else return 3;
+            return 3;
         case NY:
             if (!hasNrm) throw NoAttributeException();
-            else return 4;
+            return 4;
         case NZ:
             if (!hasNrm) throw NoAttributeException();
-            else return 5;
+            return 5;
 
         case U:
             if (!hasPar) throw NoAttributeException();
-            else return (hasNrm) ? 6 : 3;
+            return 3 + 3*hasNrm;
         case V:
             if (!hasPar) throw NoAttributeException();
-            else return (hasNrm) ? 7 : 4;
-        default:
-            throw NoAttributeException();
+            return 4 + 3*hasNrm;
+
+        case K:
+            if (!hasDif) throw NoAttributeException();
+            return 3 + 3*hasNrm + 2*hasPar;
+        case H:
+            if (!hasDif) throw NoAttributeException();
+            return 4 + 3*hasNrm + 2*hasPar;
     }
+    throw NoAttributeException();
 }
 
 unsigned int Mesh::addVertex() {
@@ -235,6 +241,8 @@ void Mesh::writePLY(std::string path) const {
         std::endl;
     if (hasPar) file << "property float u" << std::endl <<
         "property float v" << std::endl;
+    if (hasDif) file << "property float k" << std::endl <<
+        "property float h" << std::endl;
     file << "element face " << fNum << std::endl;
     file << "property list uchar int vertex_indices" << std::endl;
     file << "end_header" << std::endl;

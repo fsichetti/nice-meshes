@@ -4,7 +4,7 @@ Torus::Torus(
         unsigned int samples,   // samples in toroidal direction
         double rOuter,
         double rInner
-    ) : Mesh(true, true) {
+    ) : Mesh(true, true, true) {
 
     // Construct torus
     const double rRatio = rOuter / rInner;
@@ -76,9 +76,13 @@ Torus::Torus(
             attrib(index, Attribute::NY) = dq.normal().y;
             attrib(index, Attribute::NZ) = dq.normal().z;
 
-            // Write parametric coordinates
+            // Parametric coordinates
             attrib(index, Attribute::U) = uu;
             attrib(index, Attribute::V) = vv;
+
+            // Curvature
+            attrib(index, Attribute::H) = dq.meanCurvature();
+            attrib(index, Attribute::K) = dq.gaussianCurvature();
 
             // Add faces
             unsigned int us = (u+uSamples-v%2)%uSamples;

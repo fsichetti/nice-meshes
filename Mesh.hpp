@@ -16,7 +16,7 @@ class Mesh {
         std::string name = "";
 
         // Init mesh with expected number of vertices and faces
-        Mesh(bool normals, bool parametric);
+        Mesh(bool normals, bool parametric, bool curvature);
         ~Mesh();
 
         // Get vertex and face number
@@ -37,7 +37,7 @@ class Mesh {
         void writeOFF(std::string filename) const;
 
         // Access methods
-        enum Attribute { X, Y, Z, NX, NY, NZ, U, V };
+        enum Attribute { X, Y, Z, NX, NY, NZ, U, V, K, H };
         const inline GLfloat cAttrib(unsigned int vertexId,
             int attribOffset) const {
             return verts[attCmp * vertexId + attribOffset];
@@ -96,6 +96,7 @@ class Mesh {
 
         const bool hasNrm;  // Has normals?
         const bool hasPar;  // Has parametric coordinates?
+        const bool hasDif;  // Has curvature / other differential quantities?
         
         // Computes normals unless already available
         bool normalsComputed = false;

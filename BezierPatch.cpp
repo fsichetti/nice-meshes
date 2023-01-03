@@ -26,7 +26,7 @@ glm::vec3 BezierPatch::samplePosition(const ControlGrid& cg,
 
 
 BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
-    : Mesh(true, true) {
+    : Mesh(true, true, true) {
     name = "BezierPatch";
     const unsigned int uvSamples = samples * samples;
     const double uvStep = 1.0 / (double)samples;
@@ -54,9 +54,13 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
             attrib(index, Attribute::NY) = dq.normal().y;
             attrib(index, Attribute::NZ) = dq.normal().z;
 
-            // Write parametric coordinates
+            // Parametric coordinates
             attrib(index, Attribute::U) = uu;
             attrib(index, Attribute::V) = vv;
+            
+            // Curvature
+            attrib(index, Attribute::H) = dq.meanCurvature();
+            attrib(index, Attribute::K) = dq.gaussianCurvature();
 
             if (u < samples-1 && v < samples-1) {
                 const unsigned int id = samples * u + v;
@@ -70,7 +74,7 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
 
 
 BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
-    : Mesh(true, true) {
+    : Mesh(true, true, true) {
     name = "BezierPatch";
     const unsigned int NV = smp.verts.size() / 2;
     const unsigned int NF = smp.faces.size() / 3;
@@ -95,9 +99,13 @@ BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
         attrib(i, Attribute::NY) = dq.normal().y;
         attrib(i, Attribute::NZ) = dq.normal().z;
 
-        // Write parametric coordinates
+        // Parametric coordinates
         attrib(i, Attribute::U) = uu;
         attrib(i, Attribute::V) = vv;
+
+        // Curvature
+        attrib(i, Attribute::H) = dq.meanCurvature();
+        attrib(i, Attribute::K) = dq.gaussianCurvature();
     }
     // Add faces
     for (unsigned int i = 0; i < NF; ++i) {
