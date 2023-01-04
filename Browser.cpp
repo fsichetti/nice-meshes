@@ -205,7 +205,7 @@ namespace Browser {
     void callbackClose() {
         delete progLines;
         delete progSmooth;
-        delete mesh;
+        mesh->deleteBuffers();
         glutLeaveMainLoop();
     }
 

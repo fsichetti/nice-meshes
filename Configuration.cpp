@@ -5,15 +5,18 @@ void ConfigManager::defaultValues() {
     c["shape"] = "torus";
     c["name"] = "mesh";
 
-    c["mode"] = "obj";
+    c["interactive"] = "true";
     c["repeat"] = "1";
     c["outFolder"] = "./";
+    c["savePLY"] = "false";
+    c["saveOBJ"] = "false";
+    c["saveOFF"] = "false";
 
     c["samples"] = "64";
     c["radius"] = "1";
     c["innerRadius"] = "1";
     c["outerRadius"] = "2";
-    c["centered"] = "no";
+    c["centered"] = "false";
     c["subdivision"] = "3";
 
     c["noise"] = "0";

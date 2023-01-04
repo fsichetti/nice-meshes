@@ -17,7 +17,16 @@ class Mesh {
 
         // Init mesh with expected number of vertices and faces
         Mesh(bool normals, bool parametric, bool curvature);
-        ~Mesh();
+        void deleteBuffers() {
+            if (!allocatedGLBuffers) return;
+            glDeleteBuffers(1, &vbo);
+            glDeleteBuffers(1, &ebo);
+            glDeleteVertexArrays(1, &vao);
+            vbo = 0;
+            ebo = 0;
+            vao = 0;
+            allocatedGLBuffers = false;
+        }
 
         // Get vertex and face number
         const inline unsigned int vertNum() const { return vNum; }

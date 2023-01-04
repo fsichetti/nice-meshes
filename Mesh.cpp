@@ -10,14 +10,6 @@ Mesh::Mesh(bool nrm, bool par, bool dif) :
     {
 };
 
-// Destructor
-Mesh::~Mesh() {
-    if (!allocatedGLBuffers) return;
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);
-    glDeleteVertexArrays(1, &vao);
-}
-
 // Reserve space in verts and faces arrays
 void Mesh::reserveSpace(unsigned int rv, unsigned int re) {
     verts.reserve(rv * attCmp);

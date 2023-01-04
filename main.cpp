@@ -93,7 +93,7 @@ int main(int argc, char **argv) {
         }
 
         // Processing
-        if (cm["centered"] == "yes" || cm["centered"] == "true") {
+        if (cm["centered"] == "true") {
             mesh->makeCentered();
         }
         if (std::stod(cm["noise"]) > 0) {
@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
         }
         
         // Mode
-        if (cm["mode"] == "interactive") {
+        if (cm["interactive"] == "true") {
             Trackball trb;
             Browser::init(argv[0], &trb);
             mesh->finalize();
@@ -116,11 +116,12 @@ int main(int argc, char **argv) {
         }
         else {  // save file
             mesh->finalize(true);
-            std::string fname = cm["outFolder"] + mesh->name + "." + cm["mode"];
-            if (cm["mode"] == "obj") mesh->writeOBJ(fname);
-            if (cm["mode"] == "ply") mesh->writePLY(fname);
-            delete mesh;
         }
+        std::string fname = cm["outFolder"] + mesh->name + ".";
+        if (cm["saveOBJ"] == "true") mesh->writeOBJ(fname + "obj");
+        if (cm["savePLY"] == "true") mesh->writePLY(fname + "ply");
+        if (cm["saveOFF"] == "true") mesh->writeOFF(fname + "off");
+        delete mesh;
     }
     return 0;
 }
