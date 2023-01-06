@@ -27,7 +27,7 @@ class DifferentialQuantities {
 
             // Principal curvatures as eigenvalues of Sh
             const float d = 1/(E*G - F*F);
-            crvH = (L*G - 2*M*G + N*E) * d / 2;
+            crvH = (L*G - 2*M*F + N*E) * d / 2;
             crvK = (L*N - M*M) * d;
         }
 
