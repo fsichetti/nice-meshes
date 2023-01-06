@@ -38,8 +38,8 @@ Catenoid::Catenoid(
 
             // Compute derivatives
             const glm::vec3 xu(
-                sin(upi) * cat,
-                -cos(upi) * cat,
+                -sin(upi) * cat,
+                cos(upi) * cat,
                 0
             );
             const glm::vec3 xv(
@@ -48,13 +48,13 @@ Catenoid::Catenoid(
                 1
             );
             const glm::vec3 xuu(
-                cos(upi) * cat,
-                sin(upi) * cat,
+                -cos(upi) * cat,
+                -sin(upi) * cat,
                 0
             );
             const glm::vec3 xuv(
-                -sinh(vs) * sin(upi),
-                sinh(vs) * cos(upi),
+                sinh(vs) * sin(upi),
+                -sinh(vs) * cos(upi),
                 0
             );
             const glm::vec3 xvv(
