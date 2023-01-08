@@ -33,56 +33,31 @@ Torus::Torus(
             // Place vertices
             const double uu = (u - (v%2)*.5) * uStep;
             const double vv = phi / phiMax;
-            const double upi = TWOPI * uu, vpi = TWOPI * vv;
-            const double k = (rOuter + rInner * cos(vpi));
+            const double sinu = sin(TWOPI * uu);
+            const double cosu = cos(TWOPI * uu);
+            const double sinv = sin(TWOPI * vv);
+            const double cosv = cos(TWOPI * vv);
             
             const unsigned int index = addVertex();
-            attrib(index, Attribute::X) = cos(upi) * k;
-            attrib(index, Attribute::Y) = rInner * sin(vpi);
-            attrib(index, Attribute::Z) = sin(upi) * k;
-
-
-            // Compute derivatives
-            const glm::vec3 xu(
-                -sin(upi) * k,
-                0,
-                cos(upi) * k
-            );
-            const glm::vec3 xv(
-                -rInner * cos(upi) * sin(vpi),
-                rInner * cos(vpi),
-                -rInner * sin(upi) * sin(vpi)
-            );
-            const glm::vec3 xuu(
-                -cos(upi) * k,
-                0,
-                -sin(upi) * k
-            );
-            const glm::vec3 xuv(
-                rInner * sin(upi) * sin(vpi),
-                0,
-                -rInner * cos(upi) * sin(vpi)
-            );
-            const glm::vec3 xvv(
-                -rInner * cos(upi) * cos(vpi),
-                -rInner * sin(vpi),
-                -rInner * cos(upi) * sin(vpi)
-            );
-
-            const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
+            
+            attrib(index, Attribute::X) = cosu * (rOuter + rInner * cosv);
+            attrib(index, Attribute::Y) = sinu * (rOuter + rInner * cosv);
+            attrib(index, Attribute::Z) = rInner * sinv;
 
             // Normals
-            attrib(index, Attribute::NX) = dq.normal().x;
-            attrib(index, Attribute::NY) = dq.normal().y;
-            attrib(index, Attribute::NZ) = dq.normal().z;
+            attrib(index, Attribute::NX) = cosu * cosv;
+            attrib(index, Attribute::NY) = sinu * cosv;
+            attrib(index, Attribute::NZ) = sinv;
 
             // Parametric coordinates
             attrib(index, Attribute::U) = uu;
             attrib(index, Attribute::V) = vv;
 
             // Curvature
-            attrib(index, Attribute::H) = dq.meanCurvature();
-            attrib(index, Attribute::K) = dq.gaussianCurvature();
+            attrib(index, Attribute::K) = cosv /
+                (rInner * (rOuter + rInner * cosv));
+            attrib(index, Attribute::H) = (rOuter + 2 * rInner * cosv) /
+                (2 * rInner * (rOuter + rInner * cosv));
 
             // Add faces
             unsigned int us = (u+uSamples-v%2)%uSamples;

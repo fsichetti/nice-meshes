@@ -29,54 +29,32 @@ Catenoid::Catenoid(
             // Place vertices
             const double uu = (u - (v%2)*.5) * uStep;
             const double vv = v * vStep;
-            const double upi = uu * TWOPI, vs = (vv-.5)*height;
-            const double cat = rInner * cosh(vs / rInner);
+            const double vs = (vv-.5)*height;
+            const double sinu = sin(TWOPI * uu);
+            const double cosu = cos(TWOPI * uu);
+            const double sinhv = sinh(vs / rInner);
+            const double coshv = cosh(vs / rInner);
+
             const unsigned int index = addVertex();
-            attrib(index, Attribute::X) = cat * cos(upi);
-            attrib(index, Attribute::Y) = cat * sin(upi);
+
+            attrib(index, Attribute::X) = rInner * coshv * cosu;
+            attrib(index, Attribute::Y) = rInner * coshv * sinu;
             attrib(index, Attribute::Z) = vs;
 
-            // Compute derivatives
-            const glm::vec3 xu(
-                -sin(upi) * cat,
-                cos(upi) * cat,
-                0
-            );
-            const glm::vec3 xv(
-                sinh(vs) * cos(upi),
-                sinh(vs) * sin(upi),
-                1
-            );
-            const glm::vec3 xuu(
-                -cos(upi) * cat,
-                -sin(upi) * cat,
-                0
-            );
-            const glm::vec3 xuv(
-                sinh(vs) * sin(upi),
-                -sinh(vs) * cos(upi),
-                0
-            );
-            const glm::vec3 xvv(
-                cosh(vs) * cos(upi),
-                sinh(vs) * sin(upi),
-                0
-            );
-
-            const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
-
             // Normals
-            attrib(index, Attribute::NX) = dq.normal().x;
-            attrib(index, Attribute::NY) = dq.normal().y;
-            attrib(index, Attribute::NZ) = dq.normal().z;
+            const double k = sinhv * cos(TWOPI * uu * 2);
+            const double nrmFac = 1 / sqrt(1 + k*k);
+            attrib(index, Attribute::NX) = cosu * nrmFac;
+            attrib(index, Attribute::NY) = sinu * nrmFac;
+            attrib(index, Attribute::NZ) = k * nrmFac;
 
             // Write parametric coordinates
             attrib(index, Attribute::U) = uu;
             attrib(index, Attribute::V) = vv;
 
             // Curvature
-            attrib(index, Attribute::H) = dq.meanCurvature();
-            attrib(index, Attribute::K) = dq.gaussianCurvature();
+            attrib(index, Attribute::H) = 0;
+            attrib(index, Attribute::K) = -pow(rInner, -2) * pow(coshv, -4);
             
             // Add faces
             if (v != vSamples-1) {    // Open at the ends
