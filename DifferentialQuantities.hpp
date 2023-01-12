@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 
 class DifferentialQuantities {
-    glm::mat2 ff1, ff2, sh;
     glm::vec3 nrm;      // normal
     float crvH, crvK;    // curvatures
 

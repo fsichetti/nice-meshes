@@ -44,7 +44,7 @@ class BezierPatch : public Mesh {
         }
 
         // Computations
-        glm::vec3 samplePosition(const ControlGrid&, double u, double v,
+        glm::vec3 sampleSurface(const ControlGrid&, double u, double v,
             unsigned int derivU = 0, unsigned int derivV = 0);
 };
 

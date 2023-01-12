@@ -10,7 +10,7 @@ unsigned int BezierPatch::binomial(int k, int n) {
 }
 
 
-glm::vec3 BezierPatch::samplePosition(const ControlGrid& cg,
+glm::vec3 BezierPatch::sampleSurface(const ControlGrid& cg,
     double u, double v, unsigned int derivU, unsigned int derivV) {
     glm::vec3 p(0);
     for (unsigned int i = 0; i <= degree; ++i) {
@@ -38,15 +38,15 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
         for (unsigned int v = 0; v < samples; ++v) {
             const double uu = u * uvStep, vv = v * uvStep;
             // Iterate on control points (i,j)
-            const glm::vec3 x = samplePosition(cg, uu, vv);
+            const glm::vec3 x = sampleSurface(cg, uu, vv);
             const unsigned int index = addVertex(x[0], x[1], x[2]);
 
             // Compute normals analitically
-            const glm::vec3 xu = samplePosition(cg, uu, vv, 1, 0);
-            const glm::vec3 xv = samplePosition(cg, uu, vv, 0, 1);
-            const glm::vec3 xuu = samplePosition(cg, uu, vv, 2, 0);
-            const glm::vec3 xuv = samplePosition(cg, uu, vv, 1, 1);
-            const glm::vec3 xvv = samplePosition(cg, uu, vv, 0, 2);
+            const glm::vec3 xu = sampleSurface(cg, uu, vv, 1, 0);
+            const glm::vec3 xv = sampleSurface(cg, uu, vv, 0, 1);
+            const glm::vec3 xuu = sampleSurface(cg, uu, vv, 2, 0);
+            const glm::vec3 xuv = sampleSurface(cg, uu, vv, 1, 1);
+            const glm::vec3 xvv = sampleSurface(cg, uu, vv, 0, 2);
             const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
 
             // Normals
@@ -83,15 +83,15 @@ BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
     // Compute vertices
     for (unsigned int i = 0; i < NV; ++i) {
         const double uu = smp.verts[2*i], vv = smp.verts[2*i+1];
-        const glm::vec3 x = samplePosition(cg, uu, vv);
+        const glm::vec3 x = sampleSurface(cg, uu, vv);
         addVertex(x[0], x[1], x[2]);
 
         // Compute normals analitically
-        const glm::vec3 xu = samplePosition(cg, uu, vv, 1, 0);
-        const glm::vec3 xv = samplePosition(cg, uu, vv, 0, 1);
-        const glm::vec3 xuu = samplePosition(cg, uu, vv, 2, 0);
-        const glm::vec3 xuv = samplePosition(cg, uu, vv, 1, 1);
-        const glm::vec3 xvv = samplePosition(cg, uu, vv, 0, 2);
+        const glm::vec3 xu = sampleSurface(cg, uu, vv, 1, 0);
+        const glm::vec3 xv = sampleSurface(cg, uu, vv, 0, 1);
+        const glm::vec3 xuu = sampleSurface(cg, uu, vv, 2, 0);
+        const glm::vec3 xuv = sampleSurface(cg, uu, vv, 1, 1);
+        const glm::vec3 xvv = sampleSurface(cg, uu, vv, 0, 2);
         const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
 
         // Normals
