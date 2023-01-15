@@ -66,8 +66,8 @@ Torus::Torus(
             GLuint c = ((u+1-v%2)%uSamples+(v+1)*uSamples)%uvSamples;
             GLuint d = ((us+uSamples)%uSamples+(v+1)*uSamples)%uvSamples;
 
-            addFace(a, c, b);
-            addFace(a, d, c);
+            addFace(a, b, c);
+            addFace(a, c, d);
         }
         phi += TWOPI * vStep * (rRatio + cos(phi));
     }
