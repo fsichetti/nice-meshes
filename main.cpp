@@ -4,6 +4,8 @@
 #include "Catenoid.hpp"
 #include "BezierPatch.hpp"
 #include "Configuration.hpp"
+#include "ScalarField.hpp"
+
 
 int main(int argc, char **argv) {
     // Read configuration file
@@ -121,6 +123,26 @@ int main(int argc, char **argv) {
         if (cm["saveOBJ"] == "true") mesh->writeOBJ(fname + "obj");
         if (cm["savePLY"] == "true") mesh->writePLY(fname + "ply");
         if (cm["saveOFF"] == "true") mesh->writeOFF(fname + "off");
+
+        // Scalar field
+        if (cm["scalarField"] == "true") {
+            const float f = TWOPI * std::stof(cm["scalarFrequency"]);
+            const float a = std::stof(cm["scalarAmplitude"]);
+            ScalarField sf(mesh);
+
+            // Compute values
+            const unsigned int vn = mesh->vertNum();
+            for(unsigned int i = 0; i < vn; ++i) {
+                const float u = mesh->cAttrib(i, Mesh::Attribute::U);
+                const float v = mesh->cAttrib(i, Mesh::Attribute::V);
+                const float res = a * sin(f * u) * sin(f * v);
+                sf.addValue(res);
+            }
+
+            // Write
+            sf.write(cm["outFolder"] + mesh->name + "Scalar.txt");
+        }
+        
         delete mesh;
     }
     return 0;

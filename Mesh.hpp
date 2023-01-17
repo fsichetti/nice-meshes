@@ -97,7 +97,7 @@ class Mesh {
         const GLuint attCmp; // Total number of components
         const size_t attByt; // Total byte offset
 
-        // Converts ttribute enum value to offset
+        // Converts attribute enum value to offset
         unsigned int attToOff(Attribute att) const;
 
         // Vertex-vertex adjacency list

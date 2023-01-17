@@ -2,6 +2,7 @@
 
 void ConfigManager::defaultValues() {
     auto& c = configuration;
+
     c["shape"] = "torus";
     c["name"] = "mesh";
 
@@ -26,6 +27,10 @@ void ConfigManager::defaultValues() {
     c["borderVariance"] = "1";
     c["innerVariance"] = "1";
     c["sampling"] = "";
+
+    c["scalarField"] = "false";
+    c["scalarFrequency"] = "1";
+    c["scalarAmplitude"] = "1";
 }
 
 
