@@ -29,6 +29,7 @@ void ConfigManager::defaultValues() {
     c["sampling"] = "";
 
     c["scalarField"] = "false";
+    c["scalarHeader"] = "false";
     c["scalarFrequency"] = "1";
     c["scalarAmplitude"] = "1";
 }

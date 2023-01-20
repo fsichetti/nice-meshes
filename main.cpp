@@ -135,12 +135,18 @@ int main(int argc, char **argv) {
             for(unsigned int i = 0; i < vn; ++i) {
                 const float u = mesh->cAttrib(i, Mesh::Attribute::U);
                 const float v = mesh->cAttrib(i, Mesh::Attribute::V);
-                const float res = a * sin(f * u) * sin(f * v);
+                float z = 1;
+                if (cm["shape"] == "sphere") {
+                    const float x = pow(2*u - 1, 2);
+                    z = 1 - 10*pow(x,3) + 15*pow(x,4) - 6*pow(x,5);
+                }
+                const float res = a * sin(f * u) * sin(f * v) * z;
                 sf.addValue(res);
             }
 
             // Write
-            sf.write(cm["outFolder"] + mesh->name + "Scalar.txt");
+            const bool head = (cm["scalarHeader"] == "true");
+            sf.write(cm["outFolder"] + mesh->name + "Scalar.txt", head);
         }
         
         delete mesh;

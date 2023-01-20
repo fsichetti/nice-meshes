@@ -40,6 +40,7 @@ All parameters are case-insensitive.
 - **scalarField**: If "true", a scalar field defined on vertices is written in .txt format.
 - **scalarFrequency**: If set to a value, multiplies the frequency of the generated scalar field by that number. Defaults to 1.
 - **scalarAmplitude**: Scales the scalar field. Defaults to 1.
+- **scalarHeader**: If "true", adds a header line to the scalar field file containing the string "`SCALAR_FIELD`" and the number of vertices.
 
 ### Behaviour
 - **interactive** If "true", displays the generated mesh in the interactive viewer, where it can be exported to any format via keyboard shortcuts. Defaults to "true".

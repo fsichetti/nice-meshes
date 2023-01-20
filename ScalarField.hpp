@@ -8,7 +8,7 @@ class ScalarField {
         ScalarField(Mesh* m);
         ~ScalarField();
         void addValue(float val);
-        void write(std::string path) const;
+        void write(std::string path, bool header=false) const;
         class TooManyValuesException;
     private:
         const Mesh* mesh;
