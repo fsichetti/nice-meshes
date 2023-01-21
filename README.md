@@ -1,5 +1,5 @@
 # Nice Meshes
-todo
+*Nicemesh* is a progam that can generate triangle meshes with very regular geometry, to be used as ground truth when testing geometry processing algorithms.
 
 # Building
 Clone the repo, move to the root folder and run `make`.
@@ -7,9 +7,11 @@ Dependencies:
 - [Epoxy](https://github.com/anholt/libepoxy)
 - [FreeGlut](https://freeglut.sourceforge.net/)
 - [FreeImage](https://freeimage.sourceforge.io/)
+*TODO: move to CMake*
 
 # Running
-Program behaviour is specified in a standard INI file. The INI file can contain any number of sections, each corresponding to a different configuration. The program takes two optional arguments: the first is the name of the configuration (i.e. section) to use, and it defaults to the first configuration in the INI file; the second is the path to the INI file itself, which defaults to `./configuration.ini`.
+Program behaviour is specified in a standard INI file. The INI file can contain any number of sections, each corresponding to a different configuration. The program takes two optional arguments: the name of the configuration (i.e. section) to use, and the path to the INI file itself, which defaults to `./configuration.ini`.
+If only one argument is supplied, it is the name of the configuration in `./configuration.ini`. If more arguments are specified, the first one is the name of the INI file, and the others are configurations from that file that are run in order.
 
 *Example: the file `configuration.ini` in the current directory contains a section named "torusply" which generates a torus with certain parameters and saves it as a PLY mesh. The command `nicemesh torusply` executes this instruction.*
 
