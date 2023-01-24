@@ -42,11 +42,10 @@ Catenoid::Catenoid(
             attrib(index, Attribute::Z) = vs;
 
             // Normals
-            const double k = sinhv * cos(TWOPI * uu * 2);
-            const double nrmFac = 1 / sqrt(1 + k*k);
+            const double nrmFac = 1/coshv;
             attrib(index, Attribute::NX) = cosu * nrmFac;
             attrib(index, Attribute::NY) = sinu * nrmFac;
-            attrib(index, Attribute::NZ) = k * nrmFac;
+            attrib(index, Attribute::NZ) = -sinhv * nrmFac;
 
             // Write parametric coordinates
             attrib(index, Attribute::U) = uu;
