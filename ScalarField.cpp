@@ -14,6 +14,10 @@ void ScalarField::addValue(float val) {
     values[counter++] = val;    
 }
 
+float ScalarField::getValue(unsigned int i) const {
+    return values[i];
+}
+
 void ScalarField::write(std::string path, bool header) const {
     // Open file
     std::ofstream file(path);

@@ -32,6 +32,9 @@ void ConfigManager::defaultValues() {
     c["scalarHeader"] = "false";
     c["scalarFrequency"] = "1";
     c["scalarAmplitude"] = "1";
+    c["scalarLaplacian"] = "false";
+    c["scalarGradient"] = "false";
+    c["scalarHessian"] = "false";
 }
 
 
