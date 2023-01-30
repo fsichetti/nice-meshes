@@ -175,8 +175,10 @@ int main(int argc, char **argv) {
                             const float val = sf.getValue(i);
                             const float r = std::stof(cm["innerRadius"]);
                             const float R = std::stof(cm["outerRadius"]);
-                            const float c = cosh((2*v-1)*acosh(R/r));
-                            res = -(1 + 1/pow(r,2)) * pow(freq,2)*val/pow(c,2);
+                            const float hh = r * acosh(R/r);
+                            const float c = cosh((v-.5)*2*hh/r);
+                            res = -(1/pow(2*hh,2) + 2/pow(r,2)) * pow(freq,2) * 
+                                val/pow(c,2);
                         }
                         else if (cm["shape"] == "bezier") {
                         }
