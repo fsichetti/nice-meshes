@@ -15,7 +15,7 @@ Catenoid::Catenoid(
     // Pre-computation for sampling in vertical direction
     const double temp = TWOPI * SQRT3_2 * uStep * rInner;
     const unsigned int vSamples = std::ceil(height / temp);
-    const double vStep = 1.0 / static_cast<double>(vSamples);
+    const double vStep = 1.0 / static_cast<double>(vSamples-1);
     // rescale to [0, 1]
     const unsigned int uvSamples = uSamples * vSamples;
 
