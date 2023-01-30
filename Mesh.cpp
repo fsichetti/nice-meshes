@@ -337,20 +337,20 @@ void Mesh::makeCentered() {
 
 
 void Mesh::refine() {
-    typedef unsigned long Edge;
+    typedef unsigned long long int Edge;
     // Save edge and position within vertex list
-    std::unordered_map<Edge, unsigned int> edges;
-    const unsigned int oldFNum = fNum, oldVNum = vNum;
+    std::unordered_map<Edge, unsigned long int> edges;
+    const unsigned long int oldFNum = fNum, oldVNum = vNum;
     edges.reserve(oldFNum * 3 / 2);
-    for (unsigned int fi = 0; fi < oldFNum; ++fi) {
-        unsigned int viOld[3], viNew[3];    // indices
-        for (unsigned int k = 0; k < 3; ++k) {
+    for (unsigned long int fi = 0; fi < oldFNum; ++fi) {
+        unsigned long int viOld[3], viNew[3];    // indices
+        for (unsigned long int k = 0; k < 3; ++k) {
             viOld[k] = faces[3*fi + k];
         }
         // Get midpoints
-        for (unsigned int k = 0; k < 3; ++k) {
+        for (unsigned long int k = 0; k < 3; ++k) {
             // Indices of edge's endpoints
-            const unsigned int a = viOld[k], b = viOld[(k+1)%3];
+            const unsigned long int a = viOld[k], b = viOld[(k+1)%3];
             const Edge e = std::max(a,b) + oldVNum * std::min(a,b);
             // If already present
             if (edges.count(e) == 1) {
@@ -360,7 +360,7 @@ void Mesh::refine() {
                 // Make new vertex
                 viNew[k] = addVertex();
                 // Average all attributes
-                for (unsigned int att = 0; att < attCnt; ++att) {
+                for (unsigned long int att = 0; att < attCnt; ++att) {
                     attrib(viNew[k], att) = (cAttrib(viOld[k], att) + 
                         cAttrib(viOld[(k+1)%3], att)) / 2;
                 }
@@ -369,7 +369,7 @@ void Mesh::refine() {
         }
 
         // Change the middle face
-        for (unsigned int k = 0; k < 3; ++k) {
+        for (unsigned long int k = 0; k < 3; ++k) {
             faces[3*fi + k] = viNew[k];
         }
         // Add 3 new faces
