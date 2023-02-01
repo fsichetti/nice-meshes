@@ -12,6 +12,7 @@ void ConfigManager::defaultValues() {
     c["savePLY"] = "false";
     c["saveOBJ"] = "false";
     c["saveOFF"] = "false";
+    c["inputOBJ"] = "";
 
     c["samples"] = "64";
     c["radius"] = "1";

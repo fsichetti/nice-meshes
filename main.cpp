@@ -9,23 +9,39 @@
 
 int main(int argc, char **argv) {
     // Read configuration file
-    std::string file = "./configuration.ini";
+    std::string filename = "./configuration.ini";
     std::vector<std::string> configs;
-    if (argc == 2) {
-        configs.push_back(argv[1]);
+    if (argc > 1) {
+        filename = argv[1];
     }
     else if (argc > 2) {
-        file = argv[1];
+        filename = argv[1];
         for (unsigned int c = 2; c < argc; ++c) { configs.push_back(argv[c]); }
     }
-    if (configs.size() == 0) { configs.push_back(""); }
+    if (configs.size() == 0) {
+        // If no configs are specified, run them all
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            std::cerr << "Please check your configuration file (" <<
+                filename << std::endl;
+            return 1;
+        }
+        while (!file.eof()) {
+            std::string line;
+            file >> line;
+            if (line.front() == '[' && line.back() == ']') {
+                configs.push_back(line.substr(1, line.length()-2));
+            }
+        }
+        file.close();
+    }
 
     const unsigned int confCount = std::max(1, argc - 2);
     for (std::string config : configs) {
-        ConfigManager cm(file, config);
+        ConfigManager cm(filename, config);
         if (!cm) {
             std::cerr << "Please check your configuration file (" <<
-                file << ") for config " << config << std::endl;
+                filename << ") for config " << config << std::endl;
             return 1;
         }
 
@@ -56,10 +72,15 @@ int main(int argc, char **argv) {
                 );
             }
             else if (cm["shape"] == "sphere") {
-                mesh = new Sphere(
-                    std::stoi(cm["subdivision"]),
-                    std::stod(cm["radius"])
-                );
+                if (cm["inputOBJ"] == "") {
+                    mesh = new Sphere(
+                        std::stoi(cm["subdivision"]),
+                        std::stod(cm["radius"])
+                    );
+                }
+                else {
+                    mesh = new Sphere(cm["inputOBJ"], std::stod(cm["radius"]));
+                }
             }
             else if (cm["shape"] == "bezier") {
                 BezierPatch::ControlGrid cg(
@@ -80,7 +101,7 @@ int main(int argc, char **argv) {
             }
             else {
                 std::cerr << "Invalid shape (" <<
-                    file << ")" << std::endl;
+                    filename << ")" << std::endl;
                 return 1;
             }
             

@@ -1,6 +1,7 @@
 #include "Sphere.hpp"
 
-Sphere::Sphere(unsigned int subdiv, double radius) : Mesh(true, true, true) {
+Sphere::Sphere(unsigned int subdiv, double radius)
+    : Mesh(true, true, true), radius(radius) {
     name = "sphere";
 
     const unsigned int faceNumber = 20 * pow(4,subdiv);
@@ -11,8 +12,18 @@ Sphere::Sphere(unsigned int subdiv, double radius) : Mesh(true, true, true) {
     for (unsigned int i = 0; i < subdiv; ++i) {
         refine();
     }
+    computeValues();
+}
+
+Sphere::Sphere(std::string path, double radius)
+    : Mesh(true, true, true), radius(radius) {
+    readOBJ(path);
+    computeValues();
+}
+
+void Sphere::computeValues() {
     // Normalization, normals, UV
-    const unsigned int s = vertexNumber;
+    const unsigned int s = vertNum();
     for (unsigned int i = 0; i < s; ++i) {
         double x = cAttrib(i, Attribute::X);
         double y = cAttrib(i, Attribute::Y);

@@ -182,6 +182,40 @@ void Mesh::computeNormals(bool noCompute) {
 }
 
 
+void Mesh::readOBJ(std::string path) {
+    // Open file
+    std::ifstream file(path);
+    if (!file.is_open()) throw FileOpenException();
+
+    // Get data
+    while (!file.eof()) {
+        std::string tok;
+        file >> tok;
+        // Ignores normals!
+        if (tok.length() > 0) {
+            std::string a, b, c;
+            switch (tok[0]) {
+                case 'v':
+                    file >> a >> b >> c;
+                    addVertex(std::stof(a), std::stof(b), std::stof(c));
+                    break;
+
+                case 'f':
+                    file >> a >> b >> c;
+                    addFace(std::stoi(a)-1, std::stoi(b)-1, std::stoi(c)-1);
+                    break;
+
+                case '#':
+                    file.ignore(0xFF, '\n');
+            }   
+        }     
+    }
+
+    // Close file
+    file.close();
+}
+
+
 void Mesh::writeOBJ(std::string path) const {
     if (!final) throw Mesh::NotFinalizedException();
     // Open file
@@ -217,7 +251,7 @@ void Mesh::writeOBJ(std::string path) const {
 }
 
 void Mesh::writePLY(std::string path) const {
-        if (!final) throw Mesh::NotFinalizedException();
+    if (!final) throw Mesh::NotFinalizedException();
     // Open file
     std::ofstream file(path);
     if (!file.is_open()) throw FileOpenException();

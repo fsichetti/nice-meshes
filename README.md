@@ -11,7 +11,7 @@ Dependencies:
 
 # Running
 Program behaviour is specified in a standard INI file. The INI file can contain any number of sections, each corresponding to a different configuration. The program takes two optional arguments: the name of the configuration (i.e. section) to use, and the path to the INI file itself, which defaults to `./configuration.ini`.
-If only one argument is supplied, it is the name of the configuration in `./configuration.ini`. If more arguments are specified, the first one is the name of the INI file, and the others are configurations from that file that are run in order.
+The first argument is the name of the INI file. If more arguments are specified, the rest are configurations from that file that are run in order; otherwise, all configurations from the INI file are executed in order.
 
 *Example: the file `configuration.ini` in the current directory contains a section named "torusply" which generates a torus with certain parameters and saves it as a PLY mesh. The command `nicemesh torusply` executes this instruction.*
 
@@ -49,6 +49,7 @@ All parameters are case-insensitive.
 - **interactive** If "true", displays the generated mesh in the interactive viewer, where it can be exported to any format via keyboard shortcuts. Defaults to "true".
 - **repeat**: Used for batch generation of random surfaces. Controls how many times the generation is executed. The names of the resulting meshes are obtained by appending a number to the base name specified in the **name** field. If **interactive** is on, **repeat** is ignored. Defaults to 1.
 - **savePLY**/**saveOBJ**/**saveOFF**: If "true", exports the mesh with the requested format. Note that the number of vertex attributes included in the file may vary. The PLY file format is guaranteed to include all attributes. All default to "false".
+- **inputOBJ**: Instead of generating the mesh, read it from the specified OBJ file. If **shape** is specified, the read data will be interpreted as that shape for computing normals, parametric coordinates, curvature, etcetera. *Currently only implemented for spheres*.
 - **outFolder**: Path to the folder where the exported meshes should be saved. The folder must exist. Defaults to the current folder.
 - **seed**: Sets the seed for the random number generator. Defaults to empty, which tells the program to generate a seed from system time. Only relevant to random Bézier patches, since the other options do not use RNG.
 

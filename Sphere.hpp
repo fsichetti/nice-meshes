@@ -10,8 +10,11 @@ class Sphere : public Mesh {
             unsigned int subdivisionLevel,
             double radius
         );
+        Sphere(std::string path, double radius);
     private:
         void initIcosahedron();
+        void computeValues();
+        const double radius;
 };
 
 #endif

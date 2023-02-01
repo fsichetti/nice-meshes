@@ -40,6 +40,9 @@ class Mesh {
         void finalize(bool nogui = false);
         void draw(GLuint drawMode = GL_TRIANGLES) const;
 
+        // File input
+        void readOBJ(std::string filename);
+
         // File output
         void writePLY(std::string filename) const;
         void writeOBJ(std::string filename) const;
