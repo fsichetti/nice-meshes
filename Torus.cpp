@@ -4,7 +4,7 @@ Torus::Torus(
         unsigned int samples,   // samples in toroidal direction
         double rOuter,
         double rInner
-    ) : Mesh(true, true, true) {
+    ) : Mesh(true, true, true), rInner(rInner), rOuter(rOuter) {
 
     // Construct torus
     const double rRatio = rOuter / rInner;
@@ -33,34 +33,11 @@ Torus::Torus(
             // Place vertices
             const double uu = (u - (v%2)*.5) * uStep;
             const double vv = phi / phiMax;
-            const double sinu = sin(TWOPI * uu);
-            const double cosu = cos(TWOPI * uu);
-            const double sinv = sin(TWOPI * vv);
-            const double cosv = cos(TWOPI * vv);
             
-            const unsigned int index = addVertex();
-            
-            attrib(index, Attribute::X) = cosu * (rOuter + rInner * cosv);
-            attrib(index, Attribute::Y) = sinu * (rOuter + rInner * cosv);
-            attrib(index, Attribute::Z) = rInner * sinv;
-
-            // Normals
-            attrib(index, Attribute::NX) = cosu * cosv;
-            attrib(index, Attribute::NY) = sinu * cosv;
-            attrib(index, Attribute::NZ) = sinv;
-
-            // Parametric coordinates
-            attrib(index, Attribute::U) = uu;
-            attrib(index, Attribute::V) = vv;
-
-            // Curvature
-            attrib(index, Attribute::K) = cosv /
-                (rInner * (rOuter + rInner * cosv));
-            attrib(index, Attribute::H) = (rOuter + 2 * rInner * cosv) /
-                (2 * rInner * (rOuter + rInner * cosv));
+            const unsigned int index = placeVertex(uu, vv);
 
             // Add faces
-            unsigned int us = (u+uSamples-v%2)%uSamples;
+            const unsigned int us = (u+uSamples-v%2)%uSamples;
             GLuint a = index;
             GLuint b = (u+1)%uSamples+v*uSamples;
             GLuint c = ((u+1-v%2)%uSamples+(v+1)*uSamples)%uvSamples;
@@ -72,4 +49,35 @@ Torus::Torus(
         phi += TWOPI * vStep * (rRatio + cos(phi));
     }
     computeNormals(true);
+}
+
+
+unsigned int Torus::placeVertex(double u, double v) {
+    const double sinu = sin(TWOPI * u);
+    const double cosu = cos(TWOPI * u);
+    const double sinv = sin(TWOPI * v);
+    const double cosv = cos(TWOPI * v);
+    
+    const unsigned int index = addVertex();
+    
+    attrib(index, Attribute::X) = cosu * (rOuter + rInner * cosv);
+    attrib(index, Attribute::Y) = sinu * (rOuter + rInner * cosv);
+    attrib(index, Attribute::Z) = rInner * sinv;
+
+    // Normals
+    attrib(index, Attribute::NX) = cosu * cosv;
+    attrib(index, Attribute::NY) = sinu * cosv;
+    attrib(index, Attribute::NZ) = sinv;
+
+    // Parametric coordinates
+    attrib(index, Attribute::U) = u;
+    attrib(index, Attribute::V) = v;
+
+    // Curvature
+    attrib(index, Attribute::K) = cosv /
+        (rInner * (rOuter + rInner * cosv));
+    attrib(index, Attribute::H) = (rOuter + 2 * rInner * cosv) /
+        (2 * rInner * (rOuter + rInner * cosv));
+
+    return index;
 }

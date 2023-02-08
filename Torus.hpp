@@ -12,6 +12,15 @@ class Torus : public Mesh {
             double rOuter,
             double rInner
         );
+        Torus(
+            std::string path,
+            double rOuter,
+            double rInner
+        );
+
+    private:
+        const double rInner, rOuter;
+        unsigned int placeVertex(double u, double v);
 };
 
 #endif

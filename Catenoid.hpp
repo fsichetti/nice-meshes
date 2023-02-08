@@ -12,6 +12,15 @@ class Catenoid : public Mesh {
             double rOuter,
             double rInner
         );
+        Catenoid(
+            std::string path,
+            double rOuter,
+            double rInner
+        );
+
+    private:
+        const double rInner, rOuter, height;
+        unsigned int placeVertex(double u, double v);
 };
 
 #endif
