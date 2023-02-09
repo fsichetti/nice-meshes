@@ -14,10 +14,14 @@ int main(int argc, char **argv) {
     if (argc > 1) {
         filename = argv[1];
     }
-    else if (argc > 2) {
-        filename = argv[1];
+    if (argc > 2) {
         for (unsigned int c = 2; c < argc; ++c) { configs.push_back(argv[c]); }
     }
+
+    std::cout << "Running configuration(s): ";
+    for (std::string c : configs) std::cout << c << " ";
+    std::cout << std::endl;
+
     if (configs.size() == 0) {
         // If no configs are specified, run them all
         std::ifstream file(filename);
@@ -65,11 +69,20 @@ int main(int argc, char **argv) {
                 );
             }
             else if (cm["shape"] == "catenoid") {
-                mesh = new Catenoid(
-                    std::stoi(cm["samples"]),
-                    std::stod(cm["outerRadius"]),
-                    std::stod(cm["innerRadius"])
-                );
+                if (cm["inputOBJ"] == "") {
+                    mesh = new Catenoid(
+                        std::stoi(cm["samples"]),
+                        std::stod(cm["outerRadius"]),
+                        std::stod(cm["innerRadius"])
+                    );
+                }
+                else {
+                    mesh = new Catenoid(
+                        cm["inputOBJ"],
+                        std::stod(cm["outerRadius"]),
+                        std::stod(cm["innerRadius"])
+                    );
+                }
             }
             else if (cm["shape"] == "sphere") {
                 if (cm["inputOBJ"] == "") {

@@ -4,8 +4,9 @@ Catenoid::Catenoid(
         unsigned int samples,   // samples in toroidal direction
         double rOuter,
         double rInner
-    ) : Mesh(true, true, true), rInner(rInner), rOuter(rOuter), 
+    ) : Mesh(true, true, true), rOuter(rOuter), rInner(rInner),
         height(2 * rInner * acosh(rOuter / rInner)) {
+    assert(rOuter > rInner);
 
     // Sampling in rotational direction (uniform)
     const unsigned int uSamples = samples;
@@ -43,6 +44,59 @@ Catenoid::Catenoid(
                 addFace(a, c, d);
             }
         }
+    }
+    computeNormals(true);
+}
+
+
+Catenoid::Catenoid(std::string path, double rOuter, double rInner) :
+    Mesh(true, true, true), rInner(rInner), rOuter(rOuter), 
+    height(2 * rInner * acosh(rOuter / rInner)) {
+    assert(rOuter > rInner);
+
+    // Read plane parameterization
+    Mesh plane(false, false, false);
+    plane.reserveSpace(32, 64);
+    plane.readOBJ(path);
+    const unsigned int pv = plane.vertNum(), pf = plane.faceNum();
+    reserveSpace(pv, pf);
+
+    // Place vertices
+    std::vector<unsigned long> boundary;   // boundary vertices on plane
+    std::vector<unsigned long> newId;   // vertex index on the surface
+    
+    for (unsigned long int i = 0; i < pv; ++i) {
+        const double u = plane.cAttrib(i, X);
+        const double v = plane.cAttrib(i, Y);
+        // Boundary vertex duplicate checking
+        if (u == 0. || u == 1.) {
+            bool duplicate = false;
+            for (unsigned long j : boundary) {
+                const double uj = plane.cAttrib(j, X);
+                const double vj = plane.cAttrib(j, Y);
+                if ((uj == 0. || uj == 1.) && v == vj) {
+                    duplicate = true;
+                    newId.push_back(newId.at(j));
+                    break;
+                }
+            }
+            if (!duplicate) {
+                boundary.push_back(i);
+                newId.push_back(placeVertex(u, v));
+            }
+        }
+        else {
+            newId.push_back(placeVertex(u, v));
+        }
+    }
+
+    // Write faces w/ substitutions
+    for (unsigned int i = 0; i < pf; ++i) {
+        addFace(
+            newId.at(plane.cFacei(i, 0)),
+            newId.at(plane.cFacei(i, 1)),
+            newId.at(plane.cFacei(i, 2))
+        );
     }
     computeNormals(true);
 }

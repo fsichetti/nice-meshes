@@ -62,7 +62,8 @@ unsigned int Mesh::addVertex(GLfloat x, GLfloat y, GLfloat z) {
     // add padding for other attributes
     for (int i=3; i<attCmp; ++i)
         verts.push_back(0);
-    return vNum++;
+    ++vNum;
+    return vNum;
 }
 
 unsigned int Mesh::addFace(GLuint i, GLuint j, GLuint k) {

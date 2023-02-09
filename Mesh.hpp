@@ -58,6 +58,9 @@ class Mesh {
             Attribute attribute) const {
             return cAttrib(vertexId, attToOff(attribute));
         }
+        const inline GLuint cFacei(unsigned int faceId, unsigned int n) const {
+            return faces[3 * faceId + n];
+        }
 
         // Utility methods
         // friend class MeshStatistics;     // maybe in the future?
@@ -82,6 +85,9 @@ class Mesh {
         }
         inline GLfloat& attrib(unsigned int vertexId, Attribute attribute) {
             return attrib(vertexId, attToOff(attribute));
+        }
+        inline GLuint& facei(unsigned int faceId, unsigned int n) {
+            return faces[3 * faceId + n];
         }
 
         // Normals computation
