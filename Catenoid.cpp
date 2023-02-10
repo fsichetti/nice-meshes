@@ -62,6 +62,7 @@ Catenoid::Catenoid(std::string path, double rOuter, double rInner) :
     // Place vertices
     std::vector<unsigned long> boundary;   // boundary vertices on plane
     std::vector<unsigned long> newId;   // vertex index on the surface
+    newId.reserve(pv);
     
     for (unsigned long int i = 0; i < pv; ++i) {
         const double u = plane.cAttrib(i, 0);
@@ -72,7 +73,7 @@ Catenoid::Catenoid(std::string path, double rOuter, double rInner) :
             for (unsigned long j : boundary) {
                 const double uj = plane.cAttrib(j, 0);
                 const double vj = plane.cAttrib(j, 1);
-                if ((uj == 0. || uj == 1.) && v == vj) {
+                if (v == vj) {
                     duplicate = true;
                     newId.push_back(newId.at(j));
                     break;

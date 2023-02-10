@@ -52,6 +52,61 @@ Torus::Torus(
 }
 
 
+Torus::Torus(std::string path, double rOuter, double rInner) :
+    Mesh(true, true, true), rInner(rInner), rOuter(rOuter) {
+    
+    assert(rOuter > rInner);
+
+    // Read plane parameterization
+    PlaneSampling plane(path);
+    const unsigned int pv = plane.vertNum(), pf = plane.faceNum();
+    reserveSpace(pv, pf);
+
+    // Place vertices
+    std::vector<unsigned long> boundary;   // boundary vertices on plane
+    std::vector<unsigned long> newId;   // vertex index on the surface
+    newId.reserve(pv);
+    
+    for (unsigned long int i = 0; i < pv; ++i) {
+        const double u = plane.cAttrib(i, 0);
+        const double v = plane.cAttrib(i, 1);
+        const bool ub = (u == 0. || u == 1.), vb = (v == 0. || v == 1.);
+        // Boundary vertex duplicate checking
+        if (ub || vb) {
+            bool duplicate = false;
+            for (unsigned long j : boundary) {
+                const double uj = plane.cAttrib(j, 0);
+                const double vj = plane.cAttrib(j, 1);
+                if (
+                    (ub && (uj == 0. || uj == 1.) && v == vj) || 
+                    (vb && (vj == 0. || vj == 1.) && u == uj) ) {
+                    duplicate = true;
+                    newId.push_back(newId.at(j));
+                    break;
+                }
+            }
+            if (!duplicate) {
+                boundary.push_back(i);
+                newId.push_back(placeVertex(u, v));
+            }
+        }
+        else {
+            newId.push_back(placeVertex(u, v));
+        }
+    }
+
+    // Write faces w/ substitutions
+    for (unsigned int i = 0; i < pf; ++i) {
+        addFace(
+            newId.at(plane.cFacei(i, 0)),
+            newId.at(plane.cFacei(i, 1)),
+            newId.at(plane.cFacei(i, 2))
+        );
+    }
+    computeNormals(true);
+}
+
+
 unsigned int Torus::placeVertex(double u, double v) {
     const double sinu = sin(TWOPI * u);
     const double cosu = cos(TWOPI * u);

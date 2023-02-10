@@ -3,7 +3,8 @@
 
 #include "Mesh.hpp"
 
-struct PlaneSampling {
+class PlaneSampling {
+	public:
     Mesh::vArray verts;     // vertices in 2D
     Mesh::fArray faces;
     PlaneSampling(std::string path);

@@ -2,6 +2,7 @@
 #define TORUS_H
 
 #include "Mesh.hpp"
+#include "PlaneSampling.hpp"
 #include "Constants.hpp"
 #include "DifferentialQuantities.hpp"
 

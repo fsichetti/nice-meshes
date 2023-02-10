@@ -62,11 +62,20 @@ int main(int argc, char **argv) {
             // Mesh
             Mesh* mesh;
             if (cm["shape"] == "torus") {
-                mesh = new Torus(
-                    std::stoi(cm["samples"]),
-                    std::stod(cm["outerRadius"]),
-                    std::stod(cm["innerRadius"])
-                );
+                if (cm["inputOBJ"] == "") {
+                    mesh = new Torus(
+                        std::stoi(cm["samples"]),
+                        std::stod(cm["outerRadius"]),
+                        std::stod(cm["innerRadius"])
+                    );
+                }
+                else {
+                    mesh = new Torus(
+                        cm["inputOBJ"],
+                        std::stod(cm["outerRadius"]),
+                        std::stod(cm["innerRadius"])
+                    );
+                }
             }
             else if (cm["shape"] == "catenoid") {
                 if (cm["inputOBJ"] == "") {
@@ -92,7 +101,10 @@ int main(int argc, char **argv) {
                     );
                 }
                 else {
-                    mesh = new Sphere(cm["inputOBJ"], std::stod(cm["radius"]));
+                    mesh = new Sphere(
+                        cm["inputOBJ"],
+                        std::stod(cm["radius"])
+                    );
                 }
             }
             else if (cm["shape"] == "bezier") {

@@ -48,7 +48,7 @@ ConfigManager::ConfigManager(std::string path, std::string section) {
     defaultValues();
     std::string key = "";
     bool readConf = false;  // reading configuration
-    // bool globals = true;    // reading globals
+    bool globals = true;    // reading globals
     while (!ini.eof()) {
         std::string val;
         ini >> val;
@@ -62,7 +62,7 @@ ConfigManager::ConfigManager(std::string path, std::string section) {
 
         // Check section name against selected configuration
         if (val.front() == '[' && val.back() == ']') {
-            // globals = false;    // globals end at the first section
+            globals = false;    // globals end at the first section
             if (readConf) break;    // already read a full config, so stop
             std::string sec = val.substr(1, val.length()-2);
             if (section == "" || section == sec) {
@@ -71,7 +71,7 @@ ConfigManager::ConfigManager(std::string path, std::string section) {
             }
         }
         // Reading configuration
-        else if (readConf) {
+        else if (readConf || globals) {
             if (key.empty()) key = val;
             else if (val != "=") {
                 configuration[key] = val;
