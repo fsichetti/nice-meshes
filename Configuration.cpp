@@ -27,7 +27,6 @@ void ConfigManager::defaultValues() {
     c["seed"] = "";
     c["borderVariance"] = "1";
     c["innerVariance"] = "1";
-    c["sampling"] = "";
 
     c["scalarField"] = "false";
     c["scalarHeader"] = "false";
@@ -48,7 +47,8 @@ ConfigManager::ConfigManager(std::string path, std::string section) {
     for (char c : section) c = tolower(c);
     defaultValues();
     std::string key = "";
-    bool readConf = false;
+    bool readConf = false;  // reading configuration
+    // bool globals = true;    // reading globals
     while (!ini.eof()) {
         std::string val;
         ini >> val;
@@ -62,6 +62,7 @@ ConfigManager::ConfigManager(std::string path, std::string section) {
 
         // Check section name against selected configuration
         if (val.front() == '[' && val.back() == ']') {
+            // globals = false;    // globals end at the first section
             if (readConf) break;    // already read a full config, so stop
             std::string sec = val.substr(1, val.length()-2);
             if (section == "" || section == sec) {

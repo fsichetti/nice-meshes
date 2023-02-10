@@ -5,6 +5,7 @@
 #include "Constants.hpp"
 #include "RandPoint.hpp"
 #include "DifferentialQuantities.hpp"
+#include "PlaneSampling.hpp"
 #include <glm/glm.hpp>
 
 class BezierPatch : public Mesh {
@@ -13,7 +14,6 @@ class BezierPatch : public Mesh {
 
         // Control grid and plane sampling classes
         class ControlGrid;
-        class PlaneSampling;
 
         BezierPatch(
             ControlGrid cg,
@@ -76,12 +76,6 @@ class BezierPatch::ControlGrid {
 
     private:
         double storage[3][(degree+1)*(degree+1)];
-};
-
-struct BezierPatch::PlaneSampling {
-    Mesh::vArray verts;     // vertices in 2D
-    Mesh::fArray faces;
-    void readFromObj(std::string path);
 };
 
 #endif

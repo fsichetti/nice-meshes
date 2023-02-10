@@ -18,10 +18,6 @@ int main(int argc, char **argv) {
         for (unsigned int c = 2; c < argc; ++c) { configs.push_back(argv[c]); }
     }
 
-    std::cout << "Running configuration(s): ";
-    for (std::string c : configs) std::cout << c << " ";
-    std::cout << std::endl;
-
     if (configs.size() == 0) {
         // If no configs are specified, run them all
         std::ifstream file(filename);
@@ -39,6 +35,10 @@ int main(int argc, char **argv) {
         }
         file.close();
     }
+
+    std::cout << "Running configuration(s): ";
+    for (std::string c : configs) std::cout << c << " ";
+    std::cout << std::endl;
 
     const unsigned int confCount = std::max(1, argc - 2);
     for (std::string config : configs) {
@@ -102,9 +102,8 @@ int main(int argc, char **argv) {
                     std::stod(cm["innerVariance"])
                 );
 
-                if (cm["sampling"] != "") {
-                    BezierPatch::PlaneSampling smp;
-                    smp.readFromObj(cm["sampling"]);
+                if (cm["inputOBJ"] != "") {
+                    PlaneSampling smp(cm["inputOBJ"]);
                     mesh = new BezierPatch(cg, smp);
                 }
                 else {

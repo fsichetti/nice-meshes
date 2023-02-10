@@ -55,9 +55,7 @@ Catenoid::Catenoid(std::string path, double rOuter, double rInner) :
     assert(rOuter > rInner);
 
     // Read plane parameterization
-    Mesh plane(false, false, false);
-    plane.reserveSpace(32, 64);
-    plane.readOBJ(path);
+    PlaneSampling plane(path);
     const unsigned int pv = plane.vertNum(), pf = plane.faceNum();
     reserveSpace(pv, pf);
 
@@ -66,14 +64,14 @@ Catenoid::Catenoid(std::string path, double rOuter, double rInner) :
     std::vector<unsigned long> newId;   // vertex index on the surface
     
     for (unsigned long int i = 0; i < pv; ++i) {
-        const double u = plane.cAttrib(i, X);
-        const double v = plane.cAttrib(i, Y);
+        const double u = plane.cAttrib(i, 0);
+        const double v = plane.cAttrib(i, 1);
         // Boundary vertex duplicate checking
         if (u == 0. || u == 1.) {
             bool duplicate = false;
             for (unsigned long j : boundary) {
-                const double uj = plane.cAttrib(j, X);
-                const double vj = plane.cAttrib(j, Y);
+                const double uj = plane.cAttrib(j, 0);
+                const double vj = plane.cAttrib(j, 1);
                 if ((uj == 0. || uj == 1.) && v == vj) {
                     duplicate = true;
                     newId.push_back(newId.at(j));

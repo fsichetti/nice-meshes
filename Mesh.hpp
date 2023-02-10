@@ -51,7 +51,7 @@ class Mesh {
         // Access methods
         enum Attribute { X, Y, Z, NX, NY, NZ, U, V, K, H };
         const inline GLfloat cAttrib(unsigned int vertexId,
-            int attribOffset) const {
+            unsigned int attribOffset) const {
             return verts[attCmp * vertexId + attribOffset];
         }
         const inline GLfloat cAttrib(unsigned int vertexId,

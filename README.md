@@ -28,7 +28,6 @@ All parameters are case-insensitive.
 - **outerRadius**: For the torus, it is the distance of the revolved circle from the axis of revolution. For the catenoid, it is the radius of the ends of the shape. Defaults to 2.
 - **borderVariance**: Only relevant to random Bézier patches. How far the border vertices can deviate from their starting position on the line connecting two corner vertices.
 - **innerVariance**: Only relevant to random Bézier patches. How far the inner vertices can deviate from their starting position.
-- **sampling**: Only relevant to random Bézier patches. If the path to an OBJ file containing a meshed \[0,1\] XY plane is specified, the sampling of the Bézier patch is done by copying the topology of the provided plane. The Z coordinate, if present is ignored. If this parameter is not provided, a regular sampling is performed.
 
 ### Processing
 - **centered**: If "true", the mesh is centered at the origin after it is generated. This is only useful for random Bézier patches. Defaults to "false".
@@ -49,7 +48,7 @@ All parameters are case-insensitive.
 - **interactive** If "true", displays the generated mesh in the interactive viewer, where it can be exported to any format via keyboard shortcuts. Defaults to "true".
 - **repeat**: Used for batch generation of random surfaces. Controls how many times the generation is executed. The names of the resulting meshes are obtained by appending a number to the base name specified in the **name** field. If **interactive** is on, **repeat** is ignored. Defaults to 1.
 - **savePLY**/**saveOBJ**/**saveOFF**: If "true", exports the mesh with the requested format. Note that the number of vertex attributes included in the file may vary. The PLY file format is guaranteed to include all attributes. All default to "false".
-- **inputOBJ**: Instead of generating the mesh, read it from the specified OBJ file. If **shape** is specified, the read data will be interpreted as that shape for computing normals, parametric coordinates, curvature, etcetera. *Currently only implemented for spheres*.
+- **inputOBJ**: Instead of generating the mesh, read it from the specified OBJ file. If **shape** is specified, the read data will be interpreted as that shape for the purpose of computing normals, parametric coordinates, curvature, etcetera. For spheres, whatever coordinates are received are projected on the sphere of specified **radius**. For toruses, catenoids, and Bézier patches, the program expects path to a meshed \[0,1\] XY plane, which is used to create the topology of the new mesh. The Z coordinate, if present, is ignored.
 - **outFolder**: Path to the folder where the exported meshes should be saved. The folder must exist. Defaults to the current folder.
 - **seed**: Sets the seed for the random number generator. Defaults to empty, which tells the program to generate a seed from system time. Only relevant to random Bézier patches, since the other options do not use RNG.
 

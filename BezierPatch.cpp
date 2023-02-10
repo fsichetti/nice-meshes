@@ -76,13 +76,13 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
 BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
     : Mesh(true, true, true) {
     name = "BezierPatch";
-    const unsigned int NV = smp.verts.size() / 2;
-    const unsigned int NF = smp.faces.size() / 3;
+    const unsigned int NV = smp.vertNum();
+    const unsigned int NF = smp.faceNum();
     reserveSpace(NV, NF);
 
     // Compute vertices
     for (unsigned int i = 0; i < NV; ++i) {
-        const double uu = smp.verts[2*i], vv = smp.verts[2*i+1];
+        const double uu = smp.cAttrib(i, 0), vv = smp.cAttrib(i, 1);
         const glm::vec3 x = sampleSurface(cg, uu, vv);
         addVertex(x[0], x[1], x[2]);
 
@@ -110,7 +110,7 @@ BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
     // Add faces
     for (unsigned int i = 0; i < NF; ++i) {
         const auto fi = 3*i;
-        addFace(smp.faces[fi], smp.faces[fi+1], smp.faces[fi+2]);
+        addFace(smp.cFacei(fi, 0), smp.cFacei(fi, 1), smp.cFacei(fi, 2));
     }
     computeNormals(true);
 }
@@ -172,43 +172,4 @@ BezierPatch::ControlGrid::ControlGrid(double maxNorm, double bb, double ib) {
     set(2,1,p13);
     set(2,2,p14);
     set(1,2,p15);
-}
-
-
-void BezierPatch::PlaneSampling::readFromObj(std::string path) {
-    verts.clear();
-    faces.clear();
-    std::ifstream file(path);
-    if (file.is_open()) {
-        unsigned int cnt = 0;
-
-        while (!file.eof()) {
-            std::string token;
-            file >> token;
-            if (token.empty()) continue;
-
-            char c0 = token[0];
-            bool vfFlag;  // reading vertex/face
-            switch (c0) {
-                case 'v':
-                    vfFlag = true;
-                    cnt = 0;
-                    break;
-                case 'f':
-                    vfFlag = false;
-                    cnt = 0;
-                    break;
-                default:
-                    if (vfFlag && cnt<2) {
-                        verts.push_back(std::stof(token));
-                    }
-                    else if (!vfFlag && cnt<3) {
-                        faces.push_back(std::stoi(token)-1);
-                    }
-                    ++cnt;
-            }
-        }
-    }
-    else throw FileOpenException();
-    file.close();
 }
