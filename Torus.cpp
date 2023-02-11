@@ -68,18 +68,15 @@ Torus::Torus(std::string path, double rOuter, double rInner) :
     newId.reserve(pv);
     
     for (unsigned long int i = 0; i < pv; ++i) {
-        const double u = plane.cAttrib(i, 0);
-        const double v = plane.cAttrib(i, 1);
-        const bool ub = (u == 0. || u == 1.), vb = (v == 0. || v == 1.);
+        const double ui = plane.cAttrib(i, 0), vi = plane.cAttrib(i, 1);
+        const double mui = ui - floor(ui), mvi = vi - floor(vi);
         // Boundary vertex duplicate checking
-        if (ub || vb) {
+        if (mui == 0. || mvi == 0.) {
             bool duplicate = false;
             for (unsigned long j : boundary) {
-                const double uj = plane.cAttrib(j, 0);
-                const double vj = plane.cAttrib(j, 1);
-                if (
-                    (ub && (uj == 0. || uj == 1.) && v == vj) || 
-                    (vb && (vj == 0. || vj == 1.) && u == uj) ) {
+                const double uj = plane.cAttrib(j, 0), vj = plane.cAttrib(j, 1);
+                const double muj = uj - floor(uj), mvj = vj - floor(vj);
+                if (mui == muj && mvi == mvj) {
                     duplicate = true;
                     newId.push_back(newId.at(j));
                     break;
@@ -87,11 +84,11 @@ Torus::Torus(std::string path, double rOuter, double rInner) :
             }
             if (!duplicate) {
                 boundary.push_back(i);
-                newId.push_back(placeVertex(u, v));
+                newId.push_back(placeVertex(ui, vi));
             }
         }
         else {
-            newId.push_back(placeVertex(u, v));
+            newId.push_back(placeVertex(ui, vi));
         }
     }
 

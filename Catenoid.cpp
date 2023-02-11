@@ -65,15 +65,14 @@ Catenoid::Catenoid(std::string path, double rOuter, double rInner) :
     newId.reserve(pv);
     
     for (unsigned long int i = 0; i < pv; ++i) {
-        const double u = plane.cAttrib(i, 0);
-        const double v = plane.cAttrib(i, 1);
+        const double ui = plane.cAttrib(i, 0), vi = plane.cAttrib(i, 1);
+        const double mui = ui - floor(ui);
         // Boundary vertex duplicate checking
-        if (u == 0. || u == 1.) {
+        if (mui == 0.) {
             bool duplicate = false;
             for (unsigned long j : boundary) {
-                const double uj = plane.cAttrib(j, 0);
-                const double vj = plane.cAttrib(j, 1);
-                if (v == vj) {
+                const double uj = plane.cAttrib(j, 0), vj = plane.cAttrib(j, 1);
+                if (vi == vj) {
                     duplicate = true;
                     newId.push_back(newId.at(j));
                     break;
@@ -81,11 +80,11 @@ Catenoid::Catenoid(std::string path, double rOuter, double rInner) :
             }
             if (!duplicate) {
                 boundary.push_back(i);
-                newId.push_back(placeVertex(u, v));
+                newId.push_back(placeVertex(ui, vi));
             }
         }
         else {
-            newId.push_back(placeVertex(u, v));
+            newId.push_back(placeVertex(ui, vi));
         }
     }
 
