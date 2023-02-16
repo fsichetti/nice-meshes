@@ -129,3 +129,10 @@ unsigned int Catenoid::placeVertex(double u, double v) {
 
     return index;
 }
+
+double Catenoid::laplacian(double u, double v, double f,
+    double fu, double fv, double fuu, double fuv, double fvv) const {
+    double vs = (v-.5) * height;
+    return -(fuu / pow(TWOPI*rInner, 2) + fvv / pow(height, 2))
+        / pow(cosh(vs / rInner), 2);
+}

@@ -67,6 +67,14 @@ class Mesh {
         float avgEdgeLength() const;
         float getVolume() const;
 
+        // Differential quantities
+        // virtual glm::vec3 gradient(double u, double v, double f) const = 0;
+        // virtual glm::mat2 hessian(double u, double v, double f) const = 0;
+        virtual double laplacian(double u, double v, double f,
+            double fu, double fv, double fuu, double fuv, double fvv) const {
+                return 0;
+            };
+
         // Mesh processing
         // friend class MeshProcessing;     // maybe in the future?
         void gaussNoise(float variance, 

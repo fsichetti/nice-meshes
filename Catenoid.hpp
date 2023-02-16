@@ -18,6 +18,8 @@ class Catenoid : public Mesh {
             double rOuter,
             double rInner
         );
+        double laplacian(double u, double v, double f, double fu,
+            double fv, double fuu, double fuv, double fvv) const override;
 
     private:
         const double rInner, rOuter, height;

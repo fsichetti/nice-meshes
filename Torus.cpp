@@ -133,3 +133,11 @@ unsigned int Torus::placeVertex(double u, double v) {
 
     return index;
 }
+
+
+double Torus::laplacian(double u, double v, double f,
+    double fu, double fv, double fuu, double fuv, double fvv) const {
+    const double k = rOuter + rInner * cos(TWOPI * v);
+    return (sin(TWOPI * v) * fv) / (rInner * k) - fuu / pow(k,2)
+        - fvv / pow(rInner,2);
+}

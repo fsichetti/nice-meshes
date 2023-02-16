@@ -23,9 +23,10 @@ class DifferentialQuantities {
             const float N = glm::dot(xvv, nrm);
 
             // Compute curvatures
-            const float d = 1/(E*G - F*F);
-            crvH = (G*L - 2*F*M + E*N) * d / 2;
-            crvK = (L*N - M*M) * d;
+            const float det = (E*G - F*F);
+            const float idet = 1/det;
+            crvH = (G*L - 2*F*M + E*N) * idet / 2;
+            crvK = (L*N - M*M) * idet;
         }
 
         const glm::vec3 normal() const { return nrm; }

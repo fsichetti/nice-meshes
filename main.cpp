@@ -175,23 +175,39 @@ int main(int argc, char **argv) {
 
             // Scalar field
             if (cm["scalarField"] == "true") {
-                const float freq = std::stof(cm["scalarFrequency"]);
-                const float ampl = std::stof(cm["scalarAmplitude"]);
-                ScalarField sf(mesh);
+                const double freq = std::stof(cm["scalarFrequency"]);
+                const double ampl = std::stof(cm["scalarAmplitude"]);
+                ScalarField sf(mesh, 2);
+                
 
                 const unsigned int vn = mesh->vertNum();
                 // Compute field
                 for(unsigned int i = 0; i < vn; ++i) {
-                    const float u = mesh->cAttrib(i, Mesh::Attribute::U);
-                    const float v = mesh->cAttrib(i, Mesh::Attribute::V);
-                    float z = 1;
+                    const double u = mesh->cAttrib(i, Mesh::Attribute::U);
+                    const double v = mesh->cAttrib(i, Mesh::Attribute::V);
+                    double f = ampl *
+                        sin(TWOPI * freq * u) * sin(TWOPI * freq * v);
+                    double fu = ampl * freq * 
+                        cos(TWOPI * freq * u) * sin(TWOPI * freq * v);
+                    double fv = ampl * freq * 
+                        sin(TWOPI * freq * u) * cos(TWOPI * freq * v);
+                    double fuu = -freq * freq * f;
+                    double fuv = ampl * freq * freq *
+                        cos(TWOPI * freq * u) * cos(TWOPI * freq * v);
+                    double fvv = fuu;
+                        
+
                     if (cm["shape"] == "sphere") {
-                        const float x = pow(2*u - 1, 2);
-                        z = 1 - 10*pow(x,3) + 15*pow(x,4) - 6*pow(x,5);
+                        const double x = 2 * abs(2 * u - 1); // C2
+                        f *= 1 - 10*pow(x,3) + 15*pow(x,4) - 6*pow(x,5);
                     }
-                    const float res = ampl * sin(TWOPI * freq * u)
-                         * sin(TWOPI * freq * v) * z;
-                    sf.addValue(res);
+                    // INCOMPLETE FOR SPHERES!!!
+                    sf.setValue(f, i, 0, 0);
+                    sf.setValue(fu, i, 1, 0);
+                    sf.setValue(fv, i, 0, 1);
+                    sf.setValue(fuu, i, 2, 0);
+                    sf.setValue(fuv, i, 1, 1);
+                    sf.setValue(fvv, i, 0, 2);
                 }
                 // Write
                 const bool head = (cm["scalarHeader"] == "true");
@@ -202,32 +218,18 @@ int main(int argc, char **argv) {
                     ScalarField lap(mesh);
                     
                     for(unsigned int i = 0; i < vn; ++i) {
-                        const float u = mesh->cAttrib(i, Mesh::Attribute::U);
-                        const float v = mesh->cAttrib(i, Mesh::Attribute::V);
-                        float res = 0;
-                        if (cm["shape"] == "sphere") {
-                        }
-                        else if (cm["shape"] == "torus") {
-                            const float val = sf.getValue(i);
-                            const float r = std::stof(cm["innerRadius"]);
-                            const float R = std::stof(cm["outerRadius"]);
-                            const float d = R + r * cos(TWOPI * v);
-                            res = -freq * (sin(TWOPI * v)/(d*r) * ampl *
-                                sin(TWOPI * freq * u) * cos(TWOPI * freq * v) +
-                                freq * val * (1/pow(d,2) + 1/pow(r,2)));
-                        }
-                        else if (cm["shape"] == "catenoid") {
-                            const float val = sf.getValue(i);
-                            const float r = std::stof(cm["innerRadius"]);
-                            const float R = std::stof(cm["outerRadius"]);
-                            const float hh = r * acosh(R/r);
-                            const float c = cosh((v-.5)*2*hh/r);
-                            res = -(1/pow(2*hh,2) + 2/pow(r,2)) * pow(freq,2) * 
-                                val/pow(c,2);
-                        }
-                        else if (cm["shape"] == "bezier") {
-                        }
-                        lap.addValue(res);
+                        const double u = mesh->cAttrib(i, Mesh::Attribute::U);
+                        const double v = mesh->cAttrib(i, Mesh::Attribute::V);
+                        double res = 0;
+                        lap.setValue(
+                            mesh->laplacian(u, v,
+                                sf.getValue(i, 0, 0),
+                                sf.getValue(i, 1, 0),
+                                sf.getValue(i, 0, 1),
+                                sf.getValue(i, 2, 0),
+                                sf.getValue(i, 1, 1),
+                                sf.getValue(i, 0, 2)),
+                            i);
                     }
                     lap.write(cm["outFolder"] + mesh->name + "Laplacian.txt",
                         head);
