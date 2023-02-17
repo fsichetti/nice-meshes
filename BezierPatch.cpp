@@ -1,6 +1,14 @@
 #include "BezierPatch.hpp"
 
-unsigned int BezierPatch::binomial(int k, int n) {
+void BezierPatch::bcPrepare() {
+    unsigned int k = ((degree-1) * (degree-1) + degree-1) / 2;
+    bc = new unsigned int[k];
+    for (unsigned int i = 0; i < k; ++i) {
+        bc[i] = 0;
+    }
+}
+
+unsigned int BezierPatch::binomial(int k, int n) const {
     if (k < 0 || k > n) throw std::domain_error("K must be between 0 and N.");
     if (k == 0 || k == n) return 1;
     const unsigned int nn = n-2;
@@ -10,27 +18,29 @@ unsigned int BezierPatch::binomial(int k, int n) {
 }
 
 
-glm::vec3 BezierPatch::sampleSurface(const ControlGrid& cg,
-    double u, double v, unsigned int derivU, unsigned int derivV) {
+glm::vec3 BezierPatch::sampleSurface(
+    double u, double v, unsigned int derivU, unsigned int derivV) const {
     glm::vec3 p(0);
     for (unsigned int i = 0; i <= degree; ++i) {
         for (int j = 0; j <= degree; ++j) {
             p += glm::vec1(
                 bPoly(i, degree, u, derivU) * 
                 bPoly(j, degree, v, derivV)
-            ) * cg.get(i, j);
+            ) * control->get(i, j);
         }
     }
     return p;
 }
 
 
-BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
+BezierPatch::BezierPatch(ControlGrid *cg, unsigned int samples)
     : Mesh(true, true, true) {
     name = "BezierPatch";
     const unsigned int uvSamples = samples * samples;
     const double uvStep = 1.0 / (double)samples;
     reserveSpace(uvSamples, uvSamples/2);
+    bcPrepare();
+    control = cg;
 
     // Compute points
     // Iterate on sample points (u,v)
@@ -38,15 +48,15 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
         for (unsigned int v = 0; v < samples; ++v) {
             const double uu = u * uvStep, vv = v * uvStep;
             // Iterate on control points (i,j)
-            const glm::vec3 x = sampleSurface(cg, uu, vv);
+            const glm::vec3 x = sampleSurface(uu, vv);
             const unsigned int index = addVertex(x[0], x[1], x[2]);
 
             // Compute normals analitically
-            const glm::vec3 xu = sampleSurface(cg, uu, vv, 1, 0);
-            const glm::vec3 xv = sampleSurface(cg, uu, vv, 0, 1);
-            const glm::vec3 xuu = sampleSurface(cg, uu, vv, 2, 0);
-            const glm::vec3 xuv = sampleSurface(cg, uu, vv, 1, 1);
-            const glm::vec3 xvv = sampleSurface(cg, uu, vv, 0, 2);
+            const glm::vec3 xu = sampleSurface(uu, vv, 1, 0);
+            const glm::vec3 xv = sampleSurface(uu, vv, 0, 1);
+            const glm::vec3 xuu = sampleSurface(uu, vv, 2, 0);
+            const glm::vec3 xuv = sampleSurface(uu, vv, 1, 1);
+            const glm::vec3 xvv = sampleSurface(uu, vv, 0, 2);
             const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
 
             // Normals
@@ -73,25 +83,27 @@ BezierPatch::BezierPatch(ControlGrid cg, unsigned int samples)
 }
 
 
-BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
+BezierPatch::BezierPatch(ControlGrid *cg, PlaneSampling smp)
     : Mesh(true, true, true) {
     name = "BezierPatch";
     const unsigned int NV = smp.vertNum();
     const unsigned int NF = smp.faceNum();
     reserveSpace(NV, NF);
+    bcPrepare();
+    control = cg;
 
     // Compute vertices
     for (unsigned int i = 0; i < NV; ++i) {
         const double uu = smp.cAttrib(i, 0), vv = smp.cAttrib(i, 1);
-        const glm::vec3 x = sampleSurface(cg, uu, vv);
+        const glm::vec3 x = sampleSurface(uu, vv);
         addVertex(x[0], x[1], x[2]);
 
         // Compute normals analitically
-        const glm::vec3 xu = sampleSurface(cg, uu, vv, 1, 0);
-        const glm::vec3 xv = sampleSurface(cg, uu, vv, 0, 1);
-        const glm::vec3 xuu = sampleSurface(cg, uu, vv, 2, 0);
-        const glm::vec3 xuv = sampleSurface(cg, uu, vv, 1, 1);
-        const glm::vec3 xvv = sampleSurface(cg, uu, vv, 0, 2);
+        const glm::vec3 xu = sampleSurface(uu, vv, 1, 0);
+        const glm::vec3 xv = sampleSurface(uu, vv, 0, 1);
+        const glm::vec3 xuu = sampleSurface(uu, vv, 2, 0);
+        const glm::vec3 xuv = sampleSurface(uu, vv, 1, 1);
+        const glm::vec3 xvv = sampleSurface(uu, vv, 0, 2);
         const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
 
         // Normals
@@ -113,6 +125,11 @@ BezierPatch::BezierPatch(ControlGrid cg, PlaneSampling smp)
         addFace(smp.cFacei(fi, 0), smp.cFacei(fi, 1), smp.cFacei(fi, 2));
     }
     computeNormals(true);
+}
+
+BezierPatch::~BezierPatch() {
+    delete control;
+    delete bc;
 }
 
 
@@ -172,4 +189,36 @@ BezierPatch::ControlGrid::ControlGrid(double maxNorm, double bb, double ib) {
     set(2,1,p13);
     set(2,2,p14);
     set(1,2,p15);
+}
+
+
+double BezierPatch::laplacian(double u, double v, double f,
+    double fu, double fv, double fuu, double fuv, double fvv) const {
+    const glm::vec3 xu = sampleSurface(u, v, 1, 0);
+    const glm::vec3 xv = sampleSurface(u, v, 0, 1);
+    const glm::vec3 xuu = sampleSurface(u, v, 2, 0);
+    const glm::vec3 xuv = sampleSurface(u, v, 1, 1);
+    const glm::vec3 xvv = sampleSurface(u, v, 0, 2);
+    const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
+
+    const auto g = dq.metric();
+    const double E = g[0][0];
+    const double F = g[0][1];
+    const double G = g[1][1];
+    double detg = E*G - F*F;
+    double g_deltau = -(E * (G * dot(xu, xvv) - F * dot(xv, xvv)) +
+            2 * F * (F * dot(xv, xuv) - G * dot(xu, xuv)) +
+            G * (G * dot(xu, xuu) - F * dot(xv, xuu))) /
+            pow(detg, 2);
+        
+    double g_deltav = -(E * (E * dot(xv, xvv) - F * dot(xu, xvv)) +
+            2 * F * (F * dot(xu, xuv) - E * dot(xv, xuv)) +
+            G * (E * dot(xv, xuu) - F * dot(xu, xuu))) /
+            pow(detg, 2);
+    double g_deltauu = G / detg;
+    double g_deltauv = -2 * F / detg;
+    double g_deltavv = E / detg;
+
+    return g_deltau * fu + g_deltav * fv + g_deltauu * fuu + g_deltauv * fuv +
+         g_deltavv * fvv;
 }

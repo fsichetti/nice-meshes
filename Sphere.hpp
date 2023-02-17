@@ -11,6 +11,10 @@ class Sphere : public Mesh {
             double radius
         );
         Sphere(std::string path, double radius);
+
+        double laplacian(double u, double v, double f, double fu,
+            double fv, double fuu, double fuv, double fvv) const override;
+            
     private:
         void initIcosahedron();
         void computeValues();

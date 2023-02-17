@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
                 }
             }
             else if (cm["shape"] == "bezier") {
-                BezierPatch::ControlGrid cg(
+                BezierPatch::ControlGrid *cg = new BezierPatch::ControlGrid(
                     std::stod(cm["radius"]),
                     std::stod(cm["borderVariance"]),
                     std::stod(cm["innerVariance"])

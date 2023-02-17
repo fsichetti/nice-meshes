@@ -86,3 +86,10 @@ void Sphere::initIcosahedron() {
     addFace(8, 6, 7);
     addFace(9, 8, 1);
 }
+
+
+double Sphere::laplacian(double u, double v, double f, double fu,
+    double fv, double fuu, double fuv, double fvv) const {
+    double vs = TWOPI * (v-.5);
+    return fv / tan(vs) + fvv + fuu / pow(sin(vs), 2);
+}

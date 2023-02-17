@@ -16,23 +16,30 @@ class BezierPatch : public Mesh {
         class ControlGrid;
 
         BezierPatch(
-            ControlGrid cg,
+            ControlGrid *cg,
             unsigned int samples    // samples per uv direction
         );
 
         BezierPatch(
-            ControlGrid cg,
+            ControlGrid *cg,
             PlaneSampling smp    // provided sampling of the plane
         );
 
+        ~BezierPatch();
+
+        double laplacian(double u, double v, double f, double fu,
+            double fv, double fuu, double fuv, double fvv) const override;
+
     private:
+        ControlGrid * control;
         // Binomial coefficients
-        unsigned int bc[((degree-1) * (degree-1) + degree-1) / 2] = {};
-        unsigned int binomial(int k, int n);
+        unsigned int *bc;
+        unsigned int binomial(int k, int n) const;
+        void bcPrepare();
 
         // Bernstein polynomials with derivatives
         inline double bPoly(int i, int n, double x,
-            unsigned int derivative = 1) {
+            unsigned int derivative = 1) const {
             if (derivative == 0) {
                 if (i < 0 || i > n) return 0;
                 return binomial(i, n) * pow(x, i) * pow(1-x, n-i);
@@ -44,8 +51,8 @@ class BezierPatch : public Mesh {
         }
 
         // Computations
-        glm::vec3 sampleSurface(const ControlGrid&, double u, double v,
-            unsigned int derivU = 0, unsigned int derivV = 0);
+        glm::vec3 sampleSurface(double u, double v,
+            unsigned int derivU = 0, unsigned int derivV = 0) const;
 };
 
 
