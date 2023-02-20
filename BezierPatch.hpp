@@ -4,7 +4,6 @@
 #include "Mesh.hpp"
 #include "Constants.hpp"
 #include "RandPoint.hpp"
-#include "DifferentialQuantities.hpp"
 #include "PlaneSampling.hpp"
 #include <glm/glm.hpp>
 
@@ -27,8 +26,8 @@ class BezierPatch : public Mesh {
 
         ~BezierPatch();
 
-        double laplacian(double u, double v, double f, double fu,
-            double fv, double fuu, double fuv, double fvv) const override;
+        DifferentialQuantities diffEvaluate(double u, double v) const override;
+            
 
     private:
         ControlGrid * control;

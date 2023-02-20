@@ -99,12 +99,7 @@ BezierPatch::BezierPatch(ControlGrid *cg, PlaneSampling smp)
         addVertex(x[0], x[1], x[2]);
 
         // Compute normals analitically
-        const glm::vec3 xu = sampleSurface(uu, vv, 1, 0);
-        const glm::vec3 xv = sampleSurface(uu, vv, 0, 1);
-        const glm::vec3 xuu = sampleSurface(uu, vv, 2, 0);
-        const glm::vec3 xuv = sampleSurface(uu, vv, 1, 1);
-        const glm::vec3 xvv = sampleSurface(uu, vv, 0, 2);
-        const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
+        const DifferentialQuantities dq = diffEvaluate(uu, vv);
 
         // Normals
         attrib(i, Attribute::NX) = dq.normal().x;
@@ -131,6 +126,7 @@ BezierPatch::~BezierPatch() {
     delete control;
     delete bc;
 }
+
 
 
 BezierPatch::ControlGrid::ControlGrid(double maxNorm, double bb, double ib) {
@@ -191,34 +187,11 @@ BezierPatch::ControlGrid::ControlGrid(double maxNorm, double bb, double ib) {
     set(1,2,p15);
 }
 
-
-double BezierPatch::laplacian(double u, double v, double f,
-    double fu, double fv, double fuu, double fuv, double fvv) const {
+DifferentialQuantities BezierPatch::diffEvaluate(double u, double v) const {
     const glm::vec3 xu = sampleSurface(u, v, 1, 0);
     const glm::vec3 xv = sampleSurface(u, v, 0, 1);
     const glm::vec3 xuu = sampleSurface(u, v, 2, 0);
     const glm::vec3 xuv = sampleSurface(u, v, 1, 1);
     const glm::vec3 xvv = sampleSurface(u, v, 0, 2);
-    const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
-
-    const auto g = dq.metric();
-    const double E = g[0][0];
-    const double F = g[0][1];
-    const double G = g[1][1];
-    double detg = E*G - F*F;
-    double g_deltau = -(E * (G * dot(xu, xvv) - F * dot(xv, xvv)) +
-            2 * F * (F * dot(xv, xuv) - G * dot(xu, xuv)) +
-            G * (G * dot(xu, xuu) - F * dot(xv, xuu))) /
-            pow(detg, 2);
-        
-    double g_deltav = -(E * (E * dot(xv, xvv) - F * dot(xu, xvv)) +
-            2 * F * (F * dot(xu, xuv) - E * dot(xv, xuv)) +
-            G * (E * dot(xv, xuu) - F * dot(xu, xuu))) /
-            pow(detg, 2);
-    double g_deltauu = G / detg;
-    double g_deltauv = -2 * F / detg;
-    double g_deltavv = E / detg;
-
-    return g_deltau * fu + g_deltav * fv + g_deltauu * fuu + g_deltauv * fuv +
-         g_deltavv * fvv;
+    return DifferentialQuantities(xu, xv, xuu, xuv, xvv);
 }

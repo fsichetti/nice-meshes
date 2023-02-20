@@ -185,15 +185,16 @@ int main(int argc, char **argv) {
                 for(unsigned int i = 0; i < vn; ++i) {
                     const double u = mesh->cAttrib(i, Mesh::Attribute::U);
                     const double v = mesh->cAttrib(i, Mesh::Attribute::V);
+                    const double freqpi = TWOPI * freq;
                     double f = ampl *
-                        sin(TWOPI * freq * u) * sin(TWOPI * freq * v);
-                    double fu = ampl * freq * 
-                        cos(TWOPI * freq * u) * sin(TWOPI * freq * v);
-                    double fv = ampl * freq * 
-                        sin(TWOPI * freq * u) * cos(TWOPI * freq * v);
-                    double fuu = -freq * freq * f;
-                    double fuv = ampl * freq * freq *
-                        cos(TWOPI * freq * u) * cos(TWOPI * freq * v);
+                        sin(freqpi * u) * sin(freqpi * v);
+                    double fu = ampl * freqpi * 
+                        cos(freqpi * u) * sin(freqpi * v);
+                    double fv = ampl * freqpi * 
+                        sin(freqpi * u) * cos(freqpi * v);
+                    double fuu = -pow(freqpi, 2) * f;
+                    double fuv = pow(freqpi, 2) * ampl *
+                        cos(freqpi * u) * cos(freqpi * v);
                     double fvv = fuu;
                         
 

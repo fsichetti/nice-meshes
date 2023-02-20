@@ -8,6 +8,8 @@
 #include <glm/glm.hpp>
 #include "RandPoint.hpp"
 
+#include "DifferentialQuantities.hpp"
+
 class Mesh { 
     public:
         typedef std::vector<GLfloat> vArray;
@@ -68,12 +70,20 @@ class Mesh {
         float getVolume() const;
 
         // Differential quantities
-        // virtual glm::vec3 gradient(double u, double v, double f) const = 0;
-        // virtual glm::mat2 hessian(double u, double v, double f) const = 0;
-        virtual double laplacian(double u, double v, double f,
+        virtual DifferentialQuantities diffEvaluate(double u, double v)
+            const;
+        inline glm::vec3 gradient(double u, double v, double f,
+            double fu, double fv) const {
+            return diffEvaluate(u, v).gradient(f, fu, fv);
+        }
+        inline double laplacian(double u, double v, double f,
             double fu, double fv, double fuu, double fuv, double fvv) const {
-                return 0;
-            };
+            return diffEvaluate(u, v).laplacian(f, fu, fv, fuu, fuv, fvv);
+        }
+        inline glm::vec3 hessian(double u, double v, double f,
+            double fu, double fv, double fuu, double fuv, double fvv) const {
+            return diffEvaluate(u, v).hessian(f, fu, fv, fuu, fuv, fvv);
+        }
 
         // Mesh processing
         // friend class MeshProcessing;     // maybe in the future?

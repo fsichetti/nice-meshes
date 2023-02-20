@@ -16,6 +16,10 @@ void Mesh::reserveSpace(unsigned int rv, unsigned int re) {
     faces.reserve(re * 3);
 }
 
+DifferentialQuantities Mesh::diffEvaluate(double u, double v) const {
+    throw NotFinalizedException();
+}
+
 
 // Utility method to convert an attrib constant to an offset
 unsigned int Mesh::attToOff(Attribute att) const {

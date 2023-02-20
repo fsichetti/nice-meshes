@@ -130,9 +130,45 @@ unsigned int Catenoid::placeVertex(double u, double v) {
     return index;
 }
 
-double Catenoid::laplacian(double u, double v, double f,
-    double fu, double fv, double fuu, double fuv, double fvv) const {
-    double vs = (v-.5) * height;
-    return -(fuu / pow(TWOPI*rInner, 2) + fvv / pow(height, 2))
-        / pow(cosh(vs / rInner), 2);
+
+DifferentialQuantities Catenoid::diffEvaluate(double u, double v) const {
+    const double vs = (v-.5)*height;
+    const double sinu = sin(TWOPI * u);
+    const double cosu = cos(TWOPI * u);
+    const double sinhv = sinh(vs / rInner);
+    const double coshv = cosh(vs / rInner);
+
+    glm::vec3 xu(
+        -rInner * coshv * sinu * TWOPI,
+        rInner * coshv * cosu * TWOPI,
+        0
+    );
+    glm::vec3 xv(
+        rInner * sinhv * cosu * height,
+        rInner * sinhv * sinu * height,
+        height
+    );
+    glm::vec3 xuu(
+        -rInner * coshv * cosu * pow(TWOPI, 2),
+        -rInner * coshv * sinu * pow(TWOPI, 2),
+        0
+    );
+    glm::vec3 xuv(
+        -rInner * sinhv * sinu * TWOPI * height,
+        rInner * sinhv * cosu * TWOPI * height,
+        0
+    );
+    glm::vec3 xvv(
+        rInner * coshv * cosu * pow(height, 2),
+        rInner * coshv * sinu * pow(height, 2),
+        0
+    );
+    return DifferentialQuantities(xu, xv, xuu, xuv, xvv);
 }
+
+// double Catenoid::laplacian(double u, double v, double f,
+//     double fu, double fv, double fuu, double fuv, double fvv) const {
+//     double vs = (v-.5) * height;
+//     return -(fuu / pow(TWOPI*rInner, 2) + fvv / pow(height, 2))
+//         / pow(cosh(vs / rInner), 2);
+// }

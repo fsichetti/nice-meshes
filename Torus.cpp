@@ -135,9 +135,43 @@ unsigned int Torus::placeVertex(double u, double v) {
 }
 
 
-double Torus::laplacian(double u, double v, double f,
-    double fu, double fv, double fuu, double fuv, double fvv) const {
-    const double k = rOuter + rInner * cos(TWOPI * v);
-    return (sin(TWOPI * v) * fv) / (rInner * k) - fuu / pow(k,2)
-        - fvv / pow(rInner,2);
+DifferentialQuantities Torus::diffEvaluate(double u, double v) const {
+    const double sinu = sin(TWOPI * u);
+    const double cosu = cos(TWOPI * u);
+    const double sinv = sin(TWOPI * v);
+    const double cosv = cos(TWOPI * v);
+    glm::vec3 xu(
+        -sinu * (rOuter + rInner * cosv) * TWOPI,
+        cosu * (rOuter + rInner * cosv) * TWOPI,
+        0
+    );
+    glm::vec3 xv(
+        cosu * (rOuter - rInner * sinv * TWOPI),
+        sinu * (rOuter - rInner * sinv * TWOPI),
+        rInner * cosv * TWOPI
+    );
+    glm::vec3 xuu(
+        -cosu * (rOuter + rInner * cosv) * pow(TWOPI, 2),
+        -sinu * (rOuter + rInner * cosv) * pow(TWOPI, 2),
+        0
+    );
+    glm::vec3 xuv(
+        -sinu * (rOuter - rInner * sinv * TWOPI) * TWOPI,
+        cosu * (rOuter - rInner * sinv * TWOPI) * TWOPI,
+        0
+    );
+    glm::vec3 xvv(
+        cosu * (rOuter - rInner * cosv * pow(TWOPI, 2)),
+        sinu * (rOuter - rInner * cosv * pow(TWOPI, 2)),
+        -rInner * sinv * TWOPI * TWOPI
+    );
+    return DifferentialQuantities(xu, xv, xuu, xuv, xvv);
 }
+
+
+// double Torus::laplacian(double u, double v, double f,
+//     double fu, double fv, double fuu, double fuv, double fvv) const {
+//     const double k = rOuter + rInner * cos(TWOPI * v);
+//     return (sin(TWOPI * v) * fv) / (rInner * k) - fuu / pow(k,2)
+//         - fvv / pow(rInner,2);
+// }

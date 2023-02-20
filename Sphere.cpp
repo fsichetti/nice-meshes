@@ -87,9 +87,7 @@ void Sphere::initIcosahedron() {
     addFace(9, 8, 1);
 }
 
-
-double Sphere::laplacian(double u, double v, double f, double fu,
-    double fv, double fuu, double fuv, double fvv) const {
-    double vs = TWOPI * (v-.5);
-    return fv / tan(vs) + fvv + fuu / pow(sin(vs), 2);
+DifferentialQuantities Sphere::diffEvaluate(double u, double v) const {
+    const glm::vec3 z(0);
+    return DifferentialQuantities(z, z, z, z, z);
 }
