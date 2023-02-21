@@ -146,8 +146,8 @@ DifferentialQuantities Torus::diffEvaluate(double u, double v) const {
         0
     );
     glm::vec3 xv(
-        cosu * (rOuter - rInner * sinv * TWOPI),
-        sinu * (rOuter - rInner * sinv * TWOPI),
+        -rInner * cosu * sinv * TWOPI,
+        -rInner * sinu * sinv * TWOPI,
         rInner * cosv * TWOPI
     );
     glm::vec3 xuu(
@@ -156,13 +156,13 @@ DifferentialQuantities Torus::diffEvaluate(double u, double v) const {
         0
     );
     glm::vec3 xuv(
-        -sinu * (rOuter - rInner * sinv * TWOPI) * TWOPI,
-        cosu * (rOuter - rInner * sinv * TWOPI) * TWOPI,
+        -sinu * (-rInner * sinv * TWOPI) * TWOPI,
+        cosu * (-rInner * sinv * TWOPI) * TWOPI,
         0
     );
     glm::vec3 xvv(
-        cosu * (rOuter - rInner * cosv * pow(TWOPI, 2)),
-        sinu * (rOuter - rInner * cosv * pow(TWOPI, 2)),
+        -rInner * cosu * cosv * pow(TWOPI, 2),
+        -rInner * sinu * cosv * pow(TWOPI, 2),
         -rInner * sinv * TWOPI * TWOPI
     );
     return DifferentialQuantities(xu, xv, xuu, xuv, xvv);
