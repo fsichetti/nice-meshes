@@ -47,8 +47,9 @@ double DifferentialQuantities::laplacian(double f, double fu, double fv,
     const double g_deltauv = -2 * F / detg;
     const double g_deltavv = E / detg;
 
-    return g_deltau * fu + g_deltav * fv + g_deltauu * fuu + g_deltauv * fuv +
-         g_deltavv * fvv;
+    const double lap = g_deltau * fu + g_deltav * fv + g_deltauu * fuu + g_deltauv * fuv +
+        g_deltavv * fvv;
+    return std::isnan(lap) ? 0 : lap;
 }
 
 

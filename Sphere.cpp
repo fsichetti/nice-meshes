@@ -39,11 +39,11 @@ void Sphere::computeValues() {
         attrib(i, Attribute::NX) = x;
         attrib(i, Attribute::NY) = y;
         attrib(i, Attribute::NZ) = z;
-        attrib(i, Attribute::U) = acos(z) / M_PI;
         const double f = sqrt(x*x + y*y);
-        attrib(i, Attribute::V) = (f == 0) ? 0 : (
+        attrib(i, Attribute::U) = (f == 0) ? 0 : (
             glm::sign(y) * acos(x / f) / TWOPI + .5
         );
+        attrib(i, Attribute::V) = acos(z) / M_PI;
         const float h = 1 / radius;
         attrib(i, Attribute::H) = h;
         attrib(i, Attribute::K) = h / radius;
@@ -88,6 +88,38 @@ void Sphere::initIcosahedron() {
 }
 
 DifferentialQuantities Sphere::diffEvaluate(double u, double v) const {
-    const glm::vec3 z(0);
-    return DifferentialQuantities(z, z, z, z, z);
+    const double sinu = sin(TWOPI * u);
+    const double cosu = cos(TWOPI * u);
+    const double sinv = sin(M_PI * v);
+    const double cosv = cos(M_PI * v);
+
+    // x = radius sinv cosu
+    // y = radius sinv sinu
+    // z = radius cosv
+    glm::vec3 xu(
+        -radius * sinv * sinu * TWOPI,
+        radius * sinv * cosu * TWOPI,
+        0
+    );
+    glm::vec3 xv(
+        radius * cosv * cosu * M_PI,
+        radius * cosv * sinu * M_PI,
+        -radius * sinv * M_PI
+    );
+    glm::vec3 xuu(
+        -radius * sinv * cosu * pow(TWOPI, 2),
+        -radius * sinv * sinu * pow(TWOPI, 2),
+        0
+    );
+    glm::vec3 xuv(
+        -radius * cosv * sinu * 2 * pow(M_PI, 2),
+        radius * cosv * cosu * 2 * pow(M_PI, 2),
+        0
+    );
+    glm::vec3 xvv(
+        -radius * sinv * cosu * pow(M_PI, 2),
+        -radius * sinv * sinu * pow(M_PI, 2),
+        -radius * cosv * pow(M_PI, 2)
+    );
+    return DifferentialQuantities(xu, xv, xuu, xuv, xvv);
 }

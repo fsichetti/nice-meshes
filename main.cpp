@@ -199,10 +199,29 @@ int main(int argc, char **argv) {
                         
 
                     if (cm["shape"] == "sphere") {
-                        const double x = 2 * abs(2 * u - 1); // C2
-                        f *= 1 - 10*pow(x,3) + 15*pow(x,4) - 6*pow(x,5);
+                        // Additional factor that goes to zero at the poles
+                        const double x = pow(2 * v - 1, 2);
+                        const double p = - 6*pow(x,5) + 15*pow(x,4)
+                            - 10*pow(x,3) + 1;
+                        const double pv = (- 30*pow(x,4) + 60*pow(x,3)
+                            - 30*pow(x,2)) * (8*v - 4);
+                        const double pvv = (- 120*pow(x,3) + 180*pow(x,2)
+                            - 60*x) * pow(8*v - 4, 2) + (- 30*pow(x,4)
+                            + 60*pow(x,3) - 30*pow(x,2)) * 8;
+
+                        // Original values of f
+                        const double of = f, ofu = fu, ofv = fv,
+                            ofuu = fuu, ofuv = fuv, ofvv = fvv;
+
+                        // Product rule
+                        f = of * p;
+                        fu = ofu * p;
+                        fv = ofv * p + of * pv;
+                        fuu = ofuu * p;
+                        fuv = ofuv * p + ofu * pv;
+                        fvv = ofvv * p + 2 * ofv * pv + of * pvv;
                     }
-                    // INCOMPLETE FOR SPHERES!!!
+
                     sf.setValue(f, i, 0, 0);
                     sf.setValue(fu, i, 1, 0);
                     sf.setValue(fv, i, 0, 1);
