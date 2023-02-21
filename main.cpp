@@ -4,7 +4,7 @@
 #include "Catenoid.hpp"
 #include "BezierPatch.hpp"
 #include "Configuration.hpp"
-#include "ScalarField.hpp"
+#include "VectorField.hpp"
 
 
 int main(int argc, char **argv) {
@@ -233,29 +233,62 @@ int main(int argc, char **argv) {
                 const bool head = (cm["scalarHeader"] == "true");
                 sf.write(cm["outFolder"] + mesh->name + "Scalar.txt", head);
 
-                // Compute laplacian
-                if (cm["scalarLaplacian"] == "true") {
-                    ScalarField lap(mesh);
+                // Compute differential quantities
+                const bool lap = cm["scalarLaplacian"] == "true";
+                const bool gra = cm["scalarGradient"] == "true";
+                const bool hes = cm["scalarHessian"] == "true";
+                if (lap || gra || hes) {
+                    ScalarField *laplacian;
+                    VectorField *gradient, *hessian;
+
+                    // Create
+                    if (lap) laplacian = new ScalarField(mesh);
+                    if (gra) gradient = new VectorField(mesh);
+                    if (hes) hessian = new VectorField(mesh);
                     
+                    // Compute
                     for(unsigned int i = 0; i < vn; ++i) {
                         const double u = mesh->cAttrib(i, Mesh::Attribute::U);
                         const double v = mesh->cAttrib(i, Mesh::Attribute::V);
-                        double res = 0;
-                        lap.setValue(
-                            mesh->laplacian(u, v,
-                                sf.getValue(i, 0, 0),
-                                sf.getValue(i, 1, 0),
-                                sf.getValue(i, 0, 1),
-                                sf.getValue(i, 2, 0),
-                                sf.getValue(i, 1, 1),
-                                sf.getValue(i, 0, 2)),
-                            i);
+                        const double f = sf.getValue(i, 0, 0);
+                        const double fu = sf.getValue(i, 1, 0);
+                        const double fv = sf.getValue(i, 0, 1);
+                        const double fuu = sf.getValue(i, 2, 0);
+                        const double fuv = sf.getValue(i, 1, 1);
+                        const double fvv = sf.getValue(i, 0, 2);
+                        
+                        if (lap) laplacian->setValue(
+                            mesh->laplacian(u, v, f, fu, fv, fuu, fuv, fvv), i);
+                        if (gra) gradient->setValue(
+                            mesh->gradient(u, v, f, fu, fv), i);
+                        if (hes) hessian->setValue(
+                            mesh->hessian(u, v, f, fu, fv, fuu, fuv, fvv), i);
                     }
-                    lap.write(cm["outFolder"] + mesh->name + "Laplacian.txt",
-                        head);
+
+                    // Write and destroy
+                    if (lap) {
+                        laplacian->write(
+                            cm["outFolder"] + mesh->name + "Laplacian.txt",
+                            head
+                        );
+                        delete laplacian;
+                    }
+                    if (gra) {
+                        gradient->write(
+                            cm["outFolder"] + mesh->name + "Gradient.txt",
+                            head
+                        );
+                        delete gradient;
+                    }
+                    if (hes) {
+                        hessian->write(
+                            cm["outFolder"] + mesh->name + "Hessian.txt",
+                            head
+                        );
+                        delete hessian;
+                    }
                 }
             }
-
             delete mesh;
         }
     }
