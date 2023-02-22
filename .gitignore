@@ -2,10 +2,9 @@
 *.off
 *.obj
 *.png
-*.ini
 !plane*.obj
-!configuration.ini
 
 build/
 out/
 .cache/
+configurations/

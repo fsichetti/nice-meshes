@@ -41,12 +41,14 @@ int main(int argc, char **argv) {
     std::cout << std::endl;
 
     const unsigned int confCount = std::max(1, argc - 2);
+    
+    #pragma omp parallel for
     for (std::string config : configs) {
         ConfigManager cm(filename, config);
         if (!cm) {
             std::cerr << "Please check your configuration file (" <<
                 filename << ") for config " << config << std::endl;
-            return 1;
+            continue;
         }
 
         // Apply configuration
@@ -126,7 +128,8 @@ int main(int argc, char **argv) {
             else {
                 std::cerr << "Invalid shape (" <<
                     filename << ")" << std::endl;
-                return 1;
+                delete mesh;
+                continue;
             }
             
             // Name

@@ -1,6 +1,6 @@
 MAKEFLAGS += -j
 CXX = g++
-CXXFLAGS = -MD -MP
+CXXFLAGS = -MD -MP -fopenmp
 
 LDFLAGS = -lepoxy -lglut -lfreeimage
 BUILD = build
