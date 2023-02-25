@@ -10,10 +10,8 @@ Dependencies:
 *TODO: move to CMake*
 
 # Running
-Program behaviour is specified in a standard INI file. The INI file can contain any number of sections, each corresponding to a different configuration. The program takes two optional arguments: the name of the configuration (i.e. section) to use, and the path to the INI file itself, which defaults to `./configuration.ini`.
-The first argument is the name of the INI file. If more arguments are specified, the rest are configurations from that file that are run in order; otherwise, all configurations from the INI file are executed in order.
-
-*Example: the file `configuration.ini` in the current directory contains a section named "torusply" which generates a torus with certain parameters and saves it as a PLY mesh. The command `nicemesh torusply` executes this instruction.*
+Program behaviour is specified in a standard INI file. The INI file can contain any number of sections, each corresponding to a different configuration. The program takes two optional arguments: the name of the configuration (INI section) to use, and the path to the INI file itself, which defaults to `./configuration.ini`. Key-value pairs specified before any section are applied to all configurations.
+The first argument is the name of the INI file. If more arguments are specified, the rest are configurations from that file that are run in order; otherwise, all configurations from the INI file are executed in order. The `-p` options tells the program to run in parallel, which disables interactivity.
 
 ## Configuration parameters
 All parameters are case-insensitive.
