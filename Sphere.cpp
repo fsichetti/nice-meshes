@@ -41,7 +41,7 @@ void Sphere::computeValues() {
         attrib(i, Attribute::NZ) = z;
         const double f = sqrt(x*x + y*y);
         attrib(i, Attribute::U) = (f == 0) ? 0 : (
-            glm::sign(y) * acos(x / f) / TWOPI + .5
+            glm::sign(-y) * acos(-x / f) / TWOPI + .5
         );
         attrib(i, Attribute::V) = acos(z) / M_PI;
         const float h = 1 / radius;
