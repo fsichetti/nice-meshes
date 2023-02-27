@@ -13,6 +13,7 @@ void ConfigManager::defaultValues() {
     c["saveOBJ"] = "false";
     c["saveOFF"] = "false";
     c["inputOBJ"] = "";
+    c["exportUV"] = "false";
 
     c["samples"] = "64";
     c["radius"] = "1";

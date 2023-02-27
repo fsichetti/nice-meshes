@@ -45,3 +45,18 @@ void VectorField::write(std::string path, bool header) const {
     // Close file
     file.close();
 }
+
+void VectorField::write2d(std::string path) const {
+    // Open file
+    std::ofstream file(path);
+    if (!file.is_open()) throw Mesh::FileOpenException();
+
+    // Write verts
+    for (unsigned int i = 0; i < samples; ++i) {
+		const glm::vec3 v = getValue(i);
+        file << v.x << " " << v.y << std::endl;
+    }
+
+    // Close file
+    file.close();
+}

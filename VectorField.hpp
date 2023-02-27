@@ -11,6 +11,7 @@ class VectorField {
         void setValue(glm::vec3 value, unsigned int i);
         glm::vec3 getValue(unsigned int i) const;
         void write(std::string path, bool header=false) const;
+        void write2d(std::string path) const;
 
     private:
         const Mesh* mesh;

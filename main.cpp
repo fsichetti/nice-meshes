@@ -280,14 +280,16 @@ void runConfig(char* pname, std::string fname, std::string cname,
             const bool lap = cm["scalarLaplacian"] == "true";
             const bool gra = cm["scalarGradient"] == "true";
             const bool hes = cm["scalarHessian"] == "true";
-            if (lap || gra || hes) {
+            const bool euv = cm["exportUV"] == "true";
+            if (lap || gra || hes || euv) {
                 ScalarField *laplacian;
-                VectorField *gradient, *hessian;
+                VectorField *gradient, *hessian, *uvfield;
 
                 // Create
                 if (lap) laplacian = new ScalarField(mesh);
                 if (gra) gradient = new VectorField(mesh);
                 if (hes) hessian = new VectorField(mesh);
+                if (euv) uvfield = new VectorField(mesh);
                 
                 // Compute
                 for(unsigned int i = 0; i < vn; ++i) {
@@ -306,6 +308,7 @@ void runConfig(char* pname, std::string fname, std::string cname,
                         mesh->gradient(u, v, f, fu, fv), i);
                     if (hes) hessian->setValue(
                         mesh->hessian(u, v, f, fu, fv, fuu, fuv, fvv), i);
+                    if (euv) uvfield->setValue(glm::vec3(u,v,0), i);
                 }
 
                 // Write and destroy
@@ -329,6 +332,10 @@ void runConfig(char* pname, std::string fname, std::string cname,
                         head
                     );
                     delete hessian;
+                }
+                if (euv) {
+                    uvfield->write2d(cm["outFolder"] + mesh->name + "UV.txt");
+                    delete uvfield;
                 }
             }
         }
