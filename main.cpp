@@ -92,71 +92,78 @@ void runConfig(char* pname, std::string fname, std::string cname,
     for (unsigned int i = 0; i < repeat; ++i) {
         // Mesh
         Mesh* mesh;
-        if (cm["shape"] == "torus") {
-            if (cm["inputOBJ"] == "") {
-                mesh = new Torus(
-                    std::stoi(cm["samples"]),
-                    std::stod(cm["outerRadius"]),
-                    std::stod(cm["innerRadius"])
-                );
+        try {
+            if (cm["shape"] == "torus") {
+                if (cm["inputOBJ"] == "") {
+                    mesh = new Torus(
+                        std::stoi(cm["samples"]),
+                        std::stod(cm["outerRadius"]),
+                        std::stod(cm["innerRadius"])
+                    );
+                }
+                else {
+                    mesh = new Torus(
+                        cm["inputOBJ"],
+                        std::stod(cm["outerRadius"]),
+                        std::stod(cm["innerRadius"])
+                    );
+                }
             }
-            else {
-                mesh = new Torus(
-                    cm["inputOBJ"],
-                    std::stod(cm["outerRadius"]),
-                    std::stod(cm["innerRadius"])
-                );
+            else if (cm["shape"] == "catenoid") {
+                if (cm["inputOBJ"] == "") {
+                    mesh = new Catenoid(
+                        std::stoi(cm["samples"]),
+                        std::stod(cm["outerRadius"]),
+                        std::stod(cm["innerRadius"])
+                    );
+                }
+                else {
+                    mesh = new Catenoid(
+                        cm["inputOBJ"],
+                        std::stod(cm["outerRadius"]),
+                        std::stod(cm["innerRadius"])
+                    );
+                }
             }
-        }
-        else if (cm["shape"] == "catenoid") {
-            if (cm["inputOBJ"] == "") {
-                mesh = new Catenoid(
-                    std::stoi(cm["samples"]),
-                    std::stod(cm["outerRadius"]),
-                    std::stod(cm["innerRadius"])
-                );
+            else if (cm["shape"] == "sphere") {
+                if (cm["inputOBJ"] == "") {
+                    mesh = new Sphere(
+                        std::stoi(cm["subdivision"]),
+                        std::stod(cm["radius"])
+                    );
+                }
+                else {
+                    mesh = new Sphere(
+                        cm["inputOBJ"],
+                        std::stod(cm["radius"])
+                    );
+                }
             }
-            else {
-                mesh = new Catenoid(
-                    cm["inputOBJ"],
-                    std::stod(cm["outerRadius"]),
-                    std::stod(cm["innerRadius"])
+            else if (cm["shape"] == "bezier") {
+                BezierPatch::ControlGrid *cg = new BezierPatch::ControlGrid(
+                    std::stod(cm["radius"]),
+                    std::stod(cm["borderVariance"]),
+                    std::stod(cm["innerVariance"])
                 );
-            }
-        }
-        else if (cm["shape"] == "sphere") {
-            if (cm["inputOBJ"] == "") {
-                mesh = new Sphere(
-                    std::stoi(cm["subdivision"]),
-                    std::stod(cm["radius"])
-                );
-            }
-            else {
-                mesh = new Sphere(
-                    cm["inputOBJ"],
-                    std::stod(cm["radius"])
-                );
-            }
-        }
-        else if (cm["shape"] == "bezier") {
-            BezierPatch::ControlGrid *cg = new BezierPatch::ControlGrid(
-                std::stod(cm["radius"]),
-                std::stod(cm["borderVariance"]),
-                std::stod(cm["innerVariance"])
-            );
 
-            if (cm["inputOBJ"] != "") {
-                PlaneSampling smp(cm["inputOBJ"]);
-                mesh = new BezierPatch(cg, smp);
+                if (cm["inputOBJ"] != "") {
+                    PlaneSampling smp(cm["inputOBJ"]);
+                    mesh = new BezierPatch(cg, smp);
+                }
+                else {
+                    mesh = new BezierPatch(cg,
+                        std::stoi(cm["samples"]));
+                }
             }
             else {
-                mesh = new BezierPatch(cg,
-                    std::stoi(cm["samples"]));
+                std::cerr << "Invalid shape (" <<
+                    fname << ")" << std::endl;
+                delete mesh;
+                continue;
             }
         }
-        else {
-            std::cerr << "Invalid shape (" <<
-                fname << ")" << std::endl;
+        catch (Mesh::FileOpenException e) {
+            std::cerr << e.what() << " (conf:" << cname << ')' << std::endl;
             delete mesh;
             continue;
         }
