@@ -91,7 +91,8 @@ void runConfig(char* pname, std::string fname, std::string cname,
     const unsigned int repStringLen = std::to_string(repeat-1).length();
     for (unsigned int i = 0; i < repeat; ++i) {
         // Mesh
-        Mesh* mesh;
+        Mesh *mesh = nullptr;
+        BezierPatch::ControlGrid *cg = nullptr;
         try {
             if (cm["shape"] == "torus") {
                 if (cm["inputOBJ"] == "") {
@@ -140,7 +141,7 @@ void runConfig(char* pname, std::string fname, std::string cname,
                 }
             }
             else if (cm["shape"] == "bezier") {
-                BezierPatch::ControlGrid *cg = new BezierPatch::ControlGrid(
+                cg = new BezierPatch::ControlGrid(
                     std::stod(cm["radius"]),
                     std::stod(cm["borderVariance"]),
                     std::stod(cm["innerVariance"])
@@ -181,6 +182,15 @@ void runConfig(char* pname, std::string fname, std::string cname,
             else num = "";
             mesh->name = cm["name"] + num;
         }
+
+        // Write cg
+        if (cm["exportControlGrid"] == "separate" && cg) {
+            std::string basename = cm["outFolder"] + mesh->name;
+            cg->writeCoordinate(basename + "x.txt", 0);
+            cg->writeCoordinate(basename + "y.txt", 1);
+            cg->writeCoordinate(basename + "z.txt", 2);
+        }
+
 
         // Processing
         if (cm["centered"] == "true") {

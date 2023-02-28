@@ -195,3 +195,22 @@ DifferentialQuantities BezierPatch::diffEvaluate(double u, double v) const {
     const glm::vec3 xvv = sampleSurface(u, v, 0, 2);
     return DifferentialQuantities(xu, xv, xuu, xuv, xvv);
 }
+
+
+void BezierPatch::ControlGrid::writeCoordinate(
+    std::string path, int coordinate) {
+    // Open file
+    std::ofstream file(path);
+    if (!file.is_open()) throw Mesh::FileOpenException();
+
+    // Write verts
+    for (unsigned int i = 0; i <= degree; ++i) {
+        for (unsigned int j = 0; j <= degree; ++j) {
+            file << get(i,j)[coordinate] << " ";
+        }
+        file << std::endl;
+    }
+
+    // Close file
+    file.close();
+}

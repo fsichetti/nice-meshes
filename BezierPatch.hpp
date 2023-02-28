@@ -80,6 +80,8 @@ class BezierPatch::ControlGrid {
             return storage[coordinate][i + (degree+1)*j];
         }
 
+        void writeCoordinate(std::string pathx, int coordinate);
+
     private:
         double storage[3][(degree+1)*(degree+1)];
 };

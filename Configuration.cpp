@@ -8,12 +8,13 @@ void ConfigManager::defaultValues() {
 
     c["interactive"] = "true";
     c["repeat"] = "1";
+    c["inputOBJ"] = "";
     c["outFolder"] = "./";
     c["savePLY"] = "false";
     c["saveOBJ"] = "false";
     c["saveOFF"] = "false";
-    c["inputOBJ"] = "";
     c["exportUV"] = "false";
+    c["exportControlGrid"] = "false";
 
     c["samples"] = "64";
     c["radius"] = "1";
