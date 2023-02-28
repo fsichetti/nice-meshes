@@ -38,7 +38,7 @@ class BezierPatch : public Mesh {
 
         // Bernstein polynomials with derivatives
         inline double bPoly(int i, int n, double x,
-            unsigned int derivative = 1) const {
+            unsigned int derivative = 0) const {
             if (derivative == 0) {
                 if (i < 0 || i > n) return 0;
                 return binomial(i, n) * pow(x, i) * pow(1-x, n-i);
