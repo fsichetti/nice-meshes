@@ -1,9 +1,9 @@
 #include "VectorField.hpp"
 
-VectorField::VectorField(Mesh* m) :
-    mesh(m), samples(m->vertNum()) {
+VectorField::VectorField(Mesh* m, bool onFaces) :
+    mesh(m), samples(onFaces ? m->faceNum() : m->vertNum()) {
     for (int i = 0; i < 3; ++i) {
-		components[i] = new ScalarField(m, 0);
+		components[i] = new ScalarField(m, 0, onFaces);
 	}
 }
 
@@ -34,9 +34,9 @@ void VectorField::write(std::string path, bool header) const {
 
     // Write header
     if (header) {
-        file << "VECTOR_FIELD " << mesh->vertNum() << std::endl;
+        file << "VECTOR_FIELD " << samples << std::endl;
     }
-    // Write verts
+    // Write values
     for (unsigned int i = 0; i < samples; ++i) {
 		const glm::vec3 v = getValue(i);
         file << v.x << " " << v.y << " " << v.z << std::endl;

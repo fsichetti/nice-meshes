@@ -41,6 +41,7 @@ All parameters are case-insensitive.
 - **scalarAmplitude**: Scales the scalar field. Defaults to 1.
 - **scalarHeader**: If "true", adds a header line to the scalar field file containing the string "`SCALAR_FIELD`" and the number of vertices.
 - **scalarLaplacian**/**scalarGradient**/**scalarHessian**: If "true", also compute the laplacian/gradient/hessian of the scalar field and write it to `<name>Laplacian.txt`/`<name>Gradient.txt`/`<name>Hessian.txt`.
+- **scalarFaceGradient**: If "true", compute the gradient of the scalar field on face centroids and write it to `<name>FaceGradient.txt`. Useful for comparing methods that estimate the gradient in triangle faces.
 
 ### Behaviour
 - **interactive** If "true", displays the generated mesh in the interactive viewer, where it can be exported to any format via keyboard shortcuts. Defaults to "true".

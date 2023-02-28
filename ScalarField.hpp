@@ -5,7 +5,7 @@
 
 class ScalarField {
     public:
-        ScalarField(Mesh* m, unsigned int derivatives = 0);
+        ScalarField(Mesh* m, unsigned int derivatives = 0, bool onFaces=false);
         ~ScalarField();
         void setValue(double value, unsigned int i, unsigned int uDeriv = 0,
             unsigned int vDeriv = 0);

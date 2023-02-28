@@ -6,7 +6,7 @@
 
 class VectorField {
     public:
-        VectorField(Mesh* m);
+        VectorField(Mesh* m, bool onFaces=false);
         ~VectorField();
         void setValue(glm::vec3 value, unsigned int i);
         glm::vec3 getValue(unsigned int i) const;

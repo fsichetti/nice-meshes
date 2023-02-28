@@ -1,7 +1,8 @@
 #include "ScalarField.hpp"
 
-ScalarField::ScalarField(Mesh* m, unsigned int d) :
-    mesh(m), samples(m->vertNum()), deriv((d+2) * (d+1) / 2) {
+ScalarField::ScalarField(Mesh* m, unsigned int d, bool onFaces) :
+    mesh(m), samples(onFaces ? m->faceNum() : m->vertNum()),
+    deriv((d+2) * (d+1) / 2) {
     values = new double[samples * deriv];
 }
 
@@ -30,9 +31,9 @@ void ScalarField::write(std::string path, bool header) const {
 
     // Write header
     if (header) {
-        file << "SCALAR_FIELD " << mesh->vertNum() << std::endl;
+        file << "SCALAR_FIELD " << samples << std::endl;
     }
-    // Write verts
+    // Write values
     for (unsigned int i = 0; i < samples; ++i) {
         file << getValue(i) << std::endl;
     }

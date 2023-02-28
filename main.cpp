@@ -5,6 +5,7 @@
 #include "BezierPatch.hpp"
 #include "Configuration.hpp"
 #include "VectorField.hpp"
+#include "SinProductSF.hpp"
 
 void runConfig(char* pname, std::string fname, std::string cname, bool paral);
 
@@ -230,61 +231,11 @@ void runConfig(char* pname, std::string fname, std::string cname,
         if (cm["scalarField"] == "true") {
             const double freq = std::stof(cm["scalarFrequency"]);
             const double ampl = std::stof(cm["scalarAmplitude"]);
-            ScalarField sf(mesh, 2);
-            
+            SinProductSF signal(mesh, freq, ampl, (cm["shape"] == "sphere"));
 
-            const unsigned int vn = mesh->vertNum();
-            // Compute field
-            for(unsigned int i = 0; i < vn; ++i) {
-                const double u = mesh->cAttrib(i, Mesh::Attribute::U);
-                const double v = mesh->cAttrib(i, Mesh::Attribute::V);
-                const double freqpi = TWOPI * freq;
-                double f = ampl *
-                    sin(freqpi * u) * sin(freqpi * v);
-                double fu = ampl * freqpi * 
-                    cos(freqpi * u) * sin(freqpi * v);
-                double fv = ampl * freqpi * 
-                    sin(freqpi * u) * cos(freqpi * v);
-                double fuu = -pow(freqpi, 2) * f;
-                double fuv = pow(freqpi, 2) * ampl *
-                    cos(freqpi * u) * cos(freqpi * v);
-                double fvv = fuu;
-                    
-
-                if (cm["shape"] == "sphere") {
-                    // Additional factor that goes to zero at the poles
-                    const double x = pow(2 * v - 1, 2);
-                    const double p = - 6*pow(x,5) + 15*pow(x,4)
-                        - 10*pow(x,3) + 1;
-                    const double pv = (- 30*pow(x,4) + 60*pow(x,3)
-                        - 30*pow(x,2)) * (8*v - 4);
-                    const double pvv = (- 120*pow(x,3) + 180*pow(x,2)
-                        - 60*x) * pow(8*v - 4, 2) + (- 30*pow(x,4)
-                        + 60*pow(x,3) - 30*pow(x,2)) * 8;
-
-                    // Original values of f
-                    const double of = f, ofu = fu, ofv = fv,
-                        ofuu = fuu, ofuv = fuv, ofvv = fvv;
-
-                    // Product rule
-                    f = of * p;
-                    fu = ofu * p;
-                    fv = ofv * p + of * pv;
-                    fuu = ofuu * p;
-                    fuv = ofuv * p + ofu * pv;
-                    fvv = ofvv * p + 2 * ofv * pv + of * pvv;
-                }
-
-                sf.setValue(f, i, 0, 0);
-                sf.setValue(fu, i, 1, 0);
-                sf.setValue(fv, i, 0, 1);
-                sf.setValue(fuu, i, 2, 0);
-                sf.setValue(fuv, i, 1, 1);
-                sf.setValue(fvv, i, 0, 2);
-            }
             // Write
             const bool head = (cm["scalarHeader"] == "true");
-            sf.write(cm["outFolder"] + mesh->name + "Scalar.txt", head);
+            signal.write(cm["outFolder"] + mesh->name + "Scalar.txt", head);
 
             // Compute differential quantities
             const bool lap = cm["scalarLaplacian"] == "true";
@@ -293,8 +244,8 @@ void runConfig(char* pname, std::string fname, std::string cname,
             const bool euv = cm["exportUV"] == "true";
             if (lap || gra || hes || euv) {
                 ScalarField *laplacian = nullptr;
-                VectorField *gradient = nullptr,
-                    *hessian = nullptr, *uvfield = nullptr;
+                VectorField *gradient = nullptr, *hessian = nullptr,
+                    *uvfield = nullptr;
 
                 // Create
                 if (lap) laplacian = new ScalarField(mesh);
@@ -303,15 +254,17 @@ void runConfig(char* pname, std::string fname, std::string cname,
                 if (euv) uvfield = new VectorField(mesh);
                 
                 // Compute
+                const unsigned int vn = mesh->vertNum();
                 for(unsigned int i = 0; i < vn; ++i) {
                     const double u = mesh->cAttrib(i, Mesh::Attribute::U);
                     const double v = mesh->cAttrib(i, Mesh::Attribute::V);
-                    const double f = sf.getValue(i, 0, 0);
-                    const double fu = sf.getValue(i, 1, 0);
-                    const double fv = sf.getValue(i, 0, 1);
-                    const double fuu = sf.getValue(i, 2, 0);
-                    const double fuv = sf.getValue(i, 1, 1);
-                    const double fvv = sf.getValue(i, 0, 2);
+                    const double f = signal.getValue(i, 0, 0);
+                    const double fu = signal.getValue(i, 1, 0);
+                    const double fv = signal.getValue(i, 0, 1);
+                    const double fuu = signal.getValue(i, 2, 0);
+                    const double fuv = signal.getValue(i, 1, 1);
+                    const double fvv = signal.getValue(i, 0, 2);
+                    
                     
                     if (lap) laplacian->setValue(
                         mesh->laplacian(u, v, f, fu, fv, fuu, fuv, fvv), i);
@@ -348,6 +301,37 @@ void runConfig(char* pname, std::string fname, std::string cname,
                     uvfield->write2d(cm["outFolder"] + mesh->name + "UV.txt");
                     delete uvfield;
                 }
+            }
+
+            // Face diff. quantities
+            if (cm["scalarFaceGradient"] == "true") {
+                const unsigned int fn = mesh->faceNum();
+                VectorField faceGradient(mesh, true);
+                for (unsigned int i = 0; i < fn; ++i) {
+                    unsigned int f[3] = {
+                        mesh->cFacei(i, 0),
+                        mesh->cFacei(i, 1),
+                        mesh->cFacei(i, 2)
+                    };
+                    glm::vec2 centroidUV(0);
+                    for (unsigned int ti = 0; ti < 3; ++ti) {
+                        const glm::vec2 uv(
+                            mesh->cAttrib(f[ti], Mesh::Attribute::U),
+                            mesh->cAttrib(f[ti], Mesh::Attribute::V)
+                        );
+                        centroidUV += uv;
+                    }
+                    centroidUV /= glm::vec1(3);
+                    double ff, ffu, ffv, ffuu, ffuv, ffvv;
+		            signal.evaluate(centroidUV.x, centroidUV.y,
+                        ff, ffu, ffv, ffuu, ffuv, ffvv);
+                    faceGradient.setValue(
+                        mesh->gradient(centroidUV.x, centroidUV.y,
+                            ff, ffu, ffv), i);
+                }
+                const bool head = (cm["scalarHeader"] == "true");
+                faceGradient.write(cm["outFolder"]
+                    + mesh->name + "FaceGradient.txt", head);
             }
         }
         delete mesh;

@@ -36,6 +36,7 @@ void ConfigManager::defaultValues() {
     c["scalarAmplitude"] = "1";
     c["scalarLaplacian"] = "false";
     c["scalarGradient"] = "false";
+    c["scalarFaceGradient"] = "false";
     c["scalarHessian"] = "false";
 }
 
