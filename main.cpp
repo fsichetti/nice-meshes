@@ -292,8 +292,9 @@ void runConfig(char* pname, std::string fname, std::string cname,
             const bool hes = cm["scalarHessian"] == "true";
             const bool euv = cm["exportUV"] == "true";
             if (lap || gra || hes || euv) {
-                ScalarField *laplacian;
-                VectorField *gradient, *hessian, *uvfield;
+                ScalarField *laplacian = nullptr;
+                VectorField *gradient = nullptr,
+                    *hessian = nullptr, *uvfield = nullptr;
 
                 // Create
                 if (lap) laplacian = new ScalarField(mesh);
