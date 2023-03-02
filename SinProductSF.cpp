@@ -22,12 +22,12 @@ SinProductSF::SinProductSF(Mesh* mesh, double freq, double ampl, bool fadeV) :
 
 void SinProductSF::evaluate(double u, double v, double &f,
 	double &fu, double &fv, double &fuu, double &fuv, double &fvv) const {
-	const double freqpi = TWOPI * freq;
-	f = ampl * sin(freqpi * u) * sin(freqpi * v);
-	fu = ampl * freqpi * cos(freqpi * u) * sin(freqpi * v);
-	fv = ampl * freqpi * sin(freqpi * u) * cos(freqpi * v);
-	fuu = -pow(freqpi, 2) * f;
-	fuv = pow(freqpi, 2) * ampl * cos(freqpi * u) * cos(freqpi * v);
+	const double freq2pi = TWOPI * freq;
+	f = ampl * sin(freq2pi * u) * sin(freq2pi * v);
+	fu = ampl * freq2pi * cos(freq2pi * u) * sin(freq2pi * v);
+	fv = ampl * freq2pi * sin(freq2pi * u) * cos(freq2pi * v);
+	fuu = -pow(freq2pi, 2) * f;
+	fuv = pow(freq2pi, 2) * ampl * cos(freq2pi * u) * cos(freq2pi * v);
 	fvv = fuu;
 
 	if (fadeV) {
