@@ -329,25 +329,37 @@ void Mesh::writeOFF(std::string path) const {
 void Mesh::gaussNoise(float variance, bool nrm, bool tan) {
     if (!(nrm || tan)) return;
     for (unsigned int i = 0; i < vNum; ++i) {
-        glm::vec3 v(
-            cAttrib(i, Attribute::X),
-            cAttrib(i, Attribute::Y),
-            cAttrib(i, Attribute::Z)
-        );
-        glm::vec3 noise = RandPoint::gaussian3(variance);
-        // IT'S NOT YET USING UNIFORM DISTRIBUTIONS FOR NRM AND TAN NOISES!!!
-        if (nrm != tan) {
+        glm::vec3 noise(0);
+        if (nrm && tan) {
+            noise = RandPoint::gaussian3(variance);
+        }
+        else {
             if (!normalsComputed) computeNormals();
-            glm::vec3 n(
+            glm::vec3 normalVec(
                 cAttrib(i, Attribute::NX),
                 cAttrib(i, Attribute::NY),
                 cAttrib(i, Attribute::NZ)
             );
-            n = glm::normalize(n);
-            n *= glm::dot(noise, n);    // Normal component of noise
-            if (nrm) noise = n;
-            else if (tan) noise -= n;
+            normalVec = glm::normalize(normalVec);
+            if (tan) {
+                // Construct a basis for the tangent space
+                glm::vec3 v1, v2;
+                if (normalVec.z != 0) {
+                    v1 = glm::vec3(1, 1, 
+                        -(normalVec.x + normalVec.y)/normalVec.z);
+                    v1 = glm::normalize(v1);
+                }
+                else v1 = glm::vec3(0,0,1);
+                v2 = glm::cross(normalVec, v1);
+                v2 = glm::normalize(v2);
+                const auto n = RandPoint::gaussian2(variance);
+                noise = v1 * n.s + v2 * n.t;
+            }
+            if (nrm) {
+                noise = normalVec * RandPoint::gaussian1(variance);
+            }
         }
+
         attrib(i, Attribute::X) += noise.x;
         attrib(i, Attribute::Y) += noise.y;
         attrib(i, Attribute::Z) += noise.z;
@@ -430,7 +442,7 @@ float Mesh::avgEdgeLength() const {
         for (int j=0; j<3; ++j) {
             // for each xyz component, retrieve value
             for (int k=0; k<3; ++k) {
-                faceVert[j][k] = cAttrib(faces[3*i+j], k);
+                faceVert[j][k] = cAttrib(cFacei(i,j), k);
             }
         }
         len += glm::length(faceVert[0] - faceVert[1]);

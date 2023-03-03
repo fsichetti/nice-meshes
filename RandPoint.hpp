@@ -11,23 +11,33 @@ namespace RandPoint {
         return seed;
     }
 
-    inline glm::vec3 gaussian3(double variance,
-        const glm::vec3& center = glm::vec3()) {
+    inline glm::vec1 gaussian1(double variance) {
+        return glm::vec1(
+            glm::gaussRand<float>(0., variance)
+        );
+    }
+
+    inline glm::vec2 gaussian2(double variance) {
+        return glm::vec2(
+            glm::gaussRand<float>(0., variance),
+            glm::gaussRand<float>(0., variance)
+        );
+    }
+
+    inline glm::vec3 gaussian3(double variance) {
         return glm::vec3(
             glm::gaussRand<float>(0., variance),
             glm::gaussRand<float>(0., variance),
             glm::gaussRand<float>(0., variance)
-        ) + center;
+        );
     }
     
-    inline glm::vec3 onSphere(double radius,
-        const glm::vec3& center = glm::vec3()) {
-        return glm::sphericalRand<float>(radius) + center;
+    inline glm::vec3 onSphere(double radius) {
+        return glm::sphericalRand<float>(radius);
     }
 
-    inline glm::vec3 inSphere(double radius,
-        const glm::vec3& center = glm::vec3()) {
-        return glm::ballRand<float>(radius) + center;
+    inline glm::vec3 inSphere(double radius) {
+        return glm::ballRand<float>(radius);
     }
 }
 

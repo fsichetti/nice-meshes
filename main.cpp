@@ -203,7 +203,8 @@ void runConfig(char* pname, std::string fname, std::string cname,
             bool nrm, tan;
             nrm = (t == "3d" || t == "normal");
             tan = (t == "3d" || t == "tangential");
-            mesh->gaussNoise(ael*std::stod(cm["noise"]), nrm, tan);
+            const double variance = sqrt(ael * std::stod(cm["noise"]));
+            mesh->gaussNoise(variance, nrm, tan);
         }
         
         // Mode
