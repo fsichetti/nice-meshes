@@ -35,7 +35,7 @@ void ScalarField::write(std::string path, bool header) const {
     }
     // Write values
     for (uint i = 0; i < samples; ++i) {
-        file << getValue(i) << std::endl;
+        file << std::setprecision(DPRECIS) << getValue(i) << std::endl;
     }
 
     // Close file

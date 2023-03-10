@@ -39,7 +39,9 @@ void VectorField::write(std::string path, bool header) const {
     // Write values
     for (uint i = 0; i < samples; ++i) {
 		const glm::vec3 v = getValue(i);
-        file << v.x << " " << v.y << " " << v.z << std::endl;
+        file << std::setprecision(DPRECIS) << v.x << " "
+            << std::setprecision(DPRECIS) << v.y << " "
+            << std::setprecision(DPRECIS) << v.z << std::endl;
     }
 
     // Close file
@@ -54,7 +56,8 @@ void VectorField::write2d(std::string path) const {
     // Write verts
     for (uint i = 0; i < samples; ++i) {
 		const glm::vec3 v = getValue(i);
-        file << v.x << " " << v.y << std::endl;
+        file << std::setprecision(DPRECIS) << v.x << " "
+            << std::setprecision(DPRECIS) << v.y << std::endl;
     }
 
     // Close file

@@ -240,17 +240,19 @@ void Mesh::writeOBJ(std::string path) const {
     // Write verts
     for (int i=0; i < vNum; ++i) {
         file << "v "
-            << cAttrib(i, Attribute::X) << " "
-            << cAttrib(i, Attribute::Y) << " "
-            << cAttrib(i, Attribute::Z) << std::endl;
+            << std::setprecision(DPRECIS) << cAttrib(i, Attribute::X) << " "
+            << std::setprecision(DPRECIS) << cAttrib(i, Attribute::Y) << " "
+            << std::setprecision(DPRECIS) << cAttrib(i, Attribute::Z)
+            << std::endl;
     }
     // Write normals
     if (hasNrm) {
         for (int i=0; i < vNum; ++i) {
             file << "vn "
-                << cAttrib(i, Attribute::NX) << " "
-                << cAttrib(i, Attribute::NY) << " "
-                << cAttrib(i, Attribute::NZ) << std::endl;
+                << std::setprecision(DPRECIS) << cAttrib(i, Attribute::NX) << " "
+                << std::setprecision(DPRECIS) << cAttrib(i, Attribute::NY) << " "
+                << std::setprecision(DPRECIS) << cAttrib(i, Attribute::NZ)
+                << std::endl;
         }
     }
     // Write faces
@@ -291,7 +293,7 @@ void Mesh::writePLY(std::string path) const {
     // Write vertices
     for (int i=0; i < verts.size(); i+=attCmp) {
         for (int j=0; j<attCmp; ++j) {
-            file << verts[i+j] << " ";
+            file << std::setprecision(DPRECIS) << verts[i+j] << " ";
         }
         file << std::endl;
     }
@@ -320,9 +322,9 @@ void Mesh::writeOFF(std::string path) const {
 
     // Write verts
     for (int i=0; i < vNum; ++i) {
-        file << cAttrib(i, Attribute::X) << " "
-            << cAttrib(i, Attribute::Y) << " "
-            << cAttrib(i, Attribute::Z) << std::endl;
+        file << std::setprecision(DPRECIS) << cAttrib(i, Attribute::X) << " "
+            << std::setprecision(DPRECIS) << cAttrib(i, Attribute::Y) << " "
+            << std::setprecision(DPRECIS) << cAttrib(i, Attribute::Z) << std::endl;
     }
     // Write faces
     for (int i=0; i < faces.size(); i+=3) {

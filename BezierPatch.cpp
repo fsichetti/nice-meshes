@@ -202,7 +202,7 @@ void BezierPatch::ControlGrid::writeCoordinate(
     // Write verts
     for (uint i = 0; i <= degree; ++i) {
         for (uint j = 0; j <= degree; ++j) {
-            file << get(i,j)[coordinate] << " ";
+            file << std::setprecision(DPRECIS) << get(i,j)[coordinate] << " ";
         }
         file << std::endl;
     }

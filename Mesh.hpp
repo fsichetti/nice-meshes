@@ -6,9 +6,13 @@
 #include <fstream>
 #include <epoxy/gl.h>
 #include <glm/glm.hpp>
-#include "RandPoint.hpp"
+#include <iomanip>
 
+#include "RandPoint.hpp"
 #include "DifferentialQuantities.hpp"
+
+const size_t DPRECIS = std::numeric_limits<double>::digits10 + 1;
+
 
 class Mesh { 
     public:
