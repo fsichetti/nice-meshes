@@ -7,7 +7,7 @@ PlaneSampling::PlaneSampling(std::string path) {
 	faces.reserve(64);
     std::ifstream file(path);
     if (file.is_open()) {
-        unsigned int cnt = 0;
+        uint cnt = 0;
 
         while (!file.eof()) {
             std::string token;

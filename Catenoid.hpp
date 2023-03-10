@@ -9,7 +9,7 @@
 class Catenoid : public Mesh {
     public:
         Catenoid(
-            unsigned int samples,   // samples in rotational direction
+            uint samples,   // samples in rotational direction
             double rOuter,
             double rInner
         );
@@ -22,7 +22,7 @@ class Catenoid : public Mesh {
 
     private:
         const double rInner, rOuter, height;
-        unsigned int placeVertex(double u, double v);
+        uint placeVertex(double u, double v);
 };
 
 #endif

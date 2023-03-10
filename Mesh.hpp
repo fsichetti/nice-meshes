@@ -12,33 +12,24 @@
 
 class Mesh { 
     public:
-        typedef std::vector<GLfloat> vArray;
-        typedef std::vector<GLuint> fArray;
+        typedef std::vector<double> vArray;
+        typedef std::vector<uint> fArray;
 
         std::string name = "";
 
         // Init mesh with expected number of vertices and faces
         Mesh(bool normals, bool parametric, bool curvature);
-        void deleteBuffers() {
-            if (!allocatedGLBuffers) return;
-            glDeleteBuffers(1, &vbo);
-            glDeleteBuffers(1, &ebo);
-            glDeleteVertexArrays(1, &vao);
-            vbo = 0;
-            ebo = 0;
-            vao = 0;
-            allocatedGLBuffers = false;
-        }
+        void deleteBuffers();
 
         // Get vertex and face number
-        const inline unsigned int vertNum() const { return vNum; }
-        const inline unsigned int faceNum() const { return fNum; }
+        const inline uint vertNum() const { return vNum; }
+        const inline uint faceNum() const { return fNum; }
 
         // Core methods
-        void reserveSpace(unsigned int verts, unsigned int faces);
-        unsigned int addVertex();
-        unsigned int addVertex(GLfloat x, GLfloat y, GLfloat z);
-        unsigned int addFace(GLuint i, GLuint j, GLuint k);
+        void reserveSpace(uint verts, uint faces);
+        uint addVertex();
+        uint addVertex(double x, double y, double z);
+        uint addFace(uint i, uint j, uint k);
         void finalize(bool nogui = false);
         void draw(GLuint drawMode = GL_TRIANGLES) const;
 
@@ -52,22 +43,22 @@ class Mesh {
 
         // Access methods
         enum Attribute { X, Y, Z, NX, NY, NZ, U, V, K, H };
-        const inline GLfloat cAttrib(unsigned int vertexId,
-            unsigned int attribOffset) const {
+        const inline double cAttrib(uint vertexId,
+            uint attribOffset) const {
             return verts[attCmp * vertexId + attribOffset];
         }
-        const inline GLfloat cAttrib(unsigned int vertexId,
+        const inline double cAttrib(uint vertexId,
             Attribute attribute) const {
             return cAttrib(vertexId, attToOff(attribute));
         }
-        const inline GLuint cFacei(unsigned int faceId, unsigned int n) const {
+        const inline uint cFacei(uint faceId, uint n) const {
             return faces[3 * faceId + n];
         }
 
         // Utility methods
         // friend class MeshStatistics;     // maybe in the future?
-        float avgEdgeLength() const;
-        float getVolume() const;
+        double avgEdgeLength() const;
+        double getVolume() const;
 
         // Differential quantities
         virtual DifferentialQuantities diffEvaluate(double u, double v)
@@ -87,7 +78,7 @@ class Mesh {
 
         // Mesh processing
         // friend class MeshProcessing;     // maybe in the future?
-        void gaussNoise(float variance, 
+        void gaussNoise(double variance, 
             bool normal = true, bool tangential = true);
         void makeCentered();
         void refine();
@@ -98,13 +89,13 @@ class Mesh {
 
     protected:
         // Access methods
-        inline GLfloat& attrib(unsigned int vertexId, unsigned int attribOffset) {
+        inline double& attrib(uint vertexId, uint attribOffset) {
             return verts[attCmp * vertexId + attribOffset];
         }
-        inline GLfloat& attrib(unsigned int vertexId, Attribute attribute) {
+        inline double& attrib(uint vertexId, Attribute attribute) {
             return attrib(vertexId, attToOff(attribute));
         }
-        inline GLuint& facei(unsigned int faceId, unsigned int n) {
+        inline uint& facei(uint faceId, uint n) {
             return faces[3 * faceId + n];
         }
 
@@ -115,20 +106,19 @@ class Mesh {
         bool final = false;
         bool allocatedGLBuffers = false; // prevent deletion of unalloc. buffers
 
-        unsigned int vNum=0, fNum=0;    // vertex and face count
+        uint vNum=0, fNum=0;    // vertex and face count
         vArray verts;
         fArray faces;
 
         GLuint vbo, ebo, vao;   // Buffer indices
-        const GLuint attCnt; // Attribute count
-        const GLuint attCmp; // Total number of components
-        const size_t attByt; // Total byte offset
+        const uint attCnt; // Attribute count
+        const uint attCmp; // Total number of components
 
         // Converts attribute enum value to offset
-        unsigned int attToOff(Attribute att) const;
+        uint attToOff(Attribute att) const;
 
         // Vertex-vertex adjacency list
-        // typedef std::vector<std::set<unsigned int>> adjacencyVV;
+        // typedef std::vector<std::set<uint>> adjacencyVV;
 
         const bool hasNrm;  // Has normals?
         const bool hasPar;  // Has parametric coordinates?

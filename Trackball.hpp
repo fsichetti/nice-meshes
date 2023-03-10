@@ -8,7 +8,7 @@
 
 class Trackball {
     private:
-        unsigned int width, height;
+        uint width, height;
         const GLfloat fov = 45, near = .1, far = 10;
         const float radius = 200;   // on-screen radius in pixels
         const float r2 = glm::pow(radius, 2);
@@ -39,7 +39,7 @@ class Trackball {
 
         void reset();
         void setDimensions(int, int);
-        inline void getDimensions(unsigned int& w, unsigned int& h) const {
+        inline void getDimensions(uint& w, uint& h) const {
             w = width;
             h = height;
         }

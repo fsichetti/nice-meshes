@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     bool firstarg = true;
     bool parallel = false;
     // Parse arguments
-    for (unsigned int a = 1; a < argc; ++a) {
+    for (uint a = 1; a < argc; ++a) {
         if (argv[a][0] == '-') {
             switch (argv[a][1]) {
                 case 'p':
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     for (std::string c : configs) std::cout << c << " ";
     std::cout << std::endl;
 
-    const unsigned int confCount = std::max(1, argc - 2);
+    const uint confCount = std::max(1, argc - 2);
     
     if (parallel) {
         #pragma omp parallel for
@@ -87,10 +87,10 @@ void runConfig(char* pname, std::string fname, std::string cname,
     if (cm["seed"] != "") RandPoint::seed(std::stoi(cm["seed"]));
     else RandPoint::seed();
 
-    const unsigned int repeat = std::stoi(cm["repeat"]);
+    const uint repeat = std::stoi(cm["repeat"]);
     // determines the number of leading zeroes used in mesh names
-    const unsigned int repStringLen = std::to_string(repeat-1).length();
-    for (unsigned int i = 0; i < repeat; ++i) {
+    const uint repStringLen = std::to_string(repeat-1).length();
+    for (uint i = 0; i < repeat; ++i) {
         // Mesh
         Mesh *mesh = nullptr;
         BezierPatch::ControlGrid *cg = nullptr;
@@ -255,8 +255,8 @@ void runConfig(char* pname, std::string fname, std::string cname,
                 if (euv) uvfield = new VectorField(mesh);
                 
                 // Compute
-                const unsigned int vn = mesh->vertNum();
-                for(unsigned int i = 0; i < vn; ++i) {
+                const uint vn = mesh->vertNum();
+                for(uint i = 0; i < vn; ++i) {
                     const double u = mesh->cAttrib(i, Mesh::Attribute::U);
                     const double v = mesh->cAttrib(i, Mesh::Attribute::V);
                     const double f = signal.getValue(i, 0, 0);
@@ -306,16 +306,16 @@ void runConfig(char* pname, std::string fname, std::string cname,
 
             // Face diff. quantities
             if (cm["scalarFaceGradient"] == "true") {
-                const unsigned int fn = mesh->faceNum();
+                const uint fn = mesh->faceNum();
                 VectorField faceGradient(mesh, true);
-                for (unsigned int i = 0; i < fn; ++i) {
-                    unsigned int f[3] = {
+                for (uint i = 0; i < fn; ++i) {
+                    uint f[3] = {
                         mesh->cFacei(i, 0),
                         mesh->cFacei(i, 1),
                         mesh->cFacei(i, 2)
                     };
                     glm::vec2 centroidUV(0);
-                    for (unsigned int ti = 0; ti < 3; ++ti) {
+                    for (uint ti = 0; ti < 3; ++ti) {
                         const glm::vec2 uv(
                             mesh->cAttrib(f[ti], Mesh::Attribute::U),
                             mesh->cAttrib(f[ti], Mesh::Attribute::V)

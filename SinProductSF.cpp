@@ -2,9 +2,9 @@
 
 SinProductSF::SinProductSF(Mesh* mesh, double freq, double ampl, bool fadeV) :
 	ScalarField(mesh, 2), freq(freq), ampl(ampl), fadeV(fadeV) {
-	const unsigned int vn = mesh->vertNum();
+	const uint vn = mesh->vertNum();
 	// Compute field
-	for(unsigned int i = 0; i < vn; ++i) {
+	for(uint i = 0; i < vn; ++i) {
 		const double u = mesh->cAttrib(i, Mesh::Attribute::U);
 		const double v = mesh->cAttrib(i, Mesh::Attribute::V);
 		

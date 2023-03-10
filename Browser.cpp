@@ -210,7 +210,7 @@ namespace Browser {
     }
 
     void screenshot(std::string filename) {
-        unsigned int w, h;
+        uint w, h;
         trackball->getDimensions(w, h);
 
         // Read raw data

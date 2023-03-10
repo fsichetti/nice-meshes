@@ -1,6 +1,6 @@
 #include "ScalarField.hpp"
 
-ScalarField::ScalarField(Mesh* m, unsigned int d, bool onFaces) :
+ScalarField::ScalarField(Mesh* m, uint d, bool onFaces) :
     mesh(m), samples(onFaces ? m->faceNum() : m->vertNum()),
     deriv((d+2) * (d+1) / 2) {
     values = new double[samples * deriv];
@@ -10,17 +10,17 @@ ScalarField::~ScalarField() {
     delete values;
 }
 
-void ScalarField::setValue(double val, unsigned int i,
-    unsigned int du, unsigned int dv) {
+void ScalarField::setValue(double val, uint i,
+    uint du, uint dv) {
     // Cantor pairing function
-    unsigned int index = i * deriv + pair(du, dv);
+    uint index = i * deriv + pair(du, dv);
     if (index >= samples * deriv) { throw TooManyValuesException(); }
     values[index] = val;
 }
 
-double ScalarField::getValue(unsigned int i, unsigned int du,
-    unsigned int dv) const {
-    unsigned int index = i * deriv + pair(du, dv);
+double ScalarField::getValue(uint i, uint du,
+    uint dv) const {
+    uint index = i * deriv + pair(du, dv);
     return values[index];
 }
 
@@ -34,7 +34,7 @@ void ScalarField::write(std::string path, bool header) const {
         file << "SCALAR_FIELD " << samples << std::endl;
     }
     // Write values
-    for (unsigned int i = 0; i < samples; ++i) {
+    for (uint i = 0; i < samples; ++i) {
         file << getValue(i) << std::endl;
     }
 
@@ -42,6 +42,6 @@ void ScalarField::write(std::string path, bool header) const {
     file.close();
 }
 
-unsigned int ScalarField::pair(unsigned int x, unsigned int y) const {
+uint ScalarField::pair(uint x, uint y) const {
     return (x*x + 3*x + 2*x*y + y + y*y) / 2;
 }

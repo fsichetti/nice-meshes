@@ -9,7 +9,7 @@
 class Torus : public Mesh {
     public:
         Torus(
-            unsigned int samples,   // samples in toroidal direction
+            uint samples,   // samples in toroidal direction
             double rOuter,
             double rInner
         );
@@ -23,7 +23,7 @@ class Torus : public Mesh {
 
     private:
         const double rInner, rOuter;
-        unsigned int placeVertex(double u, double v);
+        uint placeVertex(double u, double v);
 };
 
 #endif

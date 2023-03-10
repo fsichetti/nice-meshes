@@ -1,27 +1,27 @@
 #include "BezierPatch.hpp"
 
 void BezierPatch::bcPrepare() {
-    unsigned int k = ((degree-1) * (degree-1) + degree-1) / 2;
-    bc = new unsigned int[k];
-    for (unsigned int i = 0; i < k; ++i) {
+    uint k = ((degree-1) * (degree-1) + degree-1) / 2;
+    bc = new uint[k];
+    for (uint i = 0; i < k; ++i) {
         bc[i] = 0;
     }
 }
 
-unsigned int BezierPatch::binomial(int k, int n) const {
+uint BezierPatch::binomial(int k, int n) const {
     if (k < 0 || k > n) throw std::domain_error("K must be between 0 and N.");
     if (k == 0 || k == n) return 1;
-    const unsigned int nn = n-2;
-    const unsigned int ind = (nn*nn + nn)/2 + k-1;
+    const uint nn = n-2;
+    const uint ind = (nn*nn + nn)/2 + k-1;
     if (bc[ind] == 0) bc[ind] = binomial(k-1, n-1) + binomial(k, n-1);
     return bc[ind];
 }
 
 
 glm::vec3 BezierPatch::sampleSurface(
-    double u, double v, unsigned int derivU, unsigned int derivV) const {
+    double u, double v, uint derivU, uint derivV) const {
     glm::vec3 p(0);
-    for (unsigned int i = 0; i <= degree; ++i) {
+    for (uint i = 0; i <= degree; ++i) {
         for (int j = 0; j <= degree; ++j) {
             p += glm::vec1(
                 bPoly(i, degree, u, derivU) * 
@@ -33,10 +33,10 @@ glm::vec3 BezierPatch::sampleSurface(
 }
 
 
-BezierPatch::BezierPatch(ControlGrid *cg, unsigned int samples)
+BezierPatch::BezierPatch(ControlGrid *cg, uint samples)
     : Mesh(true, true, true) {
     name = "BezierPatch";
-    const unsigned int uvSamples = samples * samples;
+    const uint uvSamples = samples * samples;
     const double uvStep = 1.0 / (double)samples;
     reserveSpace(uvSamples, uvSamples/2);
     bcPrepare();
@@ -44,12 +44,12 @@ BezierPatch::BezierPatch(ControlGrid *cg, unsigned int samples)
 
     // Compute points
     // Iterate on sample points (u,v)
-    for (unsigned int u = 0; u < samples; ++u) {
-        for (unsigned int v = 0; v < samples; ++v) {
+    for (uint u = 0; u < samples; ++u) {
+        for (uint v = 0; v < samples; ++v) {
             const double uu = u * uvStep, vv = v * uvStep;
             // Iterate on control points (i,j)
             const glm::vec3 x = sampleSurface(uu, vv);
-            const unsigned int index = addVertex(x[0], x[1], x[2]);
+            const uint index = addVertex(x[0], x[1], x[2]);
 
             // Compute normals analitically
             const glm::vec3 xu = sampleSurface(uu, vv, 1, 0);
@@ -73,7 +73,7 @@ BezierPatch::BezierPatch(ControlGrid *cg, unsigned int samples)
             attrib(index, Attribute::K) = dq.gaussianCurvature();
 
             if (u < samples-1 && v < samples-1) {
-                const unsigned int id = samples * u + v;
+                const uint id = samples * u + v;
                 addFace(id, id+1, id+samples);
                 addFace(id+1, id+samples+1, id+samples);
             }
@@ -86,14 +86,14 @@ BezierPatch::BezierPatch(ControlGrid *cg, unsigned int samples)
 BezierPatch::BezierPatch(ControlGrid *cg, PlaneSampling smp)
     : Mesh(true, true, true) {
     name = "BezierPatch";
-    const unsigned int NV = smp.vertNum();
-    const unsigned int NF = smp.faceNum();
+    const uint NV = smp.vertNum();
+    const uint NF = smp.faceNum();
     reserveSpace(NV, NF);
     bcPrepare();
     control = cg;
 
     // Compute vertices
-    for (unsigned int i = 0; i < NV; ++i) {
+    for (uint i = 0; i < NV; ++i) {
         const double uu = smp.cAttrib(i, 0), vv = smp.cAttrib(i, 1);
         const glm::vec3 x = sampleSurface(uu, vv);
         addVertex(x[0], x[1], x[2]);
@@ -115,7 +115,7 @@ BezierPatch::BezierPatch(ControlGrid *cg, PlaneSampling smp)
         attrib(i, Attribute::K) = dq.gaussianCurvature();
     }
     // Add faces
-    for (unsigned int i = 0; i < NF; ++i) {
+    for (uint i = 0; i < NF; ++i) {
         const auto fi = 3*i;
         addFace(smp.cFacei(fi, 0), smp.cFacei(fi, 1), smp.cFacei(fi, 2));
     }
@@ -200,8 +200,8 @@ void BezierPatch::ControlGrid::writeCoordinate(
     if (!file.is_open()) throw Mesh::FileOpenException();
 
     // Write verts
-    for (unsigned int i = 0; i <= degree; ++i) {
-        for (unsigned int j = 0; j <= degree; ++j) {
+    for (uint i = 0; i <= degree; ++i) {
+        for (uint j = 0; j <= degree; ++j) {
             file << get(i,j)[coordinate] << " ";
         }
         file << std::endl;

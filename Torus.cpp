@@ -1,47 +1,47 @@
 #include "Torus.hpp"
 
 Torus::Torus(
-        unsigned int samples,   // samples in toroidal direction
+        uint samples,   // samples in toroidal direction
         double rOuter,
         double rInner
     ) : Mesh(true, true, true), rInner(rInner), rOuter(rOuter) {
 
     // Construct torus
     const double rRatio = rOuter / rInner;
-    const unsigned int uSamples = samples;
+    const uint uSamples = samples;
     const double uStep = 1.0 / static_cast<double>(uSamples);
 
     // Pre-computation for sampling in poloidal direction
     double phiMax = 0;
-    unsigned int count = 0;
+    uint count = 0;
     const double vStep = SQRT3_2 * uStep;
     // rescale to [0, 1]
     while (phiMax < TWOPI || count % 2) { 
         phiMax += TWOPI * vStep * (rRatio + cos(phiMax));
         ++count;
     }
-    const unsigned int vSamples = count;
-    const unsigned int uvSamples = uSamples * vSamples;
+    const uint vSamples = count;
+    const uint uvSamples = uSamples * vSamples;
 
     name = "RegularTorus";
     reserveSpace(uvSamples, 2*uvSamples);    
 
 
     double phi = 0;
-    for (unsigned int v = 0; v < vSamples; ++v) {
-        for (unsigned int u = 0; u < uSamples; ++u) {
+    for (uint v = 0; v < vSamples; ++v) {
+        for (uint u = 0; u < uSamples; ++u) {
             // Place vertices
             const double uu = (u - (v%2)*.5) * uStep;
             const double vv = phi / phiMax;
             
-            const unsigned int index = placeVertex(uu, vv);
+            const uint index = placeVertex(uu, vv);
 
             // Add faces
-            const unsigned int us = (u+uSamples-v%2)%uSamples;
-            GLuint a = index;
-            GLuint b = (u+1)%uSamples+v*uSamples;
-            GLuint c = ((u+1-v%2)%uSamples+(v+1)*uSamples)%uvSamples;
-            GLuint d = ((us+uSamples)%uSamples+(v+1)*uSamples)%uvSamples;
+            const uint us = (u+uSamples-v%2)%uSamples;
+            uint a = index;
+            uint b = (u+1)%uSamples+v*uSamples;
+            uint c = ((u+1-v%2)%uSamples+(v+1)*uSamples)%uvSamples;
+            uint d = ((us+uSamples)%uSamples+(v+1)*uSamples)%uvSamples;
 
             addFace(a, b, c);
             addFace(a, c, d);
@@ -59,7 +59,7 @@ Torus::Torus(std::string path, double rOuter, double rInner) :
 
     // Read plane parameterization
     PlaneSampling plane(path);
-    const unsigned int pv = plane.vertNum(), pf = plane.faceNum();
+    const uint pv = plane.vertNum(), pf = plane.faceNum();
     reserveSpace(pv, pf);
 
     // Place vertices
@@ -93,7 +93,7 @@ Torus::Torus(std::string path, double rOuter, double rInner) :
     }
 
     // Write faces w/ substitutions
-    for (unsigned int i = 0; i < pf; ++i) {
+    for (uint i = 0; i < pf; ++i) {
         addFace(
             newId.at(plane.cFacei(i, 0)),
             newId.at(plane.cFacei(i, 1)),
@@ -104,13 +104,13 @@ Torus::Torus(std::string path, double rOuter, double rInner) :
 }
 
 
-unsigned int Torus::placeVertex(double u, double v) {
+uint Torus::placeVertex(double u, double v) {
     const double sinu = sin(TWOPI * u);
     const double cosu = cos(TWOPI * u);
     const double sinv = sin(TWOPI * v);
     const double cosv = cos(TWOPI * v);
     
-    const unsigned int index = addVertex();
+    const uint index = addVertex();
     
     attrib(index, Attribute::X) = cosu * (rOuter + rInner * cosv);
     attrib(index, Attribute::Y) = sinu * (rOuter + rInner * cosv);

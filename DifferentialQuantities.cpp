@@ -26,7 +26,7 @@ glm::vec3 DifferentialQuantities::gradient(double f, double fu, double fv)
     const glm::vec2 components = inverse(g) * df;
     glm::vec3 grad = components[0] * xu + components[1] * xv;
 
-    for (unsigned int i=0; i<3; ++i)
+    for (uint i=0; i<3; ++i)
         grad[i] = std::isnan(grad[i]) ? 0 : grad[i];
     return grad;
 }
@@ -73,7 +73,7 @@ glm::vec3 DifferentialQuantities::hessian(double f, double fu, double fv,
     }
     const glm::vec2 J2 = H * invg * I;
     glm::vec3 J = J2[0] * xu + J2[1] * xv;
-    for (unsigned int i=0; i<3; ++i)
+    for (uint i=0; i<3; ++i)
         J[i] = std::isnan(J[i]) ? 0 : J[i];
     return J;
 }

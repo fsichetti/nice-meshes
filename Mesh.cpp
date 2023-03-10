@@ -5,13 +5,11 @@
 Mesh::Mesh(bool nrm, bool par, bool dif) :
     hasNrm(nrm), hasPar(par), hasDif(dif),
     attCnt(1 + nrm + par + dif),
-    attCmp(3 + nrm*3 + par*2 + dif*2),
-    attByt(attCmp*sizeof(GLfloat))
-    {
-};
+    attCmp(3 + nrm*3 + par*2 + dif*2)
+    {};
 
 // Reserve space in verts and faces arrays
-void Mesh::reserveSpace(unsigned int rv, unsigned int re) {
+void Mesh::reserveSpace(uint rv, uint re) {
     verts.reserve(rv * attCmp);
     faces.reserve(re * 3);
 }
@@ -22,7 +20,7 @@ DifferentialQuantities Mesh::diffEvaluate(double u, double v) const {
 
 
 // Utility method to convert an attrib constant to an offset
-unsigned int Mesh::attToOff(Attribute att) const {
+uint Mesh::attToOff(Attribute att) const {
     switch (att) {
         case X: return 0;
         case Y: return 1;
@@ -55,13 +53,13 @@ unsigned int Mesh::attToOff(Attribute att) const {
     throw NoAttributeException();
 }
 
-unsigned int Mesh::addVertex() {
+uint Mesh::addVertex() {
     for (int i=0; i<attCmp; ++i)
         verts.push_back(0);
     return vNum++;
 }
 
-unsigned int Mesh::addVertex(GLfloat x, GLfloat y, GLfloat z) {
+uint Mesh::addVertex(double x, double y, double z) {
     verts.insert(verts.end(), {x,y,z});
     // add padding for other attributes
     for (int i=3; i<attCmp; ++i)
@@ -69,7 +67,7 @@ unsigned int Mesh::addVertex(GLfloat x, GLfloat y, GLfloat z) {
     return vNum++;
 }
 
-unsigned int Mesh::addFace(GLuint i, GLuint j, GLuint k) {
+uint Mesh::addFace(uint i, uint j, uint k) {
     faces.insert(faces.end(), {i,j,k});
     return fNum++;
 }
@@ -91,17 +89,17 @@ void Mesh::finalize(bool nogui) {
         final = true;
         return;
     }
-    // Vertex array
-    // glGenVertexArrays(1, &vao);
-    // glBindVertexArray(vao);
+    // Generate GL data arrays
+    std::vector<GLfloat> gpuVerts(verts.begin(), verts.end());
+    std::vector<GLuint> gpuFaces(faces.begin(), faces.end());
 
     // Vertex buffer
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(
         GL_ARRAY_BUFFER,
-        verts.size() * sizeof(GLfloat),
-        verts.data(),
+        gpuVerts.size() * sizeof(GLfloat),
+        gpuVerts.data(),
         GL_STATIC_DRAW
     );
 
@@ -111,6 +109,7 @@ void Mesh::finalize(bool nogui) {
 
     size_t off = 0;   // attribute offset
     const size_t sf = sizeof(GLfloat);
+    const size_t attByt = attCmp * sf;
     // Positions
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, false, attByt, (GLvoid*)off);
@@ -133,13 +132,25 @@ void Mesh::finalize(bool nogui) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
-        faces.size() * sizeof(GLuint),
-        faces.data(),
+        gpuFaces.size() * sizeof(GLuint),
+        gpuFaces.data(),
         GL_STATIC_DRAW
     );
 
     final = true;
     allocatedGLBuffers = true;
+}
+
+
+void Mesh::deleteBuffers()  {
+    if (!allocatedGLBuffers) return;
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
+    glDeleteVertexArrays(1, &vao);
+    vbo = 0;
+    ebo = 0;
+    vao = 0;
+    allocatedGLBuffers = false;
 }
 
 
@@ -264,15 +275,15 @@ void Mesh::writePLY(std::string path) const {
     file << "ply" << std::endl << "format ascii 1.0" << std::endl;
     if (!name.empty()) file << "comment " << name << std::endl;
     file << "element vertex " << vNum << std::endl;
-    file << "property float x" << std::endl << "property float y" <<
-        std::endl << "property float z" << std::endl;
-    if (hasNrm) file << "property float nx" << std::endl <<
-        "property float ny" << std::endl << "property float nz" <<
+    file << "property double x" << std::endl << "property double y" <<
+        std::endl << "property double z" << std::endl;
+    if (hasNrm) file << "property double nx" << std::endl <<
+        "property double ny" << std::endl << "property double nz" <<
         std::endl;
-    if (hasPar) file << "property float u" << std::endl <<
-        "property float v" << std::endl;
-    if (hasDif) file << "property float k" << std::endl <<
-        "property float h" << std::endl;
+    if (hasPar) file << "property double u" << std::endl <<
+        "property double v" << std::endl;
+    if (hasDif) file << "property double k" << std::endl <<
+        "property double h" << std::endl;
     file << "element face " << fNum << std::endl;
     file << "property list uchar int vertex_indices" << std::endl;
     file << "end_header" << std::endl;
@@ -326,9 +337,9 @@ void Mesh::writeOFF(std::string path) const {
 }
 
 
-void Mesh::gaussNoise(float variance, bool nrm, bool tan) {
+void Mesh::gaussNoise(double variance, bool nrm, bool tan) {
     if (!(nrm || tan)) return;
-    for (unsigned int i = 0; i < vNum; ++i) {
+    for (uint i = 0; i < vNum; ++i) {
         glm::vec3 noise(0);
         if (nrm && tan) {
             noise = RandPoint::gaussian3(variance);
@@ -367,18 +378,18 @@ void Mesh::gaussNoise(float variance, bool nrm, bool tan) {
 }
 
 void Mesh::makeCentered() {
-    GLfloat com[3];
-    for (unsigned int k = 0; k < 3; ++k) com[k] = 0;
+    double com[3];
+    for (uint k = 0; k < 3; ++k) com[k] = 0;
     // Accumulate
-    for (unsigned int i = 0; i < vNum; ++i) {
+    for (uint i = 0; i < vNum; ++i) {
         com[0] += cAttrib(i, Attribute::X);
         com[1] += cAttrib(i, Attribute::Y);
         com[2] += cAttrib(i, Attribute::Z);
     }
     // Average
-    for (unsigned int k = 0; k < 3; ++k) com[k] /= vNum;
+    for (uint k = 0; k < 3; ++k) com[k] /= vNum;
     // Translate
-    for (unsigned int i = 0; i < vNum; ++i) {
+    for (uint i = 0; i < vNum; ++i) {
         attrib(i, Attribute::X) -= com[0];
         attrib(i, Attribute::Y) -= com[1];
         attrib(i, Attribute::Z) -= com[2];
@@ -431,9 +442,9 @@ void Mesh::refine() {
 
 
 // cache this
-float Mesh::avgEdgeLength() const {
+double Mesh::avgEdgeLength() const {
     double len = 0;
-    unsigned int cnt = 0;
+    uint cnt = 0;
     glm::vec3 faceVert[3];
 
     // for each face...
@@ -454,8 +465,8 @@ float Mesh::avgEdgeLength() const {
 }
 
 // cache this
-float Mesh::getVolume() const {
-    float vol = 0;
+double Mesh::getVolume() const {
+    double vol = 0;
     glm::vec3 faceVert[3];
     glm::vec3 nA;
 

@@ -1,15 +1,15 @@
 #include "Sphere.hpp"
 
-Sphere::Sphere(unsigned int subdiv, double radius)
+Sphere::Sphere(uint subdiv, double radius)
     : Mesh(true, true, true), radius(radius) {
     name = "sphere";
 
-    const unsigned int faceNumber = 20 * pow(4,subdiv);
-    const unsigned int vertexNumber = 2 + faceNumber / 2;
+    const uint faceNumber = 20 * pow(4,subdiv);
+    const uint vertexNumber = 2 + faceNumber / 2;
     reserveSpace(vertexNumber, faceNumber);
     initIcosahedron();
     // Subdivision
-    for (unsigned int i = 0; i < subdiv; ++i) {
+    for (uint i = 0; i < subdiv; ++i) {
         refine();
     }
     computeValues();
@@ -23,8 +23,8 @@ Sphere::Sphere(std::string path, double radius)
 
 void Sphere::computeValues() {
     // Normalization, normals, UV
-    const unsigned int s = vertNum();
-    for (unsigned int i = 0; i < s; ++i) {
+    const uint s = vertNum();
+    for (uint i = 0; i < s; ++i) {
         double x = cAttrib(i, Attribute::X);
         double y = cAttrib(i, Attribute::Y);
         double z = cAttrib(i, Attribute::Z);
@@ -44,7 +44,7 @@ void Sphere::computeValues() {
             glm::sign(-y) * acos(-x / f) / TWOPI + .5
         );
         attrib(i, Attribute::V) = acos(z) / M_PI;
-        const float h = 1 / radius;
+        const double h = 1 / radius;
         attrib(i, Attribute::H) = h;
         attrib(i, Attribute::K) = h / radius;
     }

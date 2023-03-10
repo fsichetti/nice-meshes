@@ -7,7 +7,7 @@
 class Sphere : public Mesh {
     public:
         Sphere(
-            unsigned int subdivisionLevel,
+            uint subdivisionLevel,
             double radius
         );
         Sphere(std::string path, double radius);
