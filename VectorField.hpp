@@ -8,8 +8,8 @@ class VectorField {
     public:
         VectorField(Mesh* m, bool onFaces=false);
         ~VectorField();
-        void setValue(glm::vec3 value, uint i);
-        glm::vec3 getValue(uint i) const;
+        void setValue(glm::dvec3 value, uint i);
+        glm::dvec3 getValue(uint i) const;
         void write(std::string path, bool header=false) const;
         void write2d(std::string path) const;
 

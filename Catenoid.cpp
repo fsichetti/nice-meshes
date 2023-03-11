@@ -138,27 +138,27 @@ DifferentialQuantities Catenoid::diffEvaluate(double u, double v) const {
     const double sinhv = sinh(vs / rInner);
     const double coshv = cosh(vs / rInner);
 
-    glm::vec3 xu(
+    glm::dvec3 xu(
         -rInner * coshv * sinu * TWOPI,
         rInner * coshv * cosu * TWOPI,
         0
     );
-    glm::vec3 xv(
+    glm::dvec3 xv(
         rInner * sinhv * cosu * height,
         rInner * sinhv * sinu * height,
         height
     );
-    glm::vec3 xuu(
+    glm::dvec3 xuu(
         -rInner * coshv * cosu * pow(TWOPI, 2),
         -rInner * coshv * sinu * pow(TWOPI, 2),
         0
     );
-    glm::vec3 xuv(
+    glm::dvec3 xuv(
         -rInner * sinhv * sinu * TWOPI * height,
         rInner * sinhv * cosu * TWOPI * height,
         0
     );
-    glm::vec3 xvv(
+    glm::dvec3 xvv(
         rInner * coshv * cosu * pow(height, 2),
         rInner * coshv * sinu * pow(height, 2),
         0

@@ -18,12 +18,12 @@ uint BezierPatch::binomial(int k, int n) const {
 }
 
 
-glm::vec3 BezierPatch::sampleSurface(
+glm::dvec3 BezierPatch::sampleSurface(
     double u, double v, uint derivU, uint derivV) const {
-    glm::vec3 p(0);
+    glm::dvec3 p(0);
     for (uint i = 0; i <= degree; ++i) {
         for (int j = 0; j <= degree; ++j) {
-            p += glm::vec1(
+            p += glm::dvec1(
                 bPoly(i, degree, u, derivU) * 
                 bPoly(j, degree, v, derivV)
             ) * control->get(i, j);
@@ -48,15 +48,15 @@ BezierPatch::BezierPatch(ControlGrid *cg, uint samples)
         for (uint v = 0; v < samples; ++v) {
             const double uu = u * uvStep, vv = v * uvStep;
             // Iterate on control points (i,j)
-            const glm::vec3 x = sampleSurface(uu, vv);
+            const glm::dvec3 x = sampleSurface(uu, vv);
             const uint index = addVertex(x[0], x[1], x[2]);
 
             // Compute normals analitically
-            const glm::vec3 xu = sampleSurface(uu, vv, 1, 0);
-            const glm::vec3 xv = sampleSurface(uu, vv, 0, 1);
-            const glm::vec3 xuu = sampleSurface(uu, vv, 2, 0);
-            const glm::vec3 xuv = sampleSurface(uu, vv, 1, 1);
-            const glm::vec3 xvv = sampleSurface(uu, vv, 0, 2);
+            const glm::dvec3 xu = sampleSurface(uu, vv, 1, 0);
+            const glm::dvec3 xv = sampleSurface(uu, vv, 0, 1);
+            const glm::dvec3 xuu = sampleSurface(uu, vv, 2, 0);
+            const glm::dvec3 xuv = sampleSurface(uu, vv, 1, 1);
+            const glm::dvec3 xvv = sampleSurface(uu, vv, 0, 2);
             const DifferentialQuantities dq(xu, xv, xuu, xuv, xvv);
 
             // Normals
@@ -95,7 +95,7 @@ BezierPatch::BezierPatch(ControlGrid *cg, PlaneSampling smp)
     // Compute vertices
     for (uint i = 0; i < NV; ++i) {
         const double uu = smp.cAttrib(i, 0), vv = smp.cAttrib(i, 1);
-        const glm::vec3 x = sampleSurface(uu, vv);
+        const glm::dvec3 x = sampleSurface(uu, vv);
         addVertex(x[0], x[1], x[2]);
 
         // Compute normals analitically
@@ -132,7 +132,7 @@ BezierPatch::~BezierPatch() {
 BezierPatch::ControlGrid::ControlGrid(double maxNorm, double bb, double ib) {
     const double radBrd = bb/6.0, radInn = (ib > 0) ? ib/6.0 : bb;
     // Generate patch corners
-    glm::vec3 origin(0);
+    glm::dvec3 origin(0);
     const auto p0 = RandPoint::onSphere(maxNorm) + origin;
     const auto p1 = RandPoint::onSphere(maxNorm) + origin;
     const auto p2 = RandPoint::onSphere(maxNorm) + origin;
@@ -143,8 +143,8 @@ BezierPatch::ControlGrid::ControlGrid(double maxNorm, double bb, double ib) {
     set(0, 3, p3);
 
     // Generate patch border
-    const auto N = glm::vec1(1.0/3.0);  // near weight
-    const auto F = glm::vec1(1)-N;  // far weight
+    const auto N = glm::dvec1(1.0/3.0);  // near weight
+    const auto F = glm::dvec1(1)-N;  // far weight
     const auto p4 = RandPoint::inSphere((p1-p0).length()*radBrd) + N*p0 + F*p1;
     const auto p5 = RandPoint::inSphere((p1-p0).length()*radBrd) + F*p0 + N*p1;
     const auto p6 = RandPoint::inSphere((p2-p1).length()*radBrd) + N*p1 + F*p2;
@@ -163,8 +163,8 @@ BezierPatch::ControlGrid::ControlGrid(double maxNorm, double bb, double ib) {
     set(0, 1, p11);
 
     // Generate patch interior
-    const auto N2 = glm::vec1(.5)*N;
-    const auto F2 = glm::vec1(.5)*F;
+    const auto N2 = glm::dvec1(.5)*N;
+    const auto F2 = glm::dvec1(.5)*F;
     const auto p12 = RandPoint::inSphere(
         glm::min((p4-p9).length(), (p6-p11).length())*radInn) +
         N2*(p4+p11)+F2*(p6+p9);
@@ -184,11 +184,11 @@ BezierPatch::ControlGrid::ControlGrid(double maxNorm, double bb, double ib) {
 }
 
 DifferentialQuantities BezierPatch::diffEvaluate(double u, double v) const {
-    const glm::vec3 xu = sampleSurface(u, v, 1, 0);
-    const glm::vec3 xv = sampleSurface(u, v, 0, 1);
-    const glm::vec3 xuu = sampleSurface(u, v, 2, 0);
-    const glm::vec3 xuv = sampleSurface(u, v, 1, 1);
-    const glm::vec3 xvv = sampleSurface(u, v, 0, 2);
+    const glm::dvec3 xu = sampleSurface(u, v, 1, 0);
+    const glm::dvec3 xv = sampleSurface(u, v, 0, 1);
+    const glm::dvec3 xuu = sampleSurface(u, v, 2, 0);
+    const glm::dvec3 xuv = sampleSurface(u, v, 1, 1);
+    const glm::dvec3 xvv = sampleSurface(u, v, 0, 2);
     return DifferentialQuantities(xu, xv, xuu, xuv, xvv);
 }
 

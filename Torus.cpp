@@ -140,27 +140,27 @@ DifferentialQuantities Torus::diffEvaluate(double u, double v) const {
     const double cosu = cos(TWOPI * u);
     const double sinv = sin(TWOPI * v);
     const double cosv = cos(TWOPI * v);
-    glm::vec3 xu(
+    glm::dvec3 xu(
         -sinu * (rOuter + rInner * cosv) * TWOPI,
         cosu * (rOuter + rInner * cosv) * TWOPI,
         0
     );
-    glm::vec3 xv(
+    glm::dvec3 xv(
         -rInner * cosu * sinv * TWOPI,
         -rInner * sinu * sinv * TWOPI,
         rInner * cosv * TWOPI
     );
-    glm::vec3 xuu(
+    glm::dvec3 xuu(
         -cosu * (rOuter + rInner * cosv) * pow(TWOPI, 2),
         -sinu * (rOuter + rInner * cosv) * pow(TWOPI, 2),
         0
     );
-    glm::vec3 xuv(
+    glm::dvec3 xuv(
         -sinu * (-rInner * sinv * TWOPI) * TWOPI,
         cosu * (-rInner * sinv * TWOPI) * TWOPI,
         0
     );
-    glm::vec3 xvv(
+    glm::dvec3 xvv(
         -rInner * cosu * cosv * pow(TWOPI, 2),
         -rInner * sinu * cosv * pow(TWOPI, 2),
         -rInner * sinv * TWOPI * TWOPI

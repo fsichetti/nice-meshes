@@ -1,7 +1,7 @@
 #include "DifferentialQuantities.hpp"
 
-DifferentialQuantities::DifferentialQuantities(glm::vec3 xu, glm::vec3 xv,
-	glm::vec3 xuu, glm::vec3 xuv, glm::vec3 xvv) :
+DifferentialQuantities::DifferentialQuantities(glm::dvec3 xu, glm::dvec3 xv,
+	glm::dvec3 xuu, glm::dvec3 xuv, glm::dvec3 xvv) :
 	xu(xu), xv(xv), xuu(xuu), xuv(xuv), xvv(xvv) {
 		
 	// Compute IFF
@@ -20,11 +20,11 @@ DifferentialQuantities::DifferentialQuantities(glm::vec3 xu, glm::vec3 xv,
 	N = glm::dot(xvv, nrm);
 }
 
-glm::vec3 DifferentialQuantities::gradient(double f, double fu, double fv)
+glm::dvec3 DifferentialQuantities::gradient(double f, double fu, double fv)
 	const {
-    const glm::vec2 df(fu, fv);
-    const glm::vec2 components = inverse(g) * df;
-    glm::vec3 grad = components[0] * xu + components[1] * xv;
+    const glm::dvec2 df(fu, fv);
+    const glm::dvec2 components = inverse(g) * df;
+    glm::dvec3 grad = components[0] * xu + components[1] * xv;
 
     for (uint i=0; i<3; ++i)
         grad[i] = std::isnan(grad[i]) ? 0 : grad[i];
@@ -56,9 +56,9 @@ double DifferentialQuantities::laplacian(double f, double fu, double fv,
 
 
 	
-glm::vec3 DifferentialQuantities::hessian(double f, double fu, double fv,
+glm::dvec3 DifferentialQuantities::hessian(double f, double fu, double fv,
 	double fuu, double fuv, double fvv) const {
-    glm::vec2 I(fu, fv);
+    glm::dvec2 I(fu, fv);
     glm::mat2 II(fuu, fuv, fuv, fvv);
     glm::mat2 G[2];
     G[0] = glm::mat2(dot(xu, xuu), dot(xv, xuu), dot(xu, xuv), dot(xv, xuv));
@@ -71,8 +71,8 @@ glm::vec3 DifferentialQuantities::hessian(double f, double fu, double fv,
             H[i][k] = dot(transpose(invg)[k], (II[i] - G[i] * invg * I));
         }
     }
-    const glm::vec2 J2 = H * invg * I;
-    glm::vec3 J = J2[0] * xu + J2[1] * xv;
+    const glm::dvec2 J2 = H * invg * I;
+    glm::dvec3 J = J2[0] * xu + J2[1] * xv;
     for (uint i=0; i<3; ++i)
         J[i] = std::isnan(J[i]) ? 0 : J[i];
     return J;

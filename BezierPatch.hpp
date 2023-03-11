@@ -50,7 +50,7 @@ class BezierPatch : public Mesh {
         }
 
         // Computations
-        glm::vec3 sampleSurface(double u, double v,
+        glm::dvec3 sampleSurface(double u, double v,
             uint derivU = 0, uint derivV = 0) const;
 };
 
@@ -65,11 +65,11 @@ class BezierPatch::ControlGrid {
             double innerBumpiness=-1.0  // if <0, it's equal to borderBump.
         );
 
-        inline glm::vec3 get(uint i, uint j) const {
+        inline glm::dvec3 get(uint i, uint j) const {
             const auto id = i + (degree+1) * j;
-            return glm::vec3(storage[0][id], storage[1][id], storage[2][id]);
+            return glm::dvec3(storage[0][id], storage[1][id], storage[2][id]);
         }
-        inline void set(uint i, uint j, const glm::vec3& val) {
+        inline void set(uint i, uint j, const glm::dvec3& val) {
             const auto id = i + (degree+1) * j;
             storage[0][id] = val[0];
             storage[1][id] = val[1];

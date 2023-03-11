@@ -67,7 +67,7 @@ class Mesh {
         // Differential quantities
         virtual DifferentialQuantities diffEvaluate(double u, double v)
             const;
-        inline glm::vec3 gradient(double u, double v, double f,
+        inline glm::dvec3 gradient(double u, double v, double f,
             double fu, double fv) const {
             return diffEvaluate(u, v).gradient(f, fu, fv);
         }
@@ -75,7 +75,7 @@ class Mesh {
             double fu, double fv, double fuu, double fuv, double fvv) const {
             return diffEvaluate(u, v).laplacian(f, fu, fv, fuu, fuv, fvv);
         }
-        inline glm::vec3 hessian(double u, double v, double f,
+        inline glm::dvec3 hessian(double u, double v, double f,
             double fu, double fv, double fuu, double fuv, double fvv) const {
             return diffEvaluate(u, v).hessian(f, fu, fv, fuu, fuv, fvv);
         }

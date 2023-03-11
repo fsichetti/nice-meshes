@@ -161,15 +161,15 @@ void Mesh::computeNormals(bool noCompute) {
     if (noCompute) return;
 
     // Compute normals
-    auto normals = new glm::vec3[vNum];
+    auto normals = new glm::dvec3[vNum];
 
     for (int i=0; i<vNum; ++i) {
-        normals[i] = glm::vec3(0);
+        normals[i] = glm::dvec3(0);
     }
 
     // for each face, compute normal
     for (int i=0; i<fNum; ++i) {
-        glm::vec3 faceVert[3];
+        glm::dvec3 faceVert[3];
         // for each face vertex...
         for (int j=0; j<3; ++j) {
             // for each xyz component, retrieve value
@@ -178,7 +178,7 @@ void Mesh::computeNormals(bool noCompute) {
             }
         }
         // Compute the cross product
-        const glm::vec3 n = glm::cross(faceVert[2] - faceVert[0],
+        const glm::dvec3 n = glm::cross(faceVert[2] - faceVert[0],
             faceVert[1] - faceVert[0]);
         // Accumulate unnormalised* normal on each vertex
         // *i.e. weighted by face area
@@ -194,6 +194,8 @@ void Mesh::computeNormals(bool noCompute) {
         attrib(i, Attribute::NY) = normals[i].y;
         attrib(i, Attribute::NZ) = normals[i].z;
     }
+
+    delete[] normals;
 }
 
 
@@ -342,13 +344,13 @@ void Mesh::writeOFF(std::string path) const {
 void Mesh::gaussNoise(double variance, bool nrm, bool tan) {
     if (!(nrm || tan)) return;
     for (uint i = 0; i < vNum; ++i) {
-        glm::vec3 noise(0);
+        glm::dvec3 noise(0);
         if (nrm && tan) {
             noise = RandPoint::gaussian3(variance);
         }
         else {
             if (!normalsComputed) computeNormals();
-            glm::vec3 normalVec(
+            glm::dvec3 normalVec(
                 cAttrib(i, Attribute::NX),
                 cAttrib(i, Attribute::NY),
                 cAttrib(i, Attribute::NZ)
@@ -356,13 +358,13 @@ void Mesh::gaussNoise(double variance, bool nrm, bool tan) {
             normalVec = glm::normalize(normalVec);
             if (tan) {
                 // Construct a basis for the tangent space
-                glm::vec3 v1, v2;
+                glm::dvec3 v1, v2;
                 if (normalVec.z != 0) {
-                    v1 = glm::vec3(1, 1, 
+                    v1 = glm::dvec3(1, 1, 
                         -(normalVec.x + normalVec.y)/normalVec.z);
                     v1 = glm::normalize(v1);
                 }
-                else v1 = glm::vec3(0,0,1);
+                else v1 = glm::dvec3(0,0,1);
                 v2 = glm::cross(normalVec, v1);
                 v2 = glm::normalize(v2);
                 const auto n = RandPoint::gaussian2(variance);
@@ -447,7 +449,7 @@ void Mesh::refine() {
 double Mesh::avgEdgeLength() const {
     double len = 0;
     uint cnt = 0;
-    glm::vec3 faceVert[3];
+    glm::dvec3 faceVert[3];
 
     // for each face...
     for (int i=0; i<fNum; ++i) {
@@ -469,8 +471,8 @@ double Mesh::avgEdgeLength() const {
 // cache this
 double Mesh::getVolume() const {
     double vol = 0;
-    glm::vec3 faceVert[3];
-    glm::vec3 nA;
+    glm::dvec3 faceVert[3];
+    glm::dvec3 nA;
 
     // for each face...
     for (int i=0; i<fNum; ++i) {

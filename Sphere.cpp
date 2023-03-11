@@ -96,27 +96,27 @@ DifferentialQuantities Sphere::diffEvaluate(double u, double v) const {
     // x = radius sinv cosu
     // y = radius sinv sinu
     // z = radius cosv
-    glm::vec3 xu(
+    glm::dvec3 xu(
         -radius * sinv * sinu * TWOPI,
         radius * sinv * cosu * TWOPI,
         0
     );
-    glm::vec3 xv(
+    glm::dvec3 xv(
         radius * cosv * cosu * M_PI,
         radius * cosv * sinu * M_PI,
         -radius * sinv * M_PI
     );
-    glm::vec3 xuu(
+    glm::dvec3 xuu(
         -radius * sinv * cosu * pow(TWOPI, 2),
         -radius * sinv * sinu * pow(TWOPI, 2),
         0
     );
-    glm::vec3 xuv(
+    glm::dvec3 xuv(
         -radius * cosv * sinu * 2 * pow(M_PI, 2),
         radius * cosv * cosu * 2 * pow(M_PI, 2),
         0
     );
-    glm::vec3 xvv(
+    glm::dvec3 xvv(
         -radius * sinv * cosu * pow(M_PI, 2),
         -radius * sinv * sinu * pow(M_PI, 2),
         -radius * cosv * pow(M_PI, 2)

@@ -273,7 +273,7 @@ void runConfig(char* pname, std::string fname, std::string cname,
                         mesh->gradient(u, v, f, fu, fv), i);
                     if (hes) hessian->setValue(
                         mesh->hessian(u, v, f, fu, fv, fuu, fuv, fvv), i);
-                    if (euv) uvfield->setValue(glm::vec3(u,v,0), i);
+                    if (euv) uvfield->setValue(glm::dvec3(u,v,0), i);
                 }
 
                 // Write and destroy
@@ -314,15 +314,15 @@ void runConfig(char* pname, std::string fname, std::string cname,
                         mesh->cFacei(i, 1),
                         mesh->cFacei(i, 2)
                     };
-                    glm::vec2 centroidUV(0);
+                    glm::dvec2 centroidUV(0);
                     for (uint ti = 0; ti < 3; ++ti) {
-                        const glm::vec2 uv(
+                        const glm::dvec2 uv(
                             mesh->cAttrib(f[ti], Mesh::Attribute::U),
                             mesh->cAttrib(f[ti], Mesh::Attribute::V)
                         );
                         centroidUV += uv;
                     }
-                    centroidUV /= glm::vec1(3);
+                    centroidUV /= glm::dvec1(3);
                     double ff, ffu, ffv, ffuu, ffuv, ffvv;
 		            signal.evaluate(centroidUV.x, centroidUV.y,
                         ff, ffu, ffv, ffuu, ffuv, ffvv);
