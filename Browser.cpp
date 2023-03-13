@@ -228,7 +228,7 @@ namespace Browser {
 
         // Clean up
         FreeImage_Unload(image);
-        delete [] pixels;
+        delete[] pixels;
     }
 
     // void message(float x, float y, std::string msg) {

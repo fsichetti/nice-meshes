@@ -23,6 +23,7 @@ class Mesh {
 
         // Init mesh with expected number of vertices and faces
         Mesh(bool normals, bool parametric, bool curvature);
+        ~Mesh();
         void deleteBuffers();
 
         // Get vertex and face number
@@ -60,9 +61,14 @@ class Mesh {
         }
 
         // Utility methods
-        // friend class MeshStatistics;     // maybe in the future?
-        double avgEdgeLength() const;
+        double getAverageEdgeLength() const;
         double getVolume() const;
+        double getArea(uint faceId) const;
+        inline double getArea() const {
+            double sum = 0;
+            for (int i=0; i<fNum; ++i) sum += getArea(i);
+            return sum;
+        };
 
         // Differential quantities
         virtual DifferentialQuantities diffEvaluate(double u, double v)
@@ -86,6 +92,8 @@ class Mesh {
             bool normal = true, bool tangential = true);
         void makeCentered();
         void refine();
+
+        glm::dvec2 randomPointUV();
 
         class FileOpenException;
         class NotFinalizedException;
@@ -113,6 +121,8 @@ class Mesh {
         uint vNum=0, fNum=0;    // vertex and face count
         vArray verts;
         fArray faces;
+
+        std::vector<double> faceCDF;
 
         GLuint vbo, ebo, vao;   // Buffer indices
         const uint attCnt; // Attribute count

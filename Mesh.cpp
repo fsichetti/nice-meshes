@@ -1,5 +1,4 @@
 #include "Mesh.hpp"
-#include <iostream>
 
 // Constructor
 Mesh::Mesh(bool nrm, bool par, bool dif) :
@@ -9,9 +8,9 @@ Mesh::Mesh(bool nrm, bool par, bool dif) :
     {};
 
 // Reserve space in verts and faces arrays
-void Mesh::reserveSpace(uint rv, uint re) {
-    verts.reserve(rv * attCmp);
-    faces.reserve(re * 3);
+void Mesh::reserveSpace(uint nv, uint nf) {
+    verts.reserve(nv * attCmp);
+    faces.reserve(nf* 3);
 }
 
 DifferentialQuantities Mesh::diffEvaluate(double u, double v) const {
@@ -54,7 +53,7 @@ uint Mesh::attToOff(Attribute att) const {
 }
 
 uint Mesh::addVertex() {
-    for (int i=0; i<attCmp; ++i)
+    for (uint i=0; i<attCmp; ++i)
         verts.push_back(0);
     return vNum++;
 }
@@ -62,7 +61,7 @@ uint Mesh::addVertex() {
 uint Mesh::addVertex(double x, double y, double z) {
     verts.insert(verts.end(), {x,y,z});
     // add padding for other attributes
-    for (int i=3; i<attCmp; ++i)
+    for (uint i=3; i<attCmp; ++i)
         verts.push_back(0);
     return vNum++;
 }
@@ -141,6 +140,9 @@ void Mesh::finalize(bool nogui) {
     allocatedGLBuffers = true;
 }
 
+Mesh::~Mesh() {
+    deleteBuffers();
+}
 
 void Mesh::deleteBuffers()  {
     if (!allocatedGLBuffers) return;
@@ -151,6 +153,7 @@ void Mesh::deleteBuffers()  {
     ebo = 0;
     vao = 0;
     allocatedGLBuffers = false;
+    final = false;  // may be unnecessary
 }
 
 
@@ -163,17 +166,17 @@ void Mesh::computeNormals(bool noCompute) {
     // Compute normals
     auto normals = new glm::dvec3[vNum];
 
-    for (int i=0; i<vNum; ++i) {
+    for (uint i=0; i<vNum; ++i) {
         normals[i] = glm::dvec3(0);
     }
 
     // for each face, compute normal
-    for (int i=0; i<fNum; ++i) {
+    for (uint i=0; i<fNum; ++i) {
         glm::dvec3 faceVert[3];
         // for each face vertex...
-        for (int j=0; j<3; ++j) {
+        for (uint j=0; j<3; ++j) {
             // for each xyz component, retrieve value
-            for (int k=0; k<3; ++k) {
+            for (uint k=0; k<3; ++k) {
                 faceVert[j][k] = cAttrib(faces[3*i+j], k);
             }
         }
@@ -182,13 +185,13 @@ void Mesh::computeNormals(bool noCompute) {
             faceVert[1] - faceVert[0]);
         // Accumulate unnormalised* normal on each vertex
         // *i.e. weighted by face area
-        for (int j=0; j<3; ++j) {
+        for (uint j=0; j<3; ++j) {
             normals[faces[3*i+j]] += n;
         }
     }
 
     // for each vertex, normalise the normal and write to the vector
-    for (int i=0; i<vNum; ++i) {
+    for (uint i=0; i<vNum; ++i) {
         normals[i] = -glm::normalize(normals[i]);
         attrib(i, Attribute::NX) = normals[i].x;
         attrib(i, Attribute::NY) = normals[i].y;
@@ -240,7 +243,7 @@ void Mesh::writeOBJ(std::string path) const {
     if (!file.is_open()) throw FileOpenException();
 
     // Write verts
-    for (int i=0; i < vNum; ++i) {
+    for (uint i=0; i < vNum; ++i) {
         file << "v "
             << std::setprecision(DPRECIS) << cAttrib(i, Attribute::X) << " "
             << std::setprecision(DPRECIS) << cAttrib(i, Attribute::Y) << " "
@@ -249,7 +252,7 @@ void Mesh::writeOBJ(std::string path) const {
     }
     // Write normals
     if (hasNrm) {
-        for (int i=0; i < vNum; ++i) {
+        for (uint i=0; i < vNum; ++i) {
             file << "vn "
                 << std::setprecision(DPRECIS) << cAttrib(i, Attribute::NX) << " "
                 << std::setprecision(DPRECIS) << cAttrib(i, Attribute::NY) << " "
@@ -258,7 +261,7 @@ void Mesh::writeOBJ(std::string path) const {
         }
     }
     // Write faces
-    for (int i=0; i < faces.size(); i+=3) {
+    for (uint i=0; i < faces.size(); i+=3) {
         file << "f "
             << faces[i+0] + 1 << " "
             << faces[i+1] + 1 << " "
@@ -293,17 +296,17 @@ void Mesh::writePLY(std::string path) const {
     file << "end_header" << std::endl;
 
     // Write vertices
-    for (int i=0; i < verts.size(); i+=attCmp) {
-        for (int j=0; j<attCmp; ++j) {
+    for (uint i=0; i < verts.size(); i+=attCmp) {
+        for (uint j=0; j<attCmp; ++j) {
             file << std::setprecision(DPRECIS) << verts[i+j] << " ";
         }
         file << std::endl;
     }
 
     // Write faces
-    for (int i=0; i < faces.size(); i+=3) {
+    for (uint i=0; i < faces.size(); i+=3) {
         file << "3 ";
-        for (int j=0; j<3; ++j) {
+        for (uint j=0; j<3; ++j) {
             file << faces[i+j] << " ";
         }
         file << std::endl;
@@ -323,13 +326,13 @@ void Mesh::writeOFF(std::string path) const {
     file << "OFF " << vNum << " " << fNum << " " << 0 << std::endl;
 
     // Write verts
-    for (int i=0; i < vNum; ++i) {
+    for (uint i=0; i < vNum; ++i) {
         file << std::setprecision(DPRECIS) << cAttrib(i, Attribute::X) << " "
             << std::setprecision(DPRECIS) << cAttrib(i, Attribute::Y) << " "
             << std::setprecision(DPRECIS) << cAttrib(i, Attribute::Z) << std::endl;
     }
     // Write faces
-    for (int i=0; i < faces.size(); i+=3) {
+    for (uint i=0; i < faces.size(); i+=3) {
         file << "3 "
             << faces[i+0] << " "
             << faces[i+1] << " "
@@ -446,17 +449,17 @@ void Mesh::refine() {
 
 
 // cache this
-double Mesh::avgEdgeLength() const {
+double Mesh::getAverageEdgeLength() const {
     double len = 0;
     uint cnt = 0;
     glm::dvec3 faceVert[3];
 
     // for each face...
-    for (int i=0; i<fNum; ++i) {
+    for (uint i=0; i<fNum; ++i) {
         // for each face vertex...
-        for (int j=0; j<3; ++j) {
+        for (uint j=0; j<3; ++j) {
             // for each xyz component, retrieve value
-            for (int k=0; k<3; ++k) {
+            for (uint k=0; k<3; ++k) {
                 faceVert[j][k] = cAttrib(cFacei(i,j), k);
             }
         }
@@ -465,7 +468,8 @@ double Mesh::avgEdgeLength() const {
         len += glm::length(faceVert[2] - faceVert[0]);
         cnt += 3;
     }
-    return len / static_cast<double>(cnt);
+    const double res = len / static_cast<double>(cnt);
+    return res;
 }
 
 // cache this
@@ -475,20 +479,61 @@ double Mesh::getVolume() const {
     glm::dvec3 nA;
 
     // for each face...
-    for (int i=0; i<fNum; ++i) {
+    for (uint i=0; i<fNum; ++i) {
         // for each face vertex...
-        for (int j=0; j<3; ++j) {
+        for (uint j=0; j<3; ++j) {
             // for each xyz component, retrieve value
-            for (int k=0; k<3; ++k) {
+            for (uint k=0; k<3; ++k) {
                 faceVert[j][k] = cAttrib(faces[3*i+j], k);
             }
         }
         // face normal * 2 * face area
         nA = glm::cross(faceVert[1] - faceVert[0], faceVert[2] - faceVert[0]);
-        for (int j=0; j<3; ++j) {
+        for (uint j=0; j<3; ++j) {
             // dot and accumulate
             vol += glm::dot(faceVert[0], nA);
         }
     }
-    return vol * 3 / 2;
+    const double res = vol * 3 / 2;
+    return res;
+}
+
+double Mesh::getArea(uint faceId) const {
+    glm::dvec3 v[3];
+    // for each face vertex...
+    for (uint j=0; j<3; ++j) {
+        // for each xyz component, retrieve value
+        for (uint k=0; k<3; ++k) {
+            v[j][k] = cAttrib(cFacei(faceId,j), k);
+        }
+    }
+    const glm::dvec3 nA = glm::cross(v[1] - v[0], v[2] - v[0]);
+    return glm::length(nA) / 2;
+}
+
+
+glm::dvec2 Mesh::randomPointUV() {
+    // Compute CDF if necessary
+    if (faceCDF.size() == 0) {
+        double sum = 0;
+        faceCDF.reserve(faceNum());
+        for (uint i = 0; i < faceNum(); ++i) {
+            sum += getArea(i);
+            faceCDF.push_back(sum);
+        }
+    }
+    const double r = glm::linearRand(0., faceCDF.back());
+    uint randomFace = 0;
+    while (r > faceCDF.at(randomFace)) {
+        ++randomFace;
+    }
+
+    // Get face
+    glm::dvec3 v[3];
+    for (uint j=0; j<3; ++j) {
+        for (uint k=0; k<3; ++k) {
+            v[j][k] = cAttrib(cFacei(randomFace,j), k);
+        }
+    }
+    return RandPoint::inTriangle(v[0], v[1], v[2]);
 }

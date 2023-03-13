@@ -3,7 +3,6 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/random.hpp>
-#include <random>
 
 // Random number generation
 namespace RandPoint {

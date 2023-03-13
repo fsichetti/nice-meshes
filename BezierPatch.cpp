@@ -124,7 +124,7 @@ BezierPatch::BezierPatch(ControlGrid *cg, PlaneSampling smp)
 
 BezierPatch::~BezierPatch() {
     delete control;
-    delete bc;
+    delete[] bc;
 }
 
 

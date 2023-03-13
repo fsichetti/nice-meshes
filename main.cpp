@@ -199,7 +199,7 @@ void runConfig(char* pname, std::string fname, std::string cname,
         }
         if (std::stod(cm["noise"]) > 0) {
             const auto t = cm["noiseType"];
-            const auto ael = mesh->avgEdgeLength();
+            const auto ael = mesh->getAverageEdgeLength();
             bool nrm, tan;
             nrm = (t == "3d" || t == "normal");
             tan = (t == "3d" || t == "tangential");

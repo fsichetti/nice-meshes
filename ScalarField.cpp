@@ -7,7 +7,7 @@ ScalarField::ScalarField(Mesh* m, uint d, bool onFaces) :
 }
 
 ScalarField::~ScalarField() {
-    delete values;
+    delete[] values;
 }
 
 void ScalarField::setValue(double val, uint i,
