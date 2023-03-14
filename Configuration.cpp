@@ -16,6 +16,7 @@ void ConfigManager::defaultValues() {
     c["exportUV"] = "false";
     c["exportControlGrid"] = "false";
 
+    c["anisotropy"] = "";
     c["samples"] = "64";
     c["radius"] = "1";
     c["innerRadius"] = "1";

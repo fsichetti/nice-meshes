@@ -39,3 +39,43 @@ PlaneSampling::PlaneSampling(std::string path) {
     else throw Mesh::FileOpenException();
     file.close();
 }
+
+PlaneSampling::PlaneSampling(std::vector<glm::dvec2> positions) {
+    // Plane sampling data structures
+    verts.clear();
+    faces.clear();
+    size_t nv = positions.size();
+    verts.reserve(nv*2);
+
+    // Data structures to call Triangle
+    // moderate amounts of C ahead!
+    triangulateio in, out;
+    std::string triangleFlags = "zYYPN";
+    
+    in.numberofpoints = nv;
+    in.numberofpointattributes = 0;
+    in.pointmarkerlist = (int*) NULL;
+    in.pointlist = (REAL*) malloc(nv*2*sizeof(REAL));
+    for (uint i = 0; i < nv; ++i) {
+        const auto v = positions.at(i);
+        verts.push_back(v.x);
+        verts.push_back(v.y);
+        in.pointlist[2*i+0] = v.x;
+        in.pointlist[2*i+1] = v.y;
+    }
+    
+    out.trianglelist = (int*) NULL;
+
+    char * c = (char*)malloc(triangleFlags.size() * sizeof(char));
+    triangleFlags.copy(c, triangleFlags.size());
+    triangulate(c, &in, &out, NULL);
+
+    // Write triangulation
+    size_t nf = out.numberoftriangles;
+    faces.reserve(nf * 3);
+    for (uint i = 0; i < nf; ++i) {
+        faces.push_back(out.trianglelist[3 * i + 0]);
+        faces.push_back(out.trianglelist[3 * i + 1]);
+        faces.push_back(out.trianglelist[3 * i + 2]);
+    }
+}

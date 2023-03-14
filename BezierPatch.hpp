@@ -15,13 +15,19 @@ class BezierPatch : public Mesh {
         class ControlGrid;
 
         BezierPatch(
-            ControlGrid *cg,
+            const ControlGrid *const cg,
             uint samples    // samples per uv direction
         );
 
         BezierPatch(
-            ControlGrid *cg,
+            const ControlGrid *const cg,
             PlaneSampling smp    // provided sampling of the plane
+        );
+
+        BezierPatch(
+            const ControlGrid *const cg,
+            uint samples,
+            double anisotropy
         );
 
         ~BezierPatch();
@@ -30,7 +36,7 @@ class BezierPatch : public Mesh {
             
 
     private:
-        ControlGrid * control;
+        const ControlGrid *const control;
         // Binomial coefficients
         uint *bc;
         uint binomial(int k, int n) const;

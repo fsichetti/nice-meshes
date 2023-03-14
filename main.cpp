@@ -152,9 +152,13 @@ void runConfig(char* pname, std::string fname, std::string cname,
                     PlaneSampling smp(cm["inputOBJ"]);
                     mesh = new BezierPatch(cg, smp);
                 }
-                else {
+                else if (cm["anisotropy"] == "") {
                     mesh = new BezierPatch(cg,
                         std::stoi(cm["samples"]));
+                }
+                else {
+                    mesh = new BezierPatch(cg, 
+                        std::stoi(cm["samples"]), std::stod(cm["anisotropy"]));
                 }
             }
             else {

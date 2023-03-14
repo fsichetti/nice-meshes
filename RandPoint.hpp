@@ -40,7 +40,7 @@ namespace RandPoint {
         return glm::ballRand<double>(radius);
     }
 
-    glm::dvec3 inTriangle(glm::dvec3 v1, glm::dvec3 v2, glm::dvec3 v3);
+    glm::dvec2 inTriangle(glm::dvec2 v1, glm::dvec2 v2, glm::dvec2 v3);
 }
 
 #endif

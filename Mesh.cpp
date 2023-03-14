@@ -529,11 +529,38 @@ glm::dvec2 Mesh::randomPointUV() {
     }
 
     // Get face
-    glm::dvec3 v[3];
+    glm::dvec2 v[3];
     for (uint j=0; j<3; ++j) {
-        for (uint k=0; k<3; ++k) {
-            v[j][k] = cAttrib(cFacei(randomFace,j), k);
+        v[j].x = cAttrib(cFacei(randomFace,j), Attribute::U);
+        v[j].y = cAttrib(cFacei(randomFace,j), Attribute::V);
+        // Check if the triangle overlaps the border of the uv plane
+        // Very reasonable assumption: no triangle spans more than 
+        // half the plane in U or V direction
+        const double lmax = .25, rmin = .75;
+        // If there are any points on the far right...
+        if (v[0].x > rmin || v[1].x > rmin || v[2].x > rmin) {
+            // Check which points lie on the far left and "unwrap" them
+            for (uint k = 0; k < 3; ++k) {
+                if (v[k].x < lmax) v[k].x += 1;
+            }
+        }
+        // Same for the y
+        if (v[0].y > rmin || v[1].y > rmin || v[2].y > rmin) {
+            for (uint k = 0; k < 3; ++k) {
+                if (v[k].y < lmax) v[k].y += 1;
+            }
         }
     }
-    return RandPoint::inTriangle(v[0], v[1], v[2]);
+    auto rnd = RandPoint::inTriangle(v[0], v[1], v[2]);
+    // Wrap back the coordinates for triangles over the border
+    if (rnd.x > 1) rnd.x -= 1;
+    if (rnd.y > 1) rnd.y -= 1;
+    return rnd;
+}
+
+std::vector<glm::dvec2> Mesh::uniformSampling(uint samples) {
+    std::vector<glm::dvec2> newVerts;
+    newVerts.reserve(samples);
+    for (uint i=0; i<samples; ++i) newVerts.push_back(randomPointUV());
+    return newVerts;
 }

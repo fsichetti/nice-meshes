@@ -1,6 +1,6 @@
 #include "RandPoint.hpp"
 
-glm::dvec3 RandPoint::inTriangle(glm::dvec3 v1, glm::dvec3 v2, glm::dvec3 v3) {
+glm::dvec2 RandPoint::inTriangle(glm::dvec2 v1, glm::dvec2 v2, glm::dvec2 v3) {
 	const double p = glm::linearRand<double>(0, 1);
 	const double q = glm::linearRand<double>(0, 1);
 	const double dif = std::abs(p-q);

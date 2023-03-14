@@ -94,6 +94,7 @@ class Mesh {
         void refine();
 
         glm::dvec2 randomPointUV();
+        std::vector<glm::dvec2> uniformSampling(uint numSamples);
 
         class FileOpenException;
         class NotFinalizedException;

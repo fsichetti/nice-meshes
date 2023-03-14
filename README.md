@@ -19,6 +19,7 @@ All parameters are case-insensitive.
 ### Generation
 - **shape**: Must be one of *sphere*, *torus*, *catenoid*, *bezier*. Sets the type of shape to be generated and the parameters that are used. Defaults to *torus*.
 - **name**: Sets the name of the mesh, which is used when saving the mesh in any format. Defaults to "mesh".
+- **anisotropy**: If unspecified, samples the mesh regularly. Otherwise perform an irregular sampling with the specified anisotropy. Use anisotropy 1 to get an isotropic sampling. WIP
 - **samples**: Determines the number of samples in one of the natural coordinates. If the shape is a surface of revolution (torus or catenoid), then it is the number of samples in the direction of rotation; the number of samples in the other direction is determined automatically in order to obtain the nice mesh. If the shape is a Bézier patch, it is the number of samples in any of the two directions (unless the **sampling** parameter is specified). Defaults to 64.
 - **subdivision**: For the sphere, it is the number of times an icosahedron is subdivided to generate the sphere. Defaults to 3.
 - **radius**: For the sphere, it is the radius of the sphere. For a randomly generated Bézier patch, it is the radius of the sphere on which the 4 corner points lie. Defaults to 1.

@@ -2,12 +2,16 @@
 #define PLANESAMPLING_H
 
 #include "Mesh.hpp"
+extern "C" {
+	#include "triangle/triangle.h"
+}
 
 class PlaneSampling {
 	public:
     Mesh::vArray verts;     // vertices in 2D
     Mesh::fArray faces;
     PlaneSampling(std::string path);
+	PlaneSampling(std::vector<glm::dvec2> positions);
 	// Get vertex and face number
 	const inline uint vertNum() const { return verts.size()/2; }
 	const inline uint faceNum() const { return faces.size()/3; }

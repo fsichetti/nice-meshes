@@ -33,14 +33,13 @@ glm::dvec3 BezierPatch::sampleSurface(
 }
 
 
-BezierPatch::BezierPatch(ControlGrid *cg, uint samples)
-    : Mesh(true, true, true) {
+BezierPatch::BezierPatch(const ControlGrid *const cg, uint samples)
+    : Mesh(true, true, true), control(cg) {
     name = "BezierPatch";
     const uint uvSamples = samples * samples;
     const double uvStep = 1.0 / (double)samples;
     reserveSpace(uvSamples, uvSamples/2);
     bcPrepare();
-    control = cg;
 
     // Compute points
     // Iterate on sample points (u,v)
@@ -83,14 +82,13 @@ BezierPatch::BezierPatch(ControlGrid *cg, uint samples)
 }
 
 
-BezierPatch::BezierPatch(ControlGrid *cg, PlaneSampling smp)
-    : Mesh(true, true, true) {
+BezierPatch::BezierPatch(const ControlGrid *const cg, PlaneSampling smp)
+    : Mesh(true, true, true), control(cg) {
     name = "BezierPatch";
     const uint NV = smp.vertNum();
     const uint NF = smp.faceNum();
     reserveSpace(NV, NF);
     bcPrepare();
-    control = cg;
 
     // Compute vertices
     for (uint i = 0; i < NV; ++i) {
@@ -121,6 +119,18 @@ BezierPatch::BezierPatch(ControlGrid *cg, PlaneSampling smp)
     }
     computeNormals(true);
 }
+
+BezierPatch::BezierPatch(const ControlGrid *const cg, uint samples, double aniso)
+    /*
+    This monstrosity creates a simple "base" uniform mesh, samples it,
+    triangulates it, and finally calls the PlaneSampling constructor.
+    Anisotropy is currently ignored.
+    */
+    : BezierPatch(cg, 
+        PlaneSampling(
+            BezierPatch(cg,32).uniformSampling(samples)
+        )
+    ) {}
 
 BezierPatch::~BezierPatch() {
     delete control;
