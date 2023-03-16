@@ -112,7 +112,7 @@ Torus::Torus(uint samples, double rOuter, double rInner, double aniso) :
     Anisotropy is currently ignored.
     */
     Torus(PlaneSampling(
-        Torus(128, rOuter, rInner).uniformSampling(
+        Torus(16, rOuter, rInner).uniformSampling(
             samples, true, 4 * std::floor(sqrt(samples)))
         ), rOuter, rInner
     ) {}

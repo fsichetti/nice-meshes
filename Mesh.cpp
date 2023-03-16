@@ -524,7 +524,7 @@ glm::dvec2 Mesh::randomPointUV() {
     }
     const double r = glm::linearRand(0., faceCDF.back());
     uint randomFace = 0;
-    while (r > faceCDF.at(randomFace)) ++randomFace;
+    while (r > faceCDF.at(randomFace)) ++randomFace; // TODO: binary search
     // Get face
     glm::dvec2 v[3];
     for (uint j=0; j<3; ++j) {
@@ -558,7 +558,6 @@ glm::dvec2 Mesh::randomPointUV() {
 std::vector<glm::dvec2> Mesh::uniformSampling(uint samples, bool corners,
     uint border) {
     std::vector<glm::dvec2> newVerts;
-    if (samples < 4) corners = false;    // extreme case
     newVerts.reserve(samples);
     // Add corner vertices first
     if (corners) {

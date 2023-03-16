@@ -107,7 +107,7 @@ Catenoid::Catenoid(uint samples, double rOuter, double rInner, double aniso) :
     Anisotropy is currently ignored.
     */
     Catenoid(PlaneSampling(
-        Catenoid(128, rOuter, rInner).uniformSampling(
+        Catenoid(16, rOuter, rInner).uniformSampling(
             samples, true, 4 * std::floor(sqrt(samples)))
         ), rOuter, rInner
     ) {}
