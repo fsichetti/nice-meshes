@@ -114,7 +114,7 @@ BezierPatch::BezierPatch(const ControlGrid *const cg, PlaneSampling smp)
     }
     // Add faces
     for (uint i = 0; i < NF; ++i) {
-        const auto fi = 3*i;
+        const auto fi = i;
         addFace(smp.cFacei(fi, 0), smp.cFacei(fi, 1), smp.cFacei(fi, 2));
     }
     computeNormals(true);

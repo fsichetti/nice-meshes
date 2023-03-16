@@ -23,6 +23,7 @@ class PlaneSampling {
 	const inline uint cFacei(uint faceId, uint n) const {
 		return faces[3 * faceId + n];
 	}
+	void print(std::string path);
 };
 
 #endif
