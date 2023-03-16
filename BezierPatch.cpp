@@ -82,7 +82,7 @@ BezierPatch::BezierPatch(const ControlGrid *const cg, uint samples)
 }
 
 
-BezierPatch::BezierPatch(const ControlGrid *const cg, PlaneSampling smp)
+BezierPatch::BezierPatch(const ControlGrid *const cg, const PlaneSampling& smp)
     : Mesh(true, true, true), control(cg) {
     name = "BezierPatch";
     const uint NV = smp.vertNum();
@@ -119,13 +119,14 @@ BezierPatch::BezierPatch(const ControlGrid *const cg, PlaneSampling smp)
     computeNormals(true);
 }
 
-BezierPatch::BezierPatch(const ControlGrid *const cg, uint samples, double aniso)
+BezierPatch::BezierPatch(const ControlGrid *const cg,
+    uint samples, double aniso) :
     /*
     This monstrosity creates a simple "base" uniform mesh, samples it,
     triangulates it, and finally calls the PlaneSampling constructor.
     Anisotropy is currently ignored.
     */
-    : BezierPatch(cg, 
+    BezierPatch(cg, 
         PlaneSampling(
             BezierPatch(cg,16).uniformSampling(
                 samples, true, 4*std::floor(sqrt(samples)))

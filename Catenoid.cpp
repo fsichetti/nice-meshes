@@ -28,8 +28,10 @@ Catenoid::Catenoid(
     for (uint v = 0; v < vSamples; ++v) {
         for (uint u = 0; u < uSamples; ++u) {
             // Place vertices
-            const double uu = (u - (v%2)*.5) * uStep;
-            const double vv = v * vStep;
+            double uu = (u - (v%2)*.5) * uStep;
+            double vv = v * vStep;
+            if (uu < 0) uu += 1.;
+            assert(uu >= 0 && vv >= 0 && uu <= 1 && vv <= 1);
             const uint index = placeVertex(uu, vv);
             
             // Add faces
@@ -49,13 +51,12 @@ Catenoid::Catenoid(
 }
 
 
-Catenoid::Catenoid(std::string path, double rOuter, double rInner) :
+Catenoid::Catenoid(const PlaneSampling& plane, double rOuter, double rInner) :
     Mesh(true, true, true), rInner(rInner), rOuter(rOuter), 
     height(2 * rInner * acosh(rOuter / rInner)) {
     assert(rOuter > rInner);
 
     // Read plane parameterization
-    PlaneSampling plane(path);
     const uint pv = plane.vertNum(), pf = plane.faceNum();
     reserveSpace(pv, pf);
 
@@ -98,6 +99,18 @@ Catenoid::Catenoid(std::string path, double rOuter, double rInner) :
     }
     computeNormals(true);
 }
+
+Catenoid::Catenoid(uint samples, double rOuter, double rInner, double aniso) :
+    /*
+    This monstrosity creates a simple "base" uniform mesh, samples it,
+    triangulates it, and finally calls the PlaneSampling constructor.
+    Anisotropy is currently ignored.
+    */
+    Catenoid(PlaneSampling(
+        Catenoid(128, rOuter, rInner).uniformSampling(
+            samples, true, 4 * std::floor(sqrt(samples)))
+        ), rOuter, rInner
+    ) {}
 
 
 uint Catenoid::placeVertex(double u, double v) {

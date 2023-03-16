@@ -94,51 +94,87 @@ void runConfig(char* pname, std::string fname, std::string cname,
         // Mesh
         Mesh *mesh = nullptr;
         BezierPatch::ControlGrid *cg = nullptr;
+        PlaneSampling *smp = nullptr;
+        bool errStop = false;
         try {
+            if (cm["inputOBJ"] != "") smp = new PlaneSampling(cm["inputOBJ"]);
+
             if (cm["shape"] == "torus") {
-                if (cm["inputOBJ"] == "") {
+                // Given sampling
+                if (smp) {
+                    mesh = new Torus(
+                        *smp,
+                        std::stod(cm["outerRadius"]),
+                        std::stod(cm["innerRadius"])
+                    );
+                }
+                // Regular sampling
+                else if (cm["anisotropy"] == "") {
                     mesh = new Torus(
                         std::stoi(cm["samples"]),
                         std::stod(cm["outerRadius"]),
                         std::stod(cm["innerRadius"])
                     );
                 }
+                // Irregular sampling
                 else {
                     mesh = new Torus(
-                        cm["inputOBJ"],
+                        std::stoi(cm["samples"]),
                         std::stod(cm["outerRadius"]),
-                        std::stod(cm["innerRadius"])
+                        std::stod(cm["innerRadius"]),
+                        std::stod(cm["anisotropy"])
                     );
                 }
             }
             else if (cm["shape"] == "catenoid") {
-                if (cm["inputOBJ"] == "") {
+                // Given sampling
+                if (smp) {
+                    mesh = new Catenoid(
+                        *smp,
+                        std::stod(cm["outerRadius"]),
+                        std::stod(cm["innerRadius"])
+                    );
+                }
+                // Regular sampling
+                else if (cm["anisotropy"] == "") {
                     mesh = new Catenoid(
                         std::stoi(cm["samples"]),
                         std::stod(cm["outerRadius"]),
                         std::stod(cm["innerRadius"])
                     );
                 }
+                // Irregular sampling
                 else {
                     mesh = new Catenoid(
-                        cm["inputOBJ"],
+                        std::stoi(cm["samples"]),
                         std::stod(cm["outerRadius"]),
-                        std::stod(cm["innerRadius"])
+                        std::stod(cm["innerRadius"]),
+                        std::stod(cm["anisotropy"])
                     );
                 }
             }
             else if (cm["shape"] == "sphere") {
-                if (cm["inputOBJ"] == "") {
+                // Given sampling
+                if (smp) {
+                    // mesh = new Sphere(
+                    //     *smp,
+                    //     std::stod(cm["radius"])
+                    // );
+                }
+                // Regular sampling
+                else if (cm["anisotropy"] == "") {
                     mesh = new Sphere(
                         std::stoi(cm["subdivision"]),
                         std::stod(cm["radius"])
                     );
                 }
+                // Irregular sampling
                 else {
-                    mesh = new Sphere(
-                        cm["inputOBJ"],
-                        std::stod(cm["radius"])
-                    );
+                    // mesh = new Sphere(
+                    //     std::stoi(cm["subdivision"]),
+                    //     std::stod(cm["radius"]),
+                    //     std::stod(cm["anisotropy"])
+                    // );
                 }
             }
             else if (cm["shape"] == "bezier") {
@@ -148,14 +184,16 @@ void runConfig(char* pname, std::string fname, std::string cname,
                     std::stod(cm["innerVariance"])
                 );
 
-                if (cm["inputOBJ"] != "") {
-                    PlaneSampling smp(cm["inputOBJ"]);
-                    mesh = new BezierPatch(cg, smp);
+                // Given sampling
+                if (smp) {
+                    mesh = new BezierPatch(cg, *smp);
                 }
+                // Regular sampling
                 else if (cm["anisotropy"] == "") {
                     mesh = new BezierPatch(cg,
                         std::stoi(cm["samples"]));
                 }
+                // Irregular sampling
                 else {
                     mesh = new BezierPatch(cg, 
                         std::stoi(cm["samples"]), std::stod(cm["anisotropy"]));
@@ -164,15 +202,19 @@ void runConfig(char* pname, std::string fname, std::string cname,
             else {
                 std::cerr << "Invalid shape (" <<
                     fname << ")" << std::endl;
-                delete mesh;
-                continue;
+                errStop = true;
             }
         }
         catch (Mesh::FileOpenException e) {
             std::cerr << e.what() << " (conf:" << cname << ')' << std::endl;
+            errStop = true;
+        }
+        delete smp;
+        if (errStop) {
             delete mesh;
             continue;
         }
+        
         
         // Name
         if (cm["name"] != "") {

@@ -14,9 +14,15 @@ class Catenoid : public Mesh {
             double rInner
         );
         Catenoid(
-            std::string path,
+            const PlaneSampling& plane,
             double rOuter,
             double rInner
+        );
+        Catenoid(
+            uint samples,
+            double rOuter,
+            double rInner,
+            double anisotropy
         );
         DifferentialQuantities diffEvaluate(double u, double v) const override;
 

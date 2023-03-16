@@ -530,6 +530,9 @@ glm::dvec2 Mesh::randomPointUV() {
     for (uint j=0; j<3; ++j) {
         v[j].x = cAttrib(cFacei(randomFace,j), Attribute::U);
         v[j].y = cAttrib(cFacei(randomFace,j), Attribute::V);
+        if (v[j].x < 0 || v[j].y < 0) {
+            auto a = 1;
+        }
         // Check if the triangle overlaps the border of the uv plane
         // Very reasonable assumption: no triangle spans more than 
         // half the plane in U or V direction

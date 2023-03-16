@@ -14,9 +14,15 @@ class Torus : public Mesh {
             double rInner
         );
         Torus(
-            std::string path,
+            const PlaneSampling& plane,
             double rOuter,
             double rInner
+        );
+        Torus(
+            uint samples,
+            double rOuter,
+            double rInner,
+            double anisotropy
         );
 
         DifferentialQuantities diffEvaluate(double u, double v) const override;

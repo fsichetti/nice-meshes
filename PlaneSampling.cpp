@@ -80,7 +80,7 @@ PlaneSampling::PlaneSampling(std::vector<glm::dvec2> positions) {
     // Data structures to call Triangle
     // moderate amounts of C ahead!
     triangulateio in, out;
-    std::string triangleFlags = "zBPO";
+    std::string triangleFlags = "zBPOQ";
     
     in.numberofpoints = positions.size();
     in.numberofpointattributes = 0;
@@ -91,35 +91,6 @@ PlaneSampling::PlaneSampling(std::vector<glm::dvec2> positions) {
         in.pointlist[2*i+0] = v.x;
         in.pointlist[2*i+1] = v.y;
     }
-    // in.numberofsegments = 4;
-    // in.segmentmarkerlist = (int*) NULL;
-    // in.segmentlist = (int*) malloc(8*sizeof(int));
-    // in.numberofholes = 0;
-    // in.numberofregions = 0;
-    // verts.at(0) = 0;
-    // verts.at(1) = 0;
-    // verts.at(2) = 1;
-    // verts.at(3) = 0;
-    // verts.at(4) = 1;
-    // verts.at(5) = 1;
-    // verts.at(6) = 0;
-    // verts.at(7) = 1;
-    // in.pointlist[0] = 0;
-    // in.pointlist[1] = 0;
-    // in.pointlist[2] = 1;
-    // in.pointlist[3] = 0;
-    // in.pointlist[4] = 1;
-    // in.pointlist[5] = 1;
-    // in.pointlist[6] = 0;
-    // in.pointlist[7] = 1;
-    // in.segmentlist[0] = 0;
-    // in.segmentlist[1] = 1;
-    // in.segmentlist[2] = 1;
-    // in.segmentlist[3] = 2;
-    // in.segmentlist[4] = 2;
-    // in.segmentlist[5] = 3;
-    // in.segmentlist[6] = 3;
-    // in.segmentlist[7] = 0;
 
     out.pointlist = (REAL*) NULL;
     out.trianglelist = (int*) NULL;

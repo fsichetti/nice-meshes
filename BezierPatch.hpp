@@ -21,7 +21,7 @@ class BezierPatch : public Mesh {
 
         BezierPatch(
             const ControlGrid *const cg,
-            PlaneSampling smp    // provided sampling of the plane
+            const PlaneSampling& smp    // provided sampling of the plane
         );
 
         BezierPatch(
