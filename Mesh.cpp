@@ -524,10 +524,7 @@ glm::dvec2 Mesh::randomPointUV() {
     }
     const double r = glm::linearRand(0., faceCDF.back());
     uint randomFace = 0;
-    while (r > faceCDF.at(randomFace)) {
-        ++randomFace;
-    }
-
+    while (r > faceCDF.at(randomFace)) ++randomFace;
     // Get face
     glm::dvec2 v[3];
     for (uint j=0; j<3; ++j) {
@@ -558,9 +555,29 @@ glm::dvec2 Mesh::randomPointUV() {
     return rnd;
 }
 
-std::vector<glm::dvec2> Mesh::uniformSampling(uint samples) {
+std::vector<glm::dvec2> Mesh::uniformSampling(uint samples, bool corners,
+    uint border) {
     std::vector<glm::dvec2> newVerts;
+    if (samples < 4) corners = false;    // extreme case
     newVerts.reserve(samples);
-    for (uint i=0; i<samples; ++i) newVerts.push_back(randomPointUV());
+    // Add corner vertices first
+    if (corners) {
+        newVerts.push_back(glm::dvec2(0,0));
+        newVerts.push_back(glm::dvec2(1,0));
+        newVerts.push_back(glm::dvec2(1,1));
+        newVerts.push_back(glm::dvec2(0,1));
+    }
+    // Then, add border vertices (in groups of 4)
+    const uint start = newVerts.size();
+    for (uint i = newVerts.size(); i < border; i+=4) {
+        const auto rand = randomPointUV();
+        newVerts.push_back(glm::dvec2(rand.x,0));
+        newVerts.push_back(glm::dvec2(1,rand.y));
+        newVerts.push_back(glm::dvec2(rand.x,1));
+        newVerts.push_back(glm::dvec2(0,rand.y));
+    }
+    // Finally, add inner vertices
+    for (uint i = newVerts.size(); i < samples; ++i)
+        newVerts.push_back(randomPointUV());
     return newVerts;
 }

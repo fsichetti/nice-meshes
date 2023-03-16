@@ -37,7 +37,7 @@ BezierPatch::BezierPatch(const ControlGrid *const cg, uint samples)
     : Mesh(true, true, true), control(cg) {
     name = "BezierPatch";
     const uint uvSamples = samples * samples;
-    const double uvStep = 1.0 / (double)samples;
+    const double uvStep = 1.0 / static_cast<double>(samples-1);
     reserveSpace(uvSamples, uvSamples/2);
     bcPrepare();
 
@@ -114,8 +114,7 @@ BezierPatch::BezierPatch(const ControlGrid *const cg, PlaneSampling smp)
     }
     // Add faces
     for (uint i = 0; i < NF; ++i) {
-        const auto fi = i;
-        addFace(smp.cFacei(fi, 0), smp.cFacei(fi, 1), smp.cFacei(fi, 2));
+        addFace(smp.cFacei(i, 0), smp.cFacei(i, 1), smp.cFacei(i, 2));
     }
     computeNormals(true);
 }
@@ -128,7 +127,8 @@ BezierPatch::BezierPatch(const ControlGrid *const cg, uint samples, double aniso
     */
     : BezierPatch(cg, 
         PlaneSampling(
-            BezierPatch(cg,32).uniformSampling(samples)
+            BezierPatch(cg,16).uniformSampling(
+                samples, true, 4*std::floor(sqrt(samples)))
         )
     ) {}
 
