@@ -54,6 +54,33 @@ Torus::Torus(
 }
 
 
+Torus::Torus(
+        std::string path,
+        double rOuter,
+        double rInner
+    ) : Mesh(true, true, true), rInner(rInner), rOuter(rOuter) {
+
+    // Construct torus
+    readOBJ(path);
+    // Normalization, normals, UV
+    const uint s = vertNum();
+    for (uint i = 0; i < s; ++i) {
+        const double x = cAttrib(i, Attribute::X);
+        const double y = cAttrib(i, Attribute::Y);
+        const double z = cAttrib(i, Attribute::Z);
+        // Project on torus of given radius
+        // Start determine toroidal and poloidal angles, then project
+        const double nxy = 1.0 / sqrt(x*x + y*y);
+        const double theta = (y*nxy>=0) ? acos(x*nxy) : TWOPI - acos(x*nxy);
+        const double w = cos(theta) * x + sin(theta) * y - rOuter;
+        const double nwz = 1.0 / sqrt(w*w + z*z);
+        const double phi = (z*nwz>=0) ? acos(w*nwz) : TWOPI - acos(w*nwz);
+        replaceVertex(i, theta / TWOPI, phi / TWOPI);
+    }
+    computeNormals(true);
+}
+
+
 Torus::Torus(const PlaneSampling& plane, double rOuter, double rInner) :
     Mesh(true, true, true), rInner(rInner), rOuter(rOuter) {
     
@@ -118,13 +145,11 @@ Torus::Torus(uint samples, double rOuter, double rInner, double aniso) :
     ) {}
 
 
-uint Torus::placeVertex(double u, double v) {
+void Torus::replaceVertex(uint index, double u, double v) {
     const double sinu = sin(TWOPI * u);
     const double cosu = cos(TWOPI * u);
     const double sinv = sin(TWOPI * v);
     const double cosv = cos(TWOPI * v);
-    
-    const uint index = addVertex();
     
     attrib(index, Attribute::X) = cosu * (rOuter + rInner * cosv);
     attrib(index, Attribute::Y) = sinu * (rOuter + rInner * cosv);
@@ -144,7 +169,11 @@ uint Torus::placeVertex(double u, double v) {
         (rInner * (rOuter + rInner * cosv));
     attrib(index, Attribute::H) = (rOuter + 2 * rInner * cosv) /
         (2 * rInner * (rOuter + rInner * cosv));
+}
 
+uint Torus::placeVertex(double u, double v) {
+    const uint index = addVertex();
+    replaceVertex(index, u, v);
     return index;
 }
 

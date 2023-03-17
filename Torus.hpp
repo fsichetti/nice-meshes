@@ -19,6 +19,11 @@ class Torus : public Mesh {
             double rInner
         );
         Torus(
+            std::string path,
+            double rOuter,
+            double rInner
+        );
+        Torus(
             uint samples,
             double rOuter,
             double rInner,
@@ -30,6 +35,7 @@ class Torus : public Mesh {
     private:
         const double rInner, rOuter;
         uint placeVertex(double u, double v);
+        void replaceVertex(uint i, double u, double v);
 };
 
 #endif

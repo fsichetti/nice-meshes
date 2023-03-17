@@ -8,7 +8,8 @@ void ConfigManager::defaultValues() {
 
     c["interactive"] = "true";
     c["repeat"] = "1";
-    c["inputOBJ"] = "";
+    c["inputPlane"] = "";
+    c["inputShape"] = "";
     c["outFolder"] = "./";
     c["savePLY"] = "false";
     c["saveOBJ"] = "false";
