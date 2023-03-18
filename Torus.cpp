@@ -62,14 +62,14 @@ Torus::Torus(
 
     // Construct torus
     readOBJ(path);
-    // Normalization, normals, UV
+    // Projection
     const uint s = vertNum();
     for (uint i = 0; i < s; ++i) {
         const double x = cAttrib(i, Attribute::X);
         const double y = cAttrib(i, Attribute::Y);
         const double z = cAttrib(i, Attribute::Z);
         // Project on torus of given radius
-        // Start determine toroidal and poloidal angles, then project
+        // First determine toroidal and poloidal angles, then project
         const double nxy = 1.0 / sqrt(x*x + y*y);
         const double theta = (y*nxy>=0) ? acos(x*nxy) : TWOPI - acos(x*nxy);
         const double w = cos(theta) * x + sin(theta) * y - rOuter;

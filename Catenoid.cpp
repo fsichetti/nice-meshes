@@ -51,6 +51,31 @@ Catenoid::Catenoid(
 }
 
 
+Catenoid::Catenoid(
+        std::string path,
+        double rOuter,
+        double rInner
+    ) : Mesh(true, true, true), rInner(rInner), rOuter(rOuter),
+    height(2 * rInner * acosh(rOuter / rInner)) {
+
+    // Construct catenoid
+    readOBJ(path);
+    // Projection
+    const uint s = vertNum();
+    for (uint i = 0; i < s; ++i) {
+        const double x = cAttrib(i, Attribute::X);
+        const double y = cAttrib(i, Attribute::Y);
+        const double z = cAttrib(i, Attribute::Z);
+        // Project on catenoid of given radius
+        // For simplicity, we project orthogonally to the rotation axis (z)
+        const double nxy = 1.0 / sqrt(x*x + y*y);
+        const double theta = (y*nxy>=0) ? acos(x*nxy) : TWOPI - acos(x*nxy);
+        replaceVertex(i, theta / TWOPI, .5+z/height);
+    }
+    computeNormals(true);
+}
+
+
 Catenoid::Catenoid(const PlaneSampling& plane, double rOuter, double rInner) :
     Mesh(true, true, true), rInner(rInner), rOuter(rOuter), 
     height(2 * rInner * acosh(rOuter / rInner)) {
@@ -113,14 +138,12 @@ Catenoid::Catenoid(uint samples, double rOuter, double rInner, double aniso) :
     ) {}
 
 
-uint Catenoid::placeVertex(double u, double v) {
+void Catenoid::replaceVertex(uint index, double u, double v) {
     const double vs = (v-.5)*height;
     const double sinu = sin(TWOPI * u);
     const double cosu = cos(TWOPI * u);
     const double sinhv = sinh(vs / rInner);
     const double coshv = cosh(vs / rInner);
-
-    const uint index = addVertex();
 
     attrib(index, Attribute::X) = rInner * coshv * cosu;
     attrib(index, Attribute::Y) = rInner * coshv * sinu;
@@ -139,7 +162,11 @@ uint Catenoid::placeVertex(double u, double v) {
     // Curvature
     attrib(index, Attribute::H) = 0;
     attrib(index, Attribute::K) = -pow(rInner, -2) * pow(coshv, -4);
+}
 
+uint Catenoid::placeVertex(double u, double v) {
+    const uint index = addVertex();
+    replaceVertex(index, u, v);
     return index;
 }
 

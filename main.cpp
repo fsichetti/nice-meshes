@@ -144,6 +144,14 @@ void runConfig(char* pname, std::string fname, std::string cname,
                         std::stod(cm["innerRadius"])
                     );
                 }
+                // Given mesh
+                else if (cm["inputShape"] != "") {
+                    mesh = new Catenoid(
+                        cm["inputShape"],
+                        std::stod(cm["outerRadius"]),
+                        std::stod(cm["innerRadius"])
+                    );
+                }
                 // Regular sampling
                 else if (cm["anisotropy"] == "") {
                     mesh = new Catenoid(

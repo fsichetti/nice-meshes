@@ -19,6 +19,11 @@ class Catenoid : public Mesh {
             double rInner
         );
         Catenoid(
+            std::string path,
+            double rOuter,
+            double rInner
+        );
+        Catenoid(
             uint samples,
             double rOuter,
             double rInner,
@@ -29,6 +34,7 @@ class Catenoid : public Mesh {
     private:
         const double rInner, rOuter, height;
         uint placeVertex(double u, double v);
+        void replaceVertex(uint index, double u, double v);
 };
 
 #endif
