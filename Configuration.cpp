@@ -24,6 +24,7 @@ void ConfigManager::defaultValues() {
     c["outerRadius"] = "2";
     c["centered"] = "false";
     c["subdivision"] = "3";
+    c["elementType"] = "triangle";
 
     c["noise"] = "0";
     c["noiseType"] = "3d";

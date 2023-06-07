@@ -3,7 +3,8 @@
 Catenoid::Catenoid(
         uint samples,   // samples in toroidal direction
         double rOuter,
-        double rInner
+        double rInner,
+        bool quad
     ) : Mesh(true, true, true), rOuter(rOuter), rInner(rInner),
         height(2 * rInner * acosh(rOuter / rInner)) {
     assert(rOuter > rInner);
@@ -14,8 +15,8 @@ Catenoid::Catenoid(
     const double halfHeight = height / 2;
 
     // Pre-computation for sampling in vertical direction
-    const double temp = TWOPI * SQRT3_2 * uStep * rInner;
-    const uint vSamples = std::ceil(height / temp);
+    const double tmp = TWOPI * (quad ? 1 : SQRT3_2) * uStep * rInner;
+    const uint vSamples = std::ceil(height / tmp);
     const double vStep = 1.0 / static_cast<double>(vSamples-1);
     // rescale to [0, 1]
     const uint uvSamples = uSamples * vSamples;
@@ -27,8 +28,9 @@ Catenoid::Catenoid(
 
     for (uint v = 0; v < vSamples; ++v) {
         for (uint u = 0; u < uSamples; ++u) {
+            uint off = quad ? 0 : (v%2);
             // Place vertices
-            double uu = (u - (v%2)*.5) * uStep;
+            double uu = (u - off*.5) * uStep;
             double vv = v * vStep;
             if (uu < 0) uu += 1.;
             assert(uu >= 0 && vv >= 0 && uu <= 1 && vv <= 1);
@@ -36,10 +38,10 @@ Catenoid::Catenoid(
             
             // Add faces
             if (v != vSamples-1) {    // Open at the ends
-                const uint us = (u+uSamples-v%2)%uSamples;
+                const uint us = (u+uSamples-off)%uSamples;
                 uint a = index;
                 uint b = (u+1)%uSamples+v*uSamples;
-                uint c = ((u+1-v%2)%uSamples+(v+1)*uSamples)%uvSamples;
+                uint c = ((u+1-off)%uSamples+(v+1)*uSamples)%uvSamples;
                 uint d = ((us+uSamples)%uSamples+(v+1)*uSamples)%uvSamples;
 
                 addFace(a, b, c);

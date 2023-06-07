@@ -11,7 +11,8 @@ class Torus : public Mesh {
         Torus(
             uint samples,   // samples in toroidal direction
             double rOuter,
-            double rInner
+            double rInner,
+            bool quad = false
         );
         Torus(
             const PlaneSampling& plane,

@@ -122,7 +122,8 @@ void runConfig(char* pname, std::string fname, std::string cname,
                     mesh = new Torus(
                         std::stoi(cm["samples"]),
                         std::stod(cm["outerRadius"]),
-                        std::stod(cm["innerRadius"])
+                        std::stod(cm["innerRadius"]),
+                        cm["elementType"] == "quad"
                     );
                 }
                 // Irregular sampling
@@ -157,7 +158,8 @@ void runConfig(char* pname, std::string fname, std::string cname,
                     mesh = new Catenoid(
                         std::stoi(cm["samples"]),
                         std::stod(cm["outerRadius"]),
-                        std::stod(cm["innerRadius"])
+                        std::stod(cm["innerRadius"]),
+                        cm["elementType"] == "quad"
                     );
                 }
                 // Irregular sampling

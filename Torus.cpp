@@ -3,7 +3,8 @@
 Torus::Torus(
         uint samples,   // samples in toroidal direction
         double rOuter,
-        double rInner
+        double rInner,
+        bool quad
     ) : Mesh(true, true, true), rInner(rInner), rOuter(rOuter) {
 
     // Construct torus
@@ -14,7 +15,7 @@ Torus::Torus(
     // Pre-computation for sampling in poloidal direction
     double phiMax = 0;
     uint count = 0;
-    const double vStep = SQRT3_2 * uStep;
+    const double vStep = quad ? uStep : SQRT3_2 * uStep;
     // rescale to [0, 1]
     while (phiMax < TWOPI || count % 2) { 
         phiMax += TWOPI * vStep * (rRatio + cos(phiMax));
@@ -30,8 +31,9 @@ Torus::Torus(
     double phi = 0;
     for (uint v = 0; v < vSamples; ++v) {
         for (uint u = 0; u < uSamples; ++u) {
+            uint off = quad ? 0 : (v%2);
             // Place vertices
-            double uu = (u - (v%2)*.5) * uStep;
+            double uu = (u - off*.5) * uStep;
             double vv = phi / phiMax;
             if (uu < 0) uu += 1.;
             assert(uu >= 0 && vv >= 0 && uu <= 1 && vv <= 1);
@@ -39,10 +41,10 @@ Torus::Torus(
             const uint index = placeVertex(uu, vv);
 
             // Add faces
-            const uint us = (u+uSamples-v%2)%uSamples;
+            const uint us = (u+uSamples-off)%uSamples;
             uint a = index;
             uint b = (u+1)%uSamples+v*uSamples;
-            uint c = ((u+1-v%2)%uSamples+(v+1)*uSamples)%uvSamples;
+            uint c = ((u+1-off)%uSamples+(v+1)*uSamples)%uvSamples;
             uint d = ((us+uSamples)%uSamples+(v+1)*uSamples)%uvSamples;
 
             addFace(a, b, c);

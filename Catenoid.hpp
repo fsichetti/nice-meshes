@@ -11,7 +11,8 @@ class Catenoid : public Mesh {
         Catenoid(
             uint samples,   // samples in rotational direction
             double rOuter,
-            double rInner
+            double rInner,
+            bool quad = false
         );
         Catenoid(
             const PlaneSampling& plane,
