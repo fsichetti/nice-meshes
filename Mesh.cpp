@@ -214,20 +214,15 @@ void Mesh::readOBJ(std::string path) {
         // Ignores normals!
         if (tok.length() > 0) {
             std::string a, b, c;
-            switch (tok[0]) {
-                case 'v':
-                    file >> a >> b >> c;
-                    addVertex(std::stof(a), std::stof(b), std::stof(c));
-                    break;
-
-                case 'f':
-                    file >> a >> b >> c;
-                    addFace(std::stoi(a)-1, std::stoi(b)-1, std::stoi(c)-1);
-                    break;
-
-                case '#':
-                    file.ignore(0xFF, '\n');
-            }   
+            if (tok == "v") {
+                file >> a >> b >> c;
+                addVertex(std::stof(a), std::stof(b), std::stof(c));
+            }
+            else if (tok == "f") {
+                file >> a >> b >> c;
+                addFace(std::stoi(a)-1, std::stoi(b)-1, std::stoi(c)-1);
+            }
+            else file.ignore(0xFF, '\n');
         }     
     }
 
